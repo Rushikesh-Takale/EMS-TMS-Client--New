@@ -1,0 +1,120 @@
+/* EventsAndHolidays.css */
+
+/* Container */
+.events-holidays-container {
+  margin-top: 1rem;
+}
+
+/* Section Headers */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-weight: bold;
+  color: #3A5FBE;
+}
+
+/* Scrollable List Container */
+.scrollable-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Card Styles */
+.event-holiday-card {
+  text-align: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.card-title {
+  color: #3A5FBE;
+  margin-bottom: 0.5rem;
+}
+
+.card-divider {
+  width: 100%;
+  margin: 10px 0;
+  opacity: 0.3;
+}
+
+/* Icons */
+.event-icon {
+  color: #3A5FBE;
+  font-size: 2.5rem;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.holiday-icon {
+  color: #3A5FBE;
+  font-size: 1.5rem;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Content Container */
+.card-content-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3A5FBE;
+}
+
+.event-details,
+.holiday-details {
+  color: #3A5FBE;
+}
+
+.card-body {
+  position: relative;
+}
+.holiday-name,
+.event-name,
+.card-title {
+  padding-right: 0px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  font-weight: bold;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.edit-btn {
+  position: absolute;
+  top: 10px;
+  right: 55px;
+  z-index: 2;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+}
+/* Delete Button */
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .scrollable-list {
+    max-height: 400px;
+  }
+  
+  .event-icon {
+    font-size: 2rem;
+  }
+  
+  .holiday-icon {
+    font-size: 1.2rem;
+  }
+  
+  .section-title {
+    font-size: 1.1rem;
+  }
+}
