@@ -317,17 +317,12 @@ const handleReset = () => {
       
           // Working hours less than 8
           if (
-            attendance.checkIn &&
-            attendance.checkOut &&
-            attendance.workingHours
-          ) {
-            const hours = parseFloat(attendance.workingHours);
-      
-            if (hours < 8) {
-              updatedStatus = "Absent";
-            }
-          }
-        }
+    !attendance.workingHours ||
+    parseFloat(attendance.workingHours) < 8
+  ) {
+    updatedStatus = "Absent";
+  }
+  }
       
         result.push({
           ...attendance,
