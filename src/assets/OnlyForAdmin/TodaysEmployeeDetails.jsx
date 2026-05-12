@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import axios from "axios";
+import * as XLSX from "xlsx";
 import { useNavigate, useParams } from "react-router-dom";
 
 function TodaysEmployeeDetails() {
@@ -8,6 +9,7 @@ function TodaysEmployeeDetails() {
   const [error, setError] = useState(null);
   const { role, username, id } = useParams();
   const navigate = useNavigate();
+  const [showCardList, setShowCardList] = useState(null);
 
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,6 +25,19 @@ function TodaysEmployeeDetails() {
   const [employeeBreaks, setEmployeeBreaks] = useState([]);
   const [breakLoading, setBreakLoading] = useState(false);
   const modalRef = useRef(null);
+  const [lateSearch, setLateSearch] = useState("");
+ 
+  const [appliedLateSearch, setAppliedLateSearch] = useState("");
+ const [lateFromDate, setLateFromDate] = useState("");
+const [lateToDate, setLateToDate] = useState("");
+
+const [appliedLateFromDate, setAppliedLateFromDate] = useState("");
+const [appliedLateToDate, setAppliedLateToDate] = useState("");
+const [lateCheckInEmployeesData, setLateCheckInEmployeesData] = useState([]);
+const [lateCurrentPage, setLateCurrentPage] = useState(1);
+const [lateItemsPerPage, setLateItemsPerPage] = useState(5);
+const [showLateModal, setShowLateModal] = useState(false);
+const [selectedLateEmployee, setSelectedLateEmployee] = useState(null);
   useEffect(() => {
     if (!showModal || !modalRef.current) return;
 
@@ -68,7 +83,7 @@ function TodaysEmployeeDetails() {
     };
   }, [showModal]);
   useEffect(() => {
-    const isModalOpen = showModal;
+  const isModalOpen = showModal || showLateModal;
 
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
@@ -82,7 +97,7 @@ function TodaysEmployeeDetails() {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
-  }, [showModal]);
+}, [showModal, showLateModal]);
   const openEmployeePopup = async (emp) => {
     try {
       setSelectedEmployee(emp);
@@ -302,7 +317,148 @@ function TodaysEmployeeDetails() {
     return "Absent";
   };
 
-  if (loading)
+ 
+
+
+  // const totalPages = Math.ceil(employees.length / itemsPerPage);
+  // const indexOfLastItem = currentPage * itemsPerPage;
+  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // const currentEmployees = employees.slice(indexOfFirstItem, indexOfLastItem);
+
+  // const handlePageChange = (newPage) => {
+  //   if (newPage >= 1 && newPage <= totalPages) {
+  //     setCurrentPage(newPage);
+  //   }
+  // };
+
+  // dipali code
+  // NEW: Filter employees by status
+  const employees = attendanceData?.employees || [];
+const lateCheckInEmployees = useMemo(() => {
+  if (lateCheckInEmployeesData.length > 0) {
+    return lateCheckInEmployeesData;
+  }
+  return employees.filter((emp) => {
+    if (!emp.checkInTime) return false;
+
+    const dt = new Date(emp.checkInTime);
+    const hours = dt.getHours();
+    const minutes = dt.getMinutes();
+
+    const isLate =
+      hours > 10 || (hours === 10 && minutes > 0);
+
+    const matchesName =
+      appliedLateSearch.trim() === "" ||
+      emp.name
+        .toLowerCase()
+        .includes(appliedLateSearch.toLowerCase());
+
+    const empDate = new Date(emp.checkInTime);
+const matchesDate =
+  (!appliedLateFromDate && !appliedLateToDate) ||
+  (
+    (!appliedLateFromDate ||
+      empDate >= new Date(appliedLateFromDate)) &&
+    (!appliedLateToDate ||
+      empDate <= new Date(appliedLateToDate))
+  );
+
+    return isLate && matchesName && matchesDate;
+   
+  });
+}, [
+  employees,
+  appliedLateSearch,
+  appliedLateFromDate,
+  appliedLateToDate,
+  lateCheckInEmployeesData,
+]);
+
+const lateTotalPages = Math.ceil(
+  lateCheckInEmployees.length / lateItemsPerPage
+);
+
+const lateIndexOfLastItem =
+  lateCurrentPage * lateItemsPerPage;
+
+const lateIndexOfFirstItem =
+  lateIndexOfLastItem - lateItemsPerPage;
+
+const currentLateEmployees =
+  lateCheckInEmployees.slice(
+    lateIndexOfFirstItem,
+    lateIndexOfLastItem
+  );
+const fetchLateCheckInHistory = async () => {
+  try {
+    const token = localStorage.getItem("accessToken");
+
+    const res = await axios.get(
+      `http://localhost:8000/attendance/late-checkins`,
+      {
+        params: {
+          from: lateFromDate,
+          to: lateToDate,
+          name: lateSearch,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+setLateCheckInEmployeesData(res.data);
+setLateCurrentPage(1);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const downloadLateCheckInExcel = () => {
+  const excelData = lateCheckInEmployees.map((emp) => ({
+    Name: emp.name,
+
+    "Check-In Time": new Date(
+      emp.checkInTime
+    ).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+
+    Date: new Date(
+      emp.checkInTime
+    ).toLocaleDateString(),
+
+    Status: "Late Check-In",
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    "Late Check-Ins"
+  );
+
+  XLSX.writeFile(
+    workbook,
+    "Late_CheckIn_Employees.xlsx"
+  );
+};
+
+const openLateModal = (emp) => {
+  setSelectedLateEmployee(emp);
+  setShowLateModal(true);
+};
+
+const closeLateModal = () => {
+  setShowLateModal(false);
+  setSelectedLateEmployee(null);
+};
+ if (loading)
     return (
       <div
         className="d-flex flex-column justify-content-center align-items-center"
@@ -321,24 +477,14 @@ function TodaysEmployeeDetails() {
       </div>
     );
 
-  if (error) return <p className="text-danger">{error}</p>;
-  if (!attendanceData?.employees?.length)
-    return <p>No attendance records for today.</p>;
+if (error) {
+  return (
+    <div className="container-fluid">
+      <p className="text-danger">{error}</p>
+    </div>
+  );
+}
 
-  const employees = attendanceData.employees;
-  // const totalPages = Math.ceil(employees.length / itemsPerPage);
-  // const indexOfLastItem = currentPage * itemsPerPage;
-  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  // const currentEmployees = employees.slice(indexOfFirstItem, indexOfLastItem);
-
-  // const handlePageChange = (newPage) => {
-  //   if (newPage >= 1 && newPage <= totalPages) {
-  //     setCurrentPage(newPage);
-  //   }
-  // };
-
-  // dipali code
-  // NEW: Filter employees by status
   const applyFilters = () => {
     const employeesList = attendanceData?.employees || [];
     let temp = [...employeesList];
@@ -398,6 +544,7 @@ function TodaysEmployeeDetails() {
       setCurrentPage(newPage);
     }
   };
+
 
   console.log("currentEmployees", currentEmployees);
 
@@ -481,7 +628,11 @@ function TodaysEmployeeDetails() {
         </div>
 
         <div className="col-md-4 mb-3">
-          <div className="card shadow-sm h-100 border-0">
+  <div
+  className="card shadow-sm h-100 border-0"
+  style={{ cursor: "pointer" }}
+  onClick={() => setShowCardList("lateCheckIn")}
+>
             <div
               className="card-body d-flex align-items-center"
               style={{ gap: "20px" }}
@@ -512,7 +663,453 @@ function TodaysEmployeeDetails() {
           </div>
         </div>
       </div>
+      {showCardList === "lateCheckIn" ? (
+  <>
+  <div className="d-flex justify-content-between align-items-center mb-3">
+  <h2
+    style={{
+      color: "#3A5FBE",
+      fontSize: "25px",
+      marginBottom: 0,
+    }}
+  >
+    Late Check-In Employees
+  </h2>
 
+  <button
+    className="btn btn-sm custom-outline-btn"
+    style={{ minWidth: 90 }}
+    onClick={() => setShowCardList(null)}
+  >
+    Close
+  </button>
+</div>
+<div className="card mb-4 shadow-sm border-0">
+  <div className="card-body">
+    <div className="row align-items-center g-3">
+      
+      {/* Search */}
+         <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
+              <label
+                htmlFor="employeeNameFilter"
+                className="fw-bold mb-0 text-start text-md-end"
+                style={{
+                  width: "50px",
+                  fontSize: "16px",
+                  color: "#3A5FBE",
+                  marginRight: "2px",
+                }}
+              >
+                Name
+              </label>
+
+          <input
+            type="text"
+            className="form-control"
+            value={lateSearch}
+              placeholder="Search by any field"
+            onChange={(e) => setLateSearch(e.target.value)}
+          />
+      
+      </div>
+
+{/* From Date */}
+    <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+              <label
+                htmlFor="dateFromFilter"
+                className="fw-bold mb-0 text-start text-md-end"
+                style={{
+                  fontSize: "16px",
+                  color: "#3A5FBE",
+                  width: "50px",
+                  minWidth: "50px",
+                  marginRight: "8px",
+                }}
+              >
+                From
+              </label>
+
+    <input
+      type="date"
+      className="form-control"
+      value={lateFromDate}
+      onChange={(e) => setLateFromDate(e.target.value)}
+    />
+  
+</div>
+
+{/* To Date */}
+    <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+              <label
+                htmlFor="dateToFilter"
+                className="fw-bold mb-0 text-start text-md-end"
+                style={{
+                  width: "50px",
+                  fontSize: "16px",
+                  color: "#3A5FBE",
+                  minWidth: "50px",
+                  marginRight: "8px",
+                }}
+              >
+                To
+                </label>
+
+    <input
+      type="date"
+      className="form-control"
+      value={lateToDate}
+      onChange={(e) => setLateToDate(e.target.value)}
+    />
+  
+</div>
+
+      {/* Buttons */}
+   {/* Buttons */}
+     <div className="col-12 col-md-auto ms-md-auto d-flex gap-2 mb-1 justify-content-end">
+<button
+  type="button"
+  className="btn btn-sm custom-outline-btn"
+  style={{ minWidth: 110 }}
+  onClick={downloadLateCheckInExcel}
+>
+  Download Excel
+</button>
+
+  <button
+    type="button"
+    className="btn btn-sm custom-outline-btn"
+    style={{ minWidth: 90 }}
+onClick={fetchLateCheckInHistory}
+
+  >
+    Filter
+  </button>
+
+  <button
+    type="button"
+    className="btn btn-sm custom-outline-btn"
+    style={{ minWidth: 90 }}
+onClick={() => {
+  setLateSearch("");
+  setLateFromDate("");
+  setLateToDate("");
+  setLateCurrentPage(1);
+setLateCheckInEmployeesData([]);
+}}
+  >
+    Reset
+  </button>
+</div>
+  </div>
+    </div>
+  </div>
+
+
+
+  
+    <div className="card shadow-sm border-0 mb-0">
+     
+
+      <div className="card-body p-0 table-responsive bg-white">
+        <table className="table table-hover mb-0">
+          <thead>
+            <tr>
+             <th
+  style={{
+    fontWeight: "500",
+    fontSize: "14px",
+    color: "#6c757d",
+    borderBottom: "2px solid #dee2e6",
+    padding: "12px",
+    whiteSpace: "nowrap",
+  }}
+>
+  Name
+</th>
+
+<th
+  style={{
+    fontWeight: "500",
+    fontSize: "14px",
+    color: "#6c757d",
+    borderBottom: "2px solid #dee2e6",
+    padding: "12px",
+    whiteSpace: "nowrap",
+  }}
+>
+  Check-In Time
+</th>
+
+<th
+  style={{
+    fontWeight: "500",
+    fontSize: "14px",
+    color: "#6c757d",
+    borderBottom: "2px solid #dee2e6",
+    padding: "12px",
+    whiteSpace: "nowrap",
+  }}
+>
+  Date
+</th>
+
+<th
+  style={{
+    fontWeight: "500",
+    fontSize: "14px",
+    color: "#6c757d",
+    borderBottom: "2px solid #dee2e6",
+    padding: "12px",
+    whiteSpace: "nowrap",
+  }}
+>
+  Status
+</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            
+
+        {lateCheckInEmployees.length === 0 ? (
+  <tr>
+    <td
+      colSpan="3"
+      className="text-center py-4"
+      style={{ color: "#6c757d" }}
+    >
+      No data available
+    </td>
+  </tr>
+) : (
+currentLateEmployees.map((emp) => (
+<tr
+  key={emp._id}
+  style={{ cursor: "pointer" }}
+  onClick={() => openLateModal(emp)}
+>
+               <td
+  style={{
+    padding: "12px",
+    fontSize: "14px",
+    borderBottom: "1px solid #dee2e6",
+    whiteSpace: "nowrap",
+  }}
+>
+  {emp.name}
+</td>
+
+   <td   
+  style={{
+    padding: "12px",
+    fontSize: "14px",
+    borderBottom: "1px solid #dee2e6",
+    whiteSpace: "nowrap",
+  }}
+>
+                  {new Date(emp.checkInTime).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </td>
+                   <td   
+  style={{
+    padding: "12px",
+    fontSize: "14px",
+    borderBottom: "1px solid #dee2e6",
+    whiteSpace: "nowrap",
+  }}
+>
+            {new Date(emp.checkInTime).toLocaleDateString()}      
+                </td>
+
+                <td   style={{
+    padding: "12px",
+    fontSize: "14px",
+    borderBottom: "1px solid #dee2e6",
+    whiteSpace: "nowrap",
+  }}
+>
+                  <span
+                    style={{
+                     background: "#FFE493" ,
+                    display: "inline-block",
+                    padding: "6px 12px",
+                    fontWeight: 400,
+                    fontSize: "14px",
+                    width: 112,
+                    textAlign: "center",
+      }}
+                  >
+                    Late Check-In
+                  </span>
+                </td>
+              </tr>
+            
+            ))
+)}
+          </tbody>
+        </table>
+        
+      </div>
+    </div>
+    <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
+  <div className="d-flex align-items-center gap-3">
+
+    <div className="d-flex align-items-center">
+      <span style={{ fontSize: "14px", marginRight: "8px" }}>
+        Rows per page:
+      </span>
+
+      <select
+        className="form-select form-select-sm"
+        style={{ width: "auto", fontSize: "14px" }}
+        value={lateItemsPerPage}
+        onChange={(e) => {
+          setLateItemsPerPage(Number(e.target.value));
+          setLateCurrentPage(1);
+        }}
+      >
+        <option value={5}>5</option>
+        <option value={10}>10</option>
+        <option value={25}>25</option>
+      </select>
+    </div>
+
+    <span style={{ fontSize: "14px" }}>
+      {lateCheckInEmployees.length > 0
+        ? lateIndexOfFirstItem + 1
+        : 0}
+      -
+      {Math.min(
+        lateIndexOfLastItem,
+        lateCheckInEmployees.length
+      )}{" "}
+      of {lateCheckInEmployees.length}
+    </span>
+
+    <div className="d-flex align-items-center">
+      <button
+        className="btn btn-sm focus-ring"
+        disabled={lateCurrentPage === 1}
+        onClick={() =>
+          setLateCurrentPage((prev) => prev - 1)
+        }
+      >
+        ‹
+      </button>
+
+      <button
+        className="btn btn-sm focus-ring"
+        disabled={
+          lateCurrentPage === lateTotalPages ||
+          lateTotalPages === 0
+        }
+        onClick={() =>
+          setLateCurrentPage((prev) => prev + 1)
+        }
+      >
+        ›
+      </button>
+    </div>
+  </div>
+</nav>
+  {showLateModal && selectedLateEmployee && (
+  <div
+    className="modal fade show"
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.5)",
+      zIndex: 1050,
+    }}
+  >
+    <div
+      className="modal-dialog modal-dialog-centered"
+      style={{ maxWidth: "500px", width: "100%" }}
+    >
+      <div className="modal-content">
+
+        <div
+          className="modal-header text-white"
+          style={{ backgroundColor: "#3A5FBE" }}
+        >
+          <h5 className="modal-title">
+            Late Check-In Details
+          </h5>
+
+          <button
+            type="button"
+            className="btn-close btn-close-white"
+            onClick={closeLateModal}
+          />
+        </div>
+
+        <div className="modal-body">
+
+       <div className="row mb-3">
+  <div className="col-4 fw-bold">Name :</div>
+  <div className="col-8">{selectedLateEmployee.name}</div>
+</div>
+
+<div className="row mb-3">
+  <div className="col-4 fw-bold">Check-In Time :</div>
+  <div className="col-8">
+    {new Date(selectedLateEmployee.checkInTime).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}
+  </div>
+</div>
+
+<div className="row mb-3">
+  <div className="col-4 fw-bold">Date :</div>
+  <div className="col-8">
+    {new Date(selectedLateEmployee.checkInTime).toLocaleDateString()}
+  </div>
+</div>
+
+<div className="row mb-3">
+  <div className="col-4 fw-bold">Status :</div>
+  <div className="col-8">
+    <span
+      style={{
+        background: "#FFE493" ,
+          display: "inline-block",
+                    padding: "6px 12px",
+                    fontWeight: 400,
+                    fontSize: "14px",
+                    width: 112,
+                    textAlign: "center",
+      }}
+    >
+      Late Check-In
+    </span>
+  </div>
+</div>
+        </div>
+
+        <div className="modal-footer">
+          <button
+            className="btn btn-sm custom-outline-btn"
+            style={{ minWidth: 90 }}
+            onClick={closeLateModal}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+
+  </>
+) : (
+   <>
       {/* dipali code */}
       <div className="card mb-4 shadow-sm border-0">
         <div className="card-body">
@@ -607,6 +1204,9 @@ function TodaysEmployeeDetails() {
 
       {/* ✅ Attendance Table */}
       <div className="table-responsive">
+        {employees.length === 0 ? (
+  <p>No attendance records for today.</p>
+) : (
         <table className="table table-hover mb-0 bg-white">
           <thead style={{ backgroundColor: "#ffffffff" }}>
             <tr>
@@ -727,7 +1327,8 @@ function TodaysEmployeeDetails() {
                   Present: { background: "#d1f7df" }, // soft green
                   "Half Day": { background: "#fff3cd" }, // soft yellow
                   Working: { background: "#cff4fc" }, // soft cyan
-                  Absent: { background: "#f8d7da" }, // soft red
+                  Absent: { background: "#f8d7da" }, 
+                   "Late Check-In": { background: "#FFE493" },// soft red
                 };
 
                 return (
@@ -848,6 +1449,7 @@ function TodaysEmployeeDetails() {
             )}
           </tbody>
         </table>
+        )}
       </div>
       {/* ✅ Pagination */}
       <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
@@ -898,6 +1500,9 @@ function TodaysEmployeeDetails() {
           </div>
         </div>
       </nav>
+        </>
+)}
+
       <div className="text-end mt-3">
         <button
           className="btn btn-sm custom-outline-btn"

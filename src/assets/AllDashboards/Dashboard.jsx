@@ -529,6 +529,10 @@ const [notifications, setNotifications] = useState([]);
                   )
                 }
               />
+ <Route
+  path="latecheckin"
+  element={<TodaysEmployeeDetails />}
+/>
               <Route path="addemployee" element={<AddEmployee />} />
               <Route
                 path="myprofile"
