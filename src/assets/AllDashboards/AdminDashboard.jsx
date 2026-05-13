@@ -14,7 +14,7 @@ function AdminDashboard({ user }) {
   const [holidays, setHolidays] = useState([]);
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const [PendingLeaveRequests, setPendingLeaveRequests] = useState([]);
-
+  const [probationEmployees, setProbationEmployees] = useState([]);
   // ✅ New states
   const [leaves, setLeaves] = useState([]);
   const [regularizations, setRegularizations] = useState([]);
@@ -34,10 +34,13 @@ function AdminDashboard({ user }) {
           headers: { Authorization: `Bearer ${token}` },
         });
   
-        const [empRes, attRes, leaveRegRes] = await Promise.allSettled([
+    
+          const [empRes, attRes, leaveRegRes,probationRes] = await Promise.allSettled([
           authAxios.get("/getAllEmployees"),
           authAxios.get("/attendance/today"),
           authAxios.get("/leaves-and-regularizations"),
+          authAxios.get("/admin/probation-ending-soon"), // step 2
+
         ]);
   
         if (empRes.status === "fulfilled") {
@@ -54,6 +57,8 @@ function AdminDashboard({ user }) {
   
           setLeaves(leavesData);
           setRegularizations(regsData);
+          if (probationRes.status === "fulfilled") setProbationEmployees(probationRes.value.data);
+else console.warn("Probation fetch failed:", probationRes.reason);
   
           const merged = [
             ...leavesData.map(l => ({ ...l, type: "Leave" })),
@@ -650,7 +655,71 @@ function AdminDashboard({ user }) {
    <div className="col-12 col-md-4 g-3">
         <ActivePolls user={user} />
       </div>
-
+ {(user?.role === "admin" || user?.role === "hr") && (
+      <div className="col-md-4">
+        <div className="card shadow-sm h-100">
+          <div
+            className="card-header d-flex justify-content-between align-items-center"
+            style={{ backgroundColor: "#fff" }}
+          >
+            <h6 className="mb-0" style={{ color: "#3A5FBE" }}>
+              Probation Ending This Week
+            </h6>
+            <button
+              className="btn btn-sm custom-outline-btn"
+              onClick={() =>
+                navigate(`/dashboard/${role}/${username}/${id}/probation`)
+              }
+            >
+              View All
+            </button>
+          </div>
+          <div className="card-body p-0">
+            <div className="table-responsive">
+              <table className="table table-hover mb-0">
+                <thead style={{ backgroundColor: "#fff" }}>
+                  <tr>
+                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Name</th>
+                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Department</th>
+                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Ends On</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {probationEmployees.length === 0 ? (
+                    <tr>
+                      <td colSpan="3" className="text-center text-muted py-3" style={{ fontSize: "14px" }}>
+                        No probations ending this week
+                      </td>
+                    </tr>
+                  ) : (
+                    probationEmployees.map((emp) => (
+                      <tr key={emp._id}>
+                        <td className="text-capitalize" style={{ fontWeight: "400", fontSize: "14px" }}>
+                          {emp.name}
+                        </td>
+                        <td style={{ fontWeight: "400", fontSize: "14px" }}>
+                          {emp.department}
+                        </td>
+                        <td style={{ fontWeight: "400", fontSize: "14px" }}>
+                          <span
+                            className="badge"
+                            style={{ backgroundColor: "#FFE493", color: "#000", fontWeight: "600" }}
+                          >
+                            {new Date(emp.probationEndDate).toLocaleDateString("en-GB", {
+                              day: "2-digit", month: "short", year: "numeric"
+                            })}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      )}
     
       </div>
 

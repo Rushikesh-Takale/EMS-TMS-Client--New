@@ -710,7 +710,7 @@ useEffect(() => {
                               whiteSpace: "nowrap",
                             }}
                           >
-                            {emp.employeeId?.slice(0, 9)}
+                           {emp.employeeId}
                           </td>
                           <td
                             style={{
@@ -1081,11 +1081,17 @@ useEffect(() => {
             setWentToActive(true);
             return;
           }
-          if (wentToActive && !showOldEmployees) {
-            navigate(`/dashboard/${role}/${username}/${id}`);
-            return;
-          }
-          navigate(-1);
+        if (wentToActive && !showOldEmployees) {
+  navigate(`/dashboard/${role}/${username}/${id}`);
+  return;
+}
+
+if (!showOldEmployees) {
+  navigate(`/dashboard/${role}/${username}/${id}`);
+  return;
+}
+
+navigate(-1);
         }}
       >
         Back
