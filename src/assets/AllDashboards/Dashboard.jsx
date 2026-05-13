@@ -22,6 +22,7 @@ import AdminAddLeaveBalance from "../Leaves/AdminAddLeaveBalance";
 import TLResignation from "./TLResignation"
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./dashboard.css";
+import ProbationList from "../OnlyForAdmin/ProbationList";
 import {
   HouseDoorFill,
   PersonLinesFill,
@@ -512,6 +513,22 @@ const [notifications, setNotifications] = useState([]);
                 path="allemployeedetails"
                 element={<AllEmployeeDetails />}
               />
+                 <Route
+                path="probation"
+                element={
+                  user.role === "admin" ||
+                  user.role === "ceo" ||
+                  user.role === "hr" ||
+                  user.role === "coo" ||
+                  user.role === "md" ? (
+                    <ProbationList />
+                  ) : (
+                    <h5 className="text-center mt-4 text-danger">
+                      Access Denied: Admins Only
+                    </h5>
+                  )
+                }
+              /> 
               {/* <Route path="employeeprofile" element={<EmployeeMyProfileForAdmin />} /> */}
               <Route
                 path="employeeprofile/:empId"
@@ -529,10 +546,10 @@ const [notifications, setNotifications] = useState([]);
                   )
                 }
               />
- <Route
-  path="latecheckin"
-  element={<TodaysEmployeeDetails />}
-/>
+              <Route
+                path="latecheckin"
+                element={<TodaysEmployeeDetails />}
+              />
               <Route path="addemployee" element={<AddEmployee />} />
               <Route
                 path="myprofile"

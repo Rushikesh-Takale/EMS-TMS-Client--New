@@ -1129,7 +1129,18 @@ if (
                       <td style={tdStyle("#3A5FBE", 500)}>
                         {item.interviewId}
                       </td>
-                      <td style={tdStyle()}>{item.candidateName}</td>
+                     <td
+  style={{
+    ...tdStyle(),
+    maxWidth: "150px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  }}
+  title={item.candidateName}
+>
+  {item.candidateName}
+</td>
                       <td style={tdStyle()}>{item.role}</td>
                       <td>
                         {item.resumeUrl ? (
@@ -1388,7 +1399,16 @@ setShowResumeModal(true);
                 }).map(([k, v]) => (
                   <div className="row mb-2" key={k}>
                     <div className="col-4 fw-semibold">{k}</div>
-                    <div className="col-8">{v}</div>
+                  <div
+  className="col-8"
+  style={{
+    wordBreak: "break-word",
+    overflowWrap: "break-word",
+    whiteSpace: "pre-wrap",
+  }}
+>
+  {v}
+</div>
                   </div>
                 ))}
 
@@ -1499,12 +1519,17 @@ onClick={(e) => {
                   <div className="row mb-2">
                     <div className="col-4 fw-semibold">Comment</div>
                     <div className="col-8">
-                      <div
-                        className="p-2 border rounded bg-light"
-                        style={{ whiteSpace: "pre-wrap" }}
-                      >
-                        {selected.comment}
-                      </div>
+                    <div
+  className="p-2 border rounded bg-light"
+  style={{
+    whiteSpace: "pre-wrap",
+    wordBreak: "break-word",
+    overflowWrap: "break-word",
+    maxWidth: "100%",
+  }}
+>
+  {selected.comment}
+</div>
                     </div>
                   </div>
                 )}

@@ -42,6 +42,7 @@ const [selectedFile, setSelectedFile] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewPolicy, setViewPolicy] = useState(null);
   const modalRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const isAnyModalOpen =
     showViewModal ||
     showModal ||
@@ -243,6 +244,9 @@ const [selectedFile, setSelectedFile] = useState(null);
   };
 
   const handleAddPolicy = async () => {
+    if (isSubmitting) return;
+
+setIsSubmitting(true);
     if (!newPolicy.title ) {
       alert("Title is required");
       return;
@@ -289,7 +293,9 @@ const [selectedFile, setSelectedFile] = useState(null);
     } catch (error) {
       console.error("Failed to add policy", error);
       alert("Failed to create policy");
-    }
+    } finally {
+    setIsSubmitting(false);
+  }
   };
   
 
@@ -864,7 +870,7 @@ const getFileType = (url) => {
 
                 <div className="mb-2 row">
                   <label className="col-4 form-label fw-semibold mb-0">
-                    Descriptio
+                    Description
                   </label>
                   <div className="col-8">
                     <p
@@ -1153,12 +1159,13 @@ const getFileType = (url) => {
                   Cancel
                 </button>
 
-                <button
-                  className="btn btn-sm custom-outline-btn"
-                  onClick={handleAddPolicy}
-                >
-                  Save Policy
-                </button>
+            <button
+  className="btn btn-sm custom-outline-btn"
+  onClick={handleAddPolicy}
+  disabled={isSubmitting}
+>
+  {isSubmitting ? "Saving..." : "Save Policy"}
+</button>
               </div>
             </div>
           </div>
