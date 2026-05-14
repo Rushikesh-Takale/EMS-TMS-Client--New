@@ -50,8 +50,8 @@ function Gallery() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
-const modalRef = useRef(null);
-const MAX_TITLE_LENGTH = 40;
+  const modalRef = useRef(null);
+  const MAX_TITLE_LENGTH = 40;
   // Slice galleryItems for current page
 
   /* ================= FETCH ================= */
@@ -82,21 +82,21 @@ const MAX_TITLE_LENGTH = 40;
     }
   }, [galleryItems, activeTable]);
 
-useEffect(() => {
+  useEffect(() => {
     if (showUploadModal || showViewModal || showEditModal) {
       document.body.style.overflow = 'hidden';
-      document.body.style.height = '100vh';  
+      document.body.style.height = '100vh';
     } else {
       document.body.style.overflow = 'unset';
-      document.body.style.height = 'auto';  
+      document.body.style.height = 'auto';
     }
-  
+
     return () => {
       document.body.style.overflow = 'unset';
       document.body.style.height = 'auto';    // Add this line
     };
   }, [showUploadModal, showViewModal, showEditModal]);
-  
+
   const fetchGallery = async () => {
     const res = await axios.get(API_URL);
     setGalleryItems(res.data);
@@ -129,66 +129,66 @@ useEffect(() => {
   };
 
 
-useEffect(() => {
-  const isAnyModalOpen =
-    showUploadModal || showViewModal || showEditModal;
+  useEffect(() => {
+    const isAnyModalOpen =
+      showUploadModal || showViewModal || showEditModal;
 
-  if (!isAnyModalOpen || !modalRef.current) return;
+    if (!isAnyModalOpen || !modalRef.current) return;
 
-  const modal = modalRef.current;
+    const modal = modalRef.current;
 
-  const focusableSelectors =
-    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const focusableSelectors =
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-  const getFocusableElements = () =>
-    modal.querySelectorAll(focusableSelectors);
+    const getFocusableElements = () =>
+      modal.querySelectorAll(focusableSelectors);
 
-  const focusFirst = () => {
-    const elements = getFocusableElements();
-    if (elements.length) elements[0].focus();
-  };
+    const focusFirst = () => {
+      const elements = getFocusableElements();
+      if (elements.length) elements[0].focus();
+    };
 
-  // wait for DOM render
-  // setTimeout(focusFirst, 0); 
-  modalRef.current.focus();//rutuja
+    // wait for DOM render
+    // setTimeout(focusFirst, 0); 
+    modalRef.current.focus();//rutuja
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Escape") {
-      e.preventDefault();
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
 
-      if (showUploadModal) closeModal();
-      if (showViewModal) closeViewModal();
-      if (showEditModal) setShowEditModal(false);
-    }
+        if (showUploadModal) closeModal();
+        if (showViewModal) closeViewModal();
+        if (showEditModal) setShowEditModal(false);
+      }
 
-    if (e.key === "Tab") {
-      const focusableElements = getFocusableElements();
-      if (!focusableElements.length) return;
+      if (e.key === "Tab") {
+        const focusableElements = getFocusableElements();
+        if (!focusableElements.length) return;
 
-      const firstEl = focusableElements[0];
-      const lastEl =
-        focusableElements[focusableElements.length - 1];
+        const firstEl = focusableElements[0];
+        const lastEl =
+          focusableElements[focusableElements.length - 1];
 
-      if (e.shiftKey) {
-        if (document.activeElement === firstEl) {
-          e.preventDefault();
-          lastEl.focus();
-        }
-      } else {
-        if (document.activeElement === lastEl) {
-          e.preventDefault();
-          firstEl.focus();
+        if (e.shiftKey) {
+          if (document.activeElement === firstEl) {
+            e.preventDefault();
+            lastEl.focus();
+          }
+        } else {
+          if (document.activeElement === lastEl) {
+            e.preventDefault();
+            firstEl.focus();
+          }
         }
       }
-    }
-  };
+    };
 
-  document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
 
-  return () => {
-    document.removeEventListener("keydown", handleKeyDown);
-  };
-}, [showUploadModal, showViewModal, showEditModal]);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showUploadModal, showViewModal, showEditModal]);
 
 
   /* ================= INPUT CHANGE ================= */
@@ -247,19 +247,19 @@ useEffect(() => {
         alert("Title is required for all files");
         return;
       }
-    
+
       if (!item.description.trim()) {
         alert("Description is required for all files");
         return;
       }
-    
+
       if (!item.category) {
         alert("Please select category for all files");
         return;
       }
     }
 
-    setIsUploading(true); 
+    setIsUploading(true);
 
     try {
       const formData = new FormData();
@@ -439,7 +439,7 @@ useEffect(() => {
   const openTable = (type) => {
     setActiveTable(type);
     setCurrentPage(1);
-    
+
     setFilteredItems(galleryItems.filter(item => item.type === type));
   };
 
@@ -458,7 +458,7 @@ useEffect(() => {
 
       const categoryMatch =
         !searchCategory || item.category === searchCategory;
-      
+
       const typeMatch = item.type === activeTable;
 
       return textMatch && categoryMatch && typeMatch;
@@ -477,6 +477,7 @@ useEffect(() => {
 
 
   return (
+    <div>
     <div className="container-fluid bg-light min-vh-100">
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h2
@@ -558,9 +559,9 @@ useEffect(() => {
                           handleChange(index, "title", e.target.value)
                         }
                       />
-                    <div className="text-end">
-                      <small>{item.title.length}/{MAX_TITLE_LENGTH}</small>
-                    </div>
+                      <div className="text-end">
+                        <small>{item.title.length}/{MAX_TITLE_LENGTH}</small>
+                      </div>
                     </div>
 
                     <label className="form-label fw-bold">Description<span style={{ color: "red" }}> *</span></label>
@@ -568,7 +569,7 @@ useEffect(() => {
                       className="form-control mb-2"
                       placeholder="Description"
                       value={item.description}
-                      maxLength={MAX_DESC_LENGTH} 
+                      maxLength={MAX_DESC_LENGTH}
                       onChange={(e) =>
                         handleChange(index, "description", e.target.value)
                       }
@@ -624,8 +625,8 @@ useEffect(() => {
         <div className="col-12">
           <div className="d-flex gap-3 justify-content-center">
             <button
-               className={`btn btn-sm ${activeTable === 'image' ? 'btn-primary' : 'custom-outline-btn'}`}
-               style={{ minWidth: 90 }}
+              className={`btn btn-sm ${activeTable === 'image' ? 'btn-primary' : 'custom-outline-btn'}`}
+              style={{ minWidth: 90 }}
               onClick={() => openTable('image')}
             >
               IMAGES
@@ -699,7 +700,7 @@ useEffect(() => {
               <button
                 className="btn btn-sm custom-outline-btn "
                 style={{ minWidth: 90 }}
-                onClick={handleFilter} 
+                onClick={handleFilter}
               >
                 Filter
               </button>
@@ -707,7 +708,7 @@ useEffect(() => {
               <button
                 className="btn btn-sm custom-outline-btn "
                 style={{ minWidth: 90 }}
-                onClick={handleReset} 
+                onClick={handleReset}
               >
                 Reset
               </button>
@@ -773,20 +774,20 @@ useEffect(() => {
                     >
                       {item.title}
                     </td>
-                  <td
-                    style={{
-                      padding: "12px",
-                      fontSize: "14px",
-                      borderBottom: "1px solid #dee2e6",
-                      maxWidth: "100px",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                    title={item.description}
-                  >
-                    {item.description || "-"}
-                  </td>
+                    <td
+                      style={{
+                        padding: "12px",
+                        fontSize: "14px",
+                        borderBottom: "1px solid #dee2e6",
+                        maxWidth: "100px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                      title={item.description}
+                    >
+                      {item.description || "-"}
+                    </td>
 
                     <td
                       style={{
@@ -823,8 +824,8 @@ useEffect(() => {
                       {item.type === "pdf" && (
                         <div className="d-flex align-items-center gap-2">
                           <span style={{ fontSize: "20px" }}>📄</span>
-                          <span 
-                            style={{ 
+                          <span
+                            style={{
                               fontSize: "13px",
                               color: "#3A5FBE",
                               textDecoration: "underline",
@@ -873,7 +874,7 @@ useEffect(() => {
                   </tr>
                 ))
               )}
-            </tbody>          
+            </tbody>
           </table>
         </div>
       </div>
@@ -980,7 +981,7 @@ useEffect(() => {
             style={{ marginLeft: "16px" }}
           >
             <button
-                           className="btn btn-sm focus-ring"
+              className="btn btn-sm focus-ring"
 
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
@@ -1000,21 +1001,13 @@ useEffect(() => {
         </div>
       </nav>
 
-      <div className="text-end mt-3">
-        <button
-          className="btn btn-sm custom-outline-btn"
-          style={{ minWidth: 90 }}
-          onClick={() => window.history.go(-1)}
-        >
-          Back
-        </button>
-      </div>
+
 
       {showViewModal && viewItem && (
         <div
           className="modal fade show"
-           ref={modalRef}
-            tabIndex="-1"
+          ref={modalRef}
+          tabIndex="-1"
           style={{ display: "block", backgroundColor: "rgba(0,0,0,0.4)" }}
           onClick={closeViewModal}
         >
@@ -1047,32 +1040,32 @@ useEffect(() => {
               {/* ===== BODY ===== */}
               <div className="modal-body px-4 py-3">
                 <div className="row mb-2">
-                <div className="col-4 fw-semibold">Title</div>
-                 <div
-                  className="col-8"
-                  style={{
-                    whiteSpace: "normal",       
-                    wordBreak: "break-word",    
-                    overflowWrap: "break-word",  
-                  }}
-                >
-                  {viewItem.title || "-"}
-                </div>                
-              </div>
+                  <div className="col-4 fw-semibold">Title</div>
+                  <div
+                    className="col-8"
+                    style={{
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      overflowWrap: "break-word",
+                    }}
+                  >
+                    {viewItem.title || "-"}
+                  </div>
+                </div>
 
                 <div className="row mb-2">
                   <div className="col-4 fw-semibold">Description</div>
-                 <div
-  className="col-8"
-  style={{
-    maxHeight: "120px",
-    overflowY: "auto",
-    whiteSpace: "pre-wrap",
-    wordBreak: "break-word",
-  }}
->
-  {viewItem.description || "-"}
-</div>
+                  <div
+                    className="col-8"
+                    style={{
+                      maxHeight: "120px",
+                      overflowY: "auto",
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {viewItem.description || "-"}
+                  </div>
                 </div>
 
                 <div className="row mb-2">
@@ -1193,10 +1186,10 @@ useEffect(() => {
                       }
                     />
                     <div className="text-end mt-1">
-                    <small>
-                      {editData.title.length}/50
-                    </small>
-                  </div>
+                      <small>
+                        {editData.title.length}/50
+                      </small>
+                    </div>
                   </div>
                 </div>
 
@@ -1311,7 +1304,18 @@ useEffect(() => {
           </div>
         </div>
       )}
+</div>
+            <div className="text-end mt-3">
+        <button
+          className="btn btn-sm custom-outline-btn"
+          style={{ minWidth: 90 }}
+          onClick={() => window.history.go(-1)}
+        >
+          Back
+        </button>
+      
     </div>
+       </div>
   );
 }
 

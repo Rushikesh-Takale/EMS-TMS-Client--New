@@ -193,7 +193,8 @@ setDisplayData(initialDisplayData);
 const handleFilter = (e) => {
   e.preventDefault();
 
-  let filtered = displayData; // ✅ IMPORTANT LINE
+  // ✅ Always start from full original data
+  let filtered = buildDataWithFullCalendar(attendance);
 
   // ✅ Status filter
   if (statusFilter) {
@@ -208,6 +209,7 @@ const handleFilter = (e) => {
 
     filtered = filtered.filter((att) => {
       const attDate = new Date(att.date);
+
       return (
         attDate.getFullYear() === Number(year) &&
         attDate.getMonth() + 1 === Number(month)

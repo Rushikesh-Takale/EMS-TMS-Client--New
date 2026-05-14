@@ -1,4 +1,4 @@
-import React, { useEffect, useState ,useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import AllRequest from "../All/AllRequest";
 
@@ -19,7 +19,7 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
 
   // dipali code
   const [selectedRequest, setSelectedRequest] = useState(null);
-//TANVI
+  //TANVI
   const modalRef = useRef(null);
 
   //TANVI
@@ -137,7 +137,7 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
 
     setFilteredRequests(sorted);
   }, [requests]);
-//bg scroll stop
+  //bg scroll stop
   useEffect(() => {
     if (selectedRequest) {
       document.body.style.overflow = "hidden";
@@ -153,7 +153,7 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
       document.documentElement.style.overflow = "";
     };
   }, [selectedRequest]);
-  
+
   // dip code changes 11-02-2026
   //Added by Jaicy
   const formatToIST = (utcDateString) => {
@@ -265,42 +265,42 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
   if (error) return <p className="text-danger">{error}</p>;
   // if (filteredRequests.length === 0) return <p>No regularization requests found.</p>;
   const isStrictValidDate = (dateStr) => {
-  if (!dateStr) return true; // allow empty
+    if (!dateStr) return true; // allow empty
 
-  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
-  if (!dateRegex.test(dateStr)) return false;
+    if (!dateRegex.test(dateStr)) return false;
 
-  const [year, month, day] = dateStr.split("-").map(Number);
+    const [year, month, day] = dateStr.split("-").map(Number);
 
-  // Year range restriction (you can adjust)
-  if (year < 1900 || year > 2100) return false;
+    // Year range restriction (you can adjust)
+    if (year < 1900 || year > 2100) return false;
 
-  const date = new Date(year, month - 1, day);
+    const date = new Date(year, month - 1, day);
 
-  return (
-    date.getFullYear() === year &&
-    date.getMonth() === month - 1 &&
-    date.getDate() === day
-  );
-};
+    return (
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+    );
+  };
 
   //Added by Jaicy
   const applyFilters = () => {
     if (!isStrictValidDate(dateFromFilter)) {
-    alert("Invalid From date");
-    return;
-  }
+      alert("Invalid From date");
+      return;
+    }
 
-  if (!isStrictValidDate(dateToFilter)) {
-    alert("Invalid To date");
-    return;
-  }
+    if (!isStrictValidDate(dateToFilter)) {
+      alert("Invalid To date");
+      return;
+    }
 
-  if (dateFromFilter && dateToFilter && dateFromFilter > dateToFilter) {
-    alert("Invalid date range");
-    return;
-  }
+    if (dateFromFilter && dateToFilter && dateFromFilter > dateToFilter) {
+      alert("Invalid date range");
+      return;
+    }
     let temp = requests.filter((req) =>
       ["Pending", "Rejected", "Approved"].includes(
         req.regularizationRequest?.status,
@@ -897,7 +897,7 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
         >
           <div
             className="modal-dialog modal-dialog-centered"
-            style={{ maxWidth: "650px", width: "95%",  }}
+            style={{ maxWidth: "650px", width: "95%", }}
           >
             <div className="modal-content">
               {/* Header */}
@@ -1014,15 +1014,15 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
                     <>
                       <div className="row mb-2">
                         <div className="col-5 col-sm-3 fw-semibold">
-                          {selectedRequest?.regularizationRequest?.status === "Approved" 
-                            ? "Approved by" 
+                          {selectedRequest?.regularizationRequest?.status === "Approved"
+                            ? "Approved by"
                             : "Rejected by"}
                         </div>
                         <div className="col-7 col-sm-9">
                           {selectedRequest?.regularizationRequest?.approvedByName ? (
                             <>
                               {selectedRequest.regularizationRequest.approvedByName}
-                              {selectedRequest.regularizationRequest.approvedByRole && 
+                              {selectedRequest.regularizationRequest.approvedByRole &&
                                 ` (${selectedRequest.regularizationRequest.approvedByRole})`}
                             </>
                           ) : (
@@ -1052,7 +1052,7 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
                   )}
                 <button
                   className="btn  custom-outline-btn btn-sm"
-                  style={{minWidth:"90px"}}
+                  style={{ minWidth: "90px" }}
                   onClick={() => setSelectedRequest(null)}
                 >
                   Close
@@ -1103,7 +1103,7 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
             style={{ marginLeft: "16px" }}
           >
             <button
-            className="btn btn-sm focus-ring"
+              className="btn btn-sm focus-ring"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
               style={{ fontSize: "18px", padding: "2px 8px" }}
@@ -1121,11 +1121,10 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
           </div>
         </div>
       </nav>
-
-      <div className="text-end mt-2" style={{ marginRight: "10px" }}>
+      <div className="text-end mt-3">
         <button
-          style={{ minWidth: 90 }}
           className="btn btn-sm custom-outline-btn"
+          style={{ minWidth: 90 }}
           onClick={() => window.history.go(-1)}
         >
           Back
