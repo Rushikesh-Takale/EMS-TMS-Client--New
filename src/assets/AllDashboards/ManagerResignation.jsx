@@ -588,21 +588,33 @@ useEffect(() => {
 
       {/* Toggle Buttons */}
       <div className="d-flex justify-content-center gap-3 mb-4">
-        <button
-          className="btn btn-sm custom-outline-btn"
-          style={{ minWidth: 120 }}
-          onClick={() => setActiveTab("my")}
-        >
-          My Resignation
-        </button>
+    <button
+    className="btn btn-sm"
+          style={{
+            minWidth: 120,
+            backgroundColor: activeTab === "my" ? "#3A5FBE" : "transparent",
+            borderColor: "#3A5FBE",
+            color: activeTab === "my" ? "#fff" : "#3A5FBE",
+            transition: "all 0.2s ease"
+          }}
+  onClick={() => setActiveTab("my")}
+>
+  My Resignation
+</button>
 
-        <button
-          className="btn btn-sm custom-outline-btn"
-          style={{ minWidth: 120 }}
-          onClick={() => setActiveTab("team")}
-        >
-          Team Resignation
-        </button>
+<button
+   className="btn btn-sm"
+          style={{
+            minWidth: 120,
+            backgroundColor: activeTab === "team" ? "#3A5FBE" : "transparent",
+            borderColor: "#3A5FBE",
+            color: activeTab === "team" ? "#fff" : "#3A5FBE",
+            transition: "all 0.2s ease"
+          }}
+  onClick={() => setActiveTab("team")}
+>
+  Team Resignation
+</button>
       </div>
 
       {activeTab === "my" && (
@@ -1405,16 +1417,31 @@ useEffect(() => {
                   {/* Approved / Rejected Date */}
                   {selectedMyResignation.status?.toLowerCase() !==
                     "pending" && (
-                    <div className="row mb-2">
-                      <div className="col-5 col-sm-4 fw-semibold">
-                        Approved / Rejected Date
-                      </div>
-                      <div className="col-7 col-sm-8">
-                        {selectedMyResignation.approvedDate
-                          ? formatDate(selectedMyResignation.approvedDate)
-                          : "N/A"}
-                      </div>
-                    </div>
+<div className="row mb-2">
+  <div
+    className="col-5 col-sm-3 fw-semibold"
+    style={{ color: "#212529" }}
+  >
+    {selectedMyResignation.status?.toLowerCase() ===
+    "approved"
+      ? "Approved Date"
+      : selectedMyResignation.status?.toLowerCase() ===
+          "rejected"
+        ? "Rejected Date"
+        : "Status Date"}
+  </div>
+
+  <div
+    className="col-7 col-sm-9"
+    style={{ color: "#212529" }}
+  >
+    {selectedMyResignation.approvedDate
+      ? formatDateTime(
+          selectedMyResignation.approvedDate
+        )
+      : "N/A"}
+  </div>
+</div>
                   )}
 
                   <div className="row mb-2">

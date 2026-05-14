@@ -936,7 +936,7 @@ if (
               </div>)}
 
               <div className="mb-3">
-                <label className="form-label">Comment / Remark</label>
+                <label className="form-label" >Comment / Remark <span style={{ color: "red" }}> *</span></label>
                 <textarea
                   name="comment"
                   rows="3"

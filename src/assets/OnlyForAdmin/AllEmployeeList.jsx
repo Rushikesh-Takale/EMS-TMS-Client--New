@@ -839,24 +839,36 @@ useEffect(() => {
                                     Assign MD
                                   </button>
                                 ) : (
-                                  emp.role?.trim().toLowerCase() !== "ceo" && (
-                                    <button
-                                      className="btn btn-sm btn-outline-success me-2"
-                                      disabled={restrictedRoles.includes(
-                                        emp.role?.trim().toLowerCase()
-                                      )}
-                                      style={{
-                                        whiteSpace: "nowrap",
-                                        height: "31px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                      }}
-                                      onClick={() => handleAssignManagerClick(emp)}
-                                    >
-                                      Assign Manager
-                                    </button>
-                                  )
+                              <button
+  className="btn btn-sm btn-outline-success me-2"
+  disabled={
+    restrictedRoles.includes(
+      emp.role?.trim().toLowerCase()
+    )
+  }
+  style={{
+    whiteSpace: "nowrap",
+    height: "31px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    opacity: restrictedRoles.includes(
+      emp.role?.trim().toLowerCase()
+    )
+      ? 0.6
+      : 1,
+    cursor: restrictedRoles.includes(
+      emp.role?.trim().toLowerCase()
+    )
+      ? "not-allowed"
+      : "pointer",
+  }}
+  onClick={() =>
+    handleAssignManagerClick(emp)
+  }
+>
+  Assign Manager
+</button>
                                 )}
                               </>
                             )}
@@ -950,7 +962,7 @@ useEffect(() => {
           tabIndex="-1"
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
         >
-          <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-dialog modal-dialog-centered"   style={{width:"600px"}}>
             <div className="modal-content">
               <div
                 className="modal-header"
@@ -989,12 +1001,14 @@ useEffect(() => {
                 <div className="d-flex justify-content-end gap-2">
                   <button
                     className="btn btn-sm custom-outline-btn"
+                    style={{minWidth:90}}
                     onClick={() => setShowModal(false)}
                   >
                     Cancel
                   </button>
                   <button
                     className="btn btn-sm custom-outline-btn"
+                      style={{minWidth:90}}
                     onClick={handleUpdateManager}
                   >
                     Assign

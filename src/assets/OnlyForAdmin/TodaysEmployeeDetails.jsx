@@ -38,6 +38,8 @@ const [lateCurrentPage, setLateCurrentPage] = useState(1);
 const [lateItemsPerPage, setLateItemsPerPage] = useState(5);
 const [showLateModal, setShowLateModal] = useState(false);
 const [selectedLateEmployee, setSelectedLateEmployee] = useState(null);
+const [downloadedFile, setDownloadedFile] =
+  useState("");
   useEffect(() => {
     if (!showModal || !modalRef.current) return;
 
@@ -346,7 +348,7 @@ const lateCheckInEmployees = useMemo(() => {
     const minutes = dt.getMinutes();
 
     const isLate =
-      hours > 10 || (hours === 10 && minutes > 0);
+      hours > 9 || (hours === 9 && minutes > 10);
 
     const matchesName =
       appliedLateSearch.trim() === "" ||
@@ -416,37 +418,60 @@ setLateCurrentPage(1);
 };
 
 const downloadLateCheckInExcel = () => {
-  const excelData = lateCheckInEmployees.map((emp) => ({
-    Name: emp.name,
 
-    "Check-In Time": new Date(
-      emp.checkInTime
-    ).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+  const employeeName =
+    lateSearch?.trim() ||
+    "All_Employees";
 
-    Date: new Date(
-      emp.checkInTime
-    ).toLocaleDateString(),
+  const safeName =
+    employeeName.replace(/\s+/g, "_");
 
-    Status: "Late Check-In",
-  }));
+  // prevent same file multiple times
+  if (downloadedFile === safeName) return;
 
-  const worksheet = XLSX.utils.json_to_sheet(excelData);
+  try {
 
-  const workbook = XLSX.utils.book_new();
+    const excelData =
+      lateCheckInEmployees.map((emp) => ({
+        Name: emp.name,
 
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    "Late Check-Ins"
-  );
+        "Check-In Time": new Date(
+          emp.checkInTime
+        ).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
 
-  XLSX.writeFile(
-    workbook,
-    "Late_CheckIn_Employees.xlsx"
-  );
+        Date: new Date(
+          emp.checkInTime
+        ).toLocaleDateString(),
+
+        Status: "Late Check-In",
+      }));
+
+    const worksheet =
+      XLSX.utils.json_to_sheet(excelData);
+
+    const workbook =
+      XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Late Check-Ins"
+    );
+
+    XLSX.writeFile(
+      workbook,
+      `${safeName}_Late_CheckIns.xlsx`
+    );
+
+    setDownloadedFile(safeName);
+
+  } catch (err) {
+
+    console.error(err);
+  }
 };
 
 const openLateModal = (emp) => {
@@ -505,7 +530,7 @@ if (error) {
           const hours = dt.getHours();
           const minutes = dt.getMinutes();
 
-          return hours > 10 || (hours === 10 && minutes > 0);
+          return hours > 9 || (hours === 9 && minutes > 10);
         }
 
         // ✅ Present should include Working
@@ -708,7 +733,13 @@ if (error) {
             className="form-control"
             value={lateSearch}
               placeholder="Search by any field"
-            onChange={(e) => setLateSearch(e.target.value)}
+onChange={(e) => {
+
+  const value = e.target.value;
+  if (/^[A-Za-z\s]*$/.test(value)) {
+    setLateSearch(value);
+  }
+}}
           />
       
       </div>
@@ -729,12 +760,15 @@ if (error) {
                 From
               </label>
 
-    <input
-      type="date"
-      className="form-control"
-      value={lateFromDate}
-      onChange={(e) => setLateFromDate(e.target.value)}
-    />
+<input
+  type="date"
+  className="form-control"
+  value={lateFromDate}
+  max={new Date().toISOString().split("T")[0]}
+  onChange={(e) =>
+    setLateFromDate(e.target.value)
+  }
+/>
   
 </div>
 
@@ -754,12 +788,15 @@ if (error) {
                 To
                 </label>
 
-    <input
-      type="date"
-      className="form-control"
-      value={lateToDate}
-      onChange={(e) => setLateToDate(e.target.value)}
-    />
+<input
+  type="date"
+  className="form-control"
+  value={lateToDate}
+  max={new Date().toISOString().split("T")[0]}
+  onChange={(e) =>
+    setLateToDate(e.target.value)
+  }
+/>
   
 </div>
 
@@ -771,6 +808,13 @@ if (error) {
   className="btn btn-sm custom-outline-btn"
   style={{ minWidth: 110 }}
   onClick={downloadLateCheckInExcel}
+  disabled={
+    downloadedFile ===
+    (
+      lateSearch?.trim() ||
+      "All_Employees"
+    ).replace(/\s+/g, "_")
+  }
 >
   Download Excel
 </button>
@@ -795,6 +839,7 @@ onClick={() => {
   setLateToDate("");
   setLateCurrentPage(1);
 setLateCheckInEmployeesData([]);
+setDownloadedFile("");
 }}
   >
     Reset

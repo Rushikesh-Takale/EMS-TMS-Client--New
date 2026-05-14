@@ -644,16 +644,17 @@ if (!user || role !== "hr") {
             </div>
           </div> */}
 
-          <button
-            className="btn btn-sm custom-outline-btn"
-            onClick={() => {
-              resetApplyForm();
-              setShowApplyModal(true);
-            }}
-            style={{ marginBottom: "20px" }}
-          >
-            Apply Resignation
-          </button>
+      <button
+  className="btn btn-sm custom-outline-btn"
+  disabled={hasApprovedResignation}
+  onClick={() => {
+    resetApplyForm();
+    setShowApplyModal(true);
+  }}
+  style={{ marginBottom: "20px" }}
+>
+  Apply Resignation
+</button>
 
           {/* My Resignation Search */}
           <div className="card mb-4 shadow-sm border-0">
@@ -1410,16 +1411,31 @@ if (!user || role !== "hr") {
                   {/* Approved / Rejected Date */}
                   {selectedMyResignation.status?.toLowerCase() !==
                     "pending" && (
-                    <div className="row mb-2">
-                      <div className="col-5 col-sm-4 fw-semibold">
-                        Approved / Rejected Date
-                      </div>
-                      <div className="col-7 col-sm-8">
-                        {selectedMyResignation.approvedDate
-                          ? formatDate(selectedMyResignation.approvedDate)
-                          : "N/A"}
-                      </div>
-                    </div>
+                  <div className="row mb-2">
+  <div
+    className="col-5 col-sm-3 fw-semibold"
+    style={{ color: "#212529" }}
+  >
+    {selectedMyResignation.status?.toLowerCase() ===
+    "approved"
+      ? "Approved Date"
+      : selectedMyResignation.status?.toLowerCase() ===
+          "rejected"
+        ? "Rejected Date"
+        : "Status Date"}
+  </div>
+
+  <div
+    className="col-7 col-sm-9"
+    style={{ color: "#212529" }}
+  >
+    {selectedMyResignation.approvedDate
+      ? formatDateTime(
+          selectedMyResignation.approvedDate
+        )
+      : "N/A"}
+  </div>
+</div>
                   )}
 
                   <div className="row mb-2">

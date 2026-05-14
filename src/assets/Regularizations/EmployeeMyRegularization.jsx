@@ -1,6 +1,10 @@
 import React, { useEffect, useState ,useRef} from "react";
 import axios from "axios";
 import AllRequest from "../All/AllRequest";
+import {
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 
 function EmployeeMyRegularization({ employeeId, refreshKey }) {
   const [requests, setRequests] = useState([]);
@@ -21,6 +25,8 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
   const [selectedRequest, setSelectedRequest] = useState(null);
 //TANVI
   const modalRef = useRef(null);
+  const navigate = useNavigate();
+const location = useLocation();
 
   //TANVI
   useEffect(() => {
@@ -1126,7 +1132,15 @@ function EmployeeMyRegularization({ employeeId, refreshKey }) {
         <button
           style={{ minWidth: 90 }}
           className="btn btn-sm custom-outline-btn"
-          onClick={() => window.history.go(-1)}
+       onClick={() => {
+
+  if (location.state?.from) {
+    navigate(location.state.from);
+  } else {
+    navigate(-1);
+  }
+
+}}
         >
           Back
         </button>

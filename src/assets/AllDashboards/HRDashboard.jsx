@@ -219,11 +219,11 @@ setProbationEmployees(probationRes.data || []);
   console.log("employees:", employees);
   console.log("mergedEmployees first 5:", mergedEmployees.slice(0, 5));
   return (
-    <div className="container-fluid pt-1 px-3" style={{ marginTop: "-25px" }}>
+    <div className="container-fluid pt-1 px-3" style={{ marginTop: "-35px" }}>
       {/* ================= Summary Cards ================= */}
-      <div className="row g-2 align-items-stretch">
+      <div className="row g-2 align-items-stretch"  style={{ marginTop: "15px",}}>
         <div className="col-md-8">
-          <div className="row g-2">
+          <div className="row g-3">
             {/* Total Employees */}
             <div className="col-md-6 mt-3">
               <div className="card shadow-sm h-100 border-0 "
@@ -385,7 +385,7 @@ setProbationEmployees(probationRes.data || []);
                       backgroundColor: "#D7F5E4",
                       padding: "10px",
                       textAlign: "center",
-                      minWidth: "75px",
+                      minWidth: "70px",
                       minHeight: "75px",
                       display: "flex",
                       alignItems: "center",
@@ -428,13 +428,13 @@ setProbationEmployees(probationRes.data || []);
         </div>
 
         {/* Holidays Card */}
-        <div className="col-md-4">
+        <div className="col-md-4" s>
           <HolidaysCards />
         </div>
       </div>
 
       {/* ================= Requests Table ================= */}
-      <div className="row g-3 mt-3">
+      <div className="row g-3 mt-1">
         {/* Recent Employees */}
         <div className="col-md-4">
           <div className="card shadow-sm h-100 border-0 "style={{ borderRadius: "10px" }} >
