@@ -418,10 +418,19 @@ if (hrs < 4) {
     if (!user.doj || !user.probationMonths) return "N/A";
 
     const doj = new Date(user.doj);
-    const probationEnd = new Date(doj);
+    let probationEnd;
+
+   if (user.probationEndDate) {
+    probationEnd = new Date(user.probationEndDate);
+  } else {
+    probationEnd = new Date(doj);
     probationEnd.setMonth(probationEnd.getMonth() + user.probationMonths);
+  }
 
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    probationEnd.setHours(0, 0, 0, 0);
+
 
     const options = { day: "2-digit", month: "short", year: "numeric" };
     const endDateStr = probationEnd.toLocaleDateString("en-US", options);
