@@ -119,7 +119,6 @@ const [notifications, setNotifications] = useState([]);
   const handleEMS = () => {
     localStorage.setItem("activeTab", "EMS");
     setActiveTab("EMS");
-    // navigate(`/dashboard/${user.role}/${user.username || user.name}/${user._id}`);
     navigate(lastEMSRoute);
   };
 
@@ -128,11 +127,10 @@ const [notifications, setNotifications] = useState([]);
       localStorage.getItem("lastTMSRoute") ||
       `/tms-dashboard/${user?.role || role}/${user?.username || username || user?.name
       }/${user?._id || id}`;
-
     localStorage.setItem("activeTab", "TMS");
     setActiveTab("TMS");
     navigate(lastTMS);
-    // navigate(`/tms-dashboard/${user.role}/${user.username || user.name}/${user._id}`);
+  
   };
   //////
   useEffect(() => {
@@ -148,7 +146,6 @@ const [notifications, setNotifications] = useState([]);
       console.warn("⚠️ Invalid session detected. Logging out...");
       localStorage.clear();
       sessionStorage.clear();
-
       // ✅ Navigate once only
       if (window.location.pathname !== "/") {
         navigate("/", { replace: true });
@@ -196,28 +193,7 @@ const [notifications, setNotifications] = useState([]);
       isMounted = false;
     };
   }, []);
-  //role, username, id, navigate
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem("accessToken");
-  //   if (!token) {
-  //     navigate("/");
-  //     return;
-  //   }
-
-  //   axios
-  //     .get(`http://localhost:8000/me`, {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     })
-  //     .then((res) => setUser(res.data))
-  //     .catch(() => {
-  //       localStorage.removeItem("accessToken");
-  //       localStorage.removeItem("refreshToken");
-  //       navigate("/");
-  //     });
-  // }, [navigate]);
-
-  // in Dashboard or Header where logout is triggered
+  
 
   const fetchNotifications = useCallback(async () => {
     if (!user?._id) return;
@@ -270,36 +246,7 @@ const [notifications, setNotifications] = useState([]);
       setIsLoggingOut(false);
     }
   };
-// useEffect(() => {
-//   if (!user?._id) return;
-//   fetchNotifications();
-// }, [user?._id]);
 
-// const fetchNotifications = async () => {
-//   console.log("userId",user);
-//   console.log("userId",user._id);
-//   if (!user._id) return;
-  
-//   console.log("hello ........")
-
-//   try {
-//     const res = await axios.get(
-//       `http://localhost:8000/notifications/${user._id}`
-//     );
-
-//     const fifteenDaysAgo = new Date();
-//     fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
-
-//     const recentNotifications = res.data.filter((n) => {
-//       const createdDate = new Date(n.createdAt);
-//       return createdDate >= fifteenDaysAgo;
-//     });
-
-//     setNotifications(recentNotifications);
-//   } catch (err) {
-//     console.error(err);
-//   }
-// };
 
   if (!user)
     return (
@@ -445,16 +392,7 @@ const [notifications, setNotifications] = useState([]);
                   )
                 }
               />
-              {/* /hr-core-dashboard */}
-              {/* <Route
-              path="/hr-core-dashboard"
-              element={
-                user.role === "hr"  //|| user.role === "hr"
-                  ? <HRDashboard user={user} />
-                  : null
-              }
-            /> */}
-              {/* hr-leavebalance */}
+            
               <Route
                 path="/hr-leavebalance"
                 element={
@@ -589,17 +527,7 @@ const [notifications, setNotifications] = useState([]);
                 path="AllEventsandHolidays"
                 element={<EventsAndHolidaysDashboard />}
               />
-              {/* <Route path="AllHolidays" element={<AllHolidays />} /> */}
-              {/* <Route path="MyAttendance" element={<MyAttendance employeeId={user._id}/>} /> */}
-              {/* <Route
-              path="employee"
-              element={
-                user.role === "ceo"
-                  ? <AllEmployeeDetails />
-                  : <MyAttendance employeeId={user._id} />
-              }
-            /> */}
-              {/* //added jayashree */}
+             
               <Route
                 path="schedule-interview"
                 element={

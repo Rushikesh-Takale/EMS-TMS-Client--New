@@ -56,7 +56,7 @@ const totalPages = Math.ceil(
     setMessage("");
     setShowModal(true);
     setExtendedDate("");
-setReason("");
+    setReason("");
   };
   const handleApprove = async (emp) => {
   const confirm = window.confirm(
@@ -89,43 +89,44 @@ setReason("");
     alert("Failed to approve probation.");
   }
 };
-  const handleExtend = async () => {
-    try {
-    const res = await authAxios.post(
-  `/admin/probation/extend/${selectedEmp._id}`,
-  {
-    probationEndDate: extendedDate,
-    reason,
+
+const handleExtend = async () => {
+  if (!extendedDate) {
+    setMessage("Please select probation end date.");
+    return;
   }
-);
-      setMessage("Probation extended successfully!");
-      fetchEmployees(); // refresh table
-      setTimeout(() => setShowModal(false), 1500);
-    } catch (err) {
-      setMessage("Failed to extend probation.");
-    }
-    if (!extendedDate) {
-  setMessage("Please select probation end date.");
-  return;
-}
 
-if (!reason.trim()) {
-  setMessage("Reason is required.");
-  return;
-}
+  if (!reason.trim()) {
+    setMessage("Reason is required.");
+    return;
+  }
 
-if (reason.trim().length < 10) {
-  setMessage("Reason must be at least 10 characters.");
-  return;
-}
-const oldDate = new Date(selectedEmp.probationEndDate);
-const newDate = new Date(extendedDate);
+  const oldDate = new Date(selectedEmp.probationEndDate);
+  const newDate = new Date(extendedDate);
 
-if (newDate <= oldDate) {
-  setMessage("New probation date must be greater than current probation date.");
-  return;
-}
-  };
+  if (newDate <= oldDate) {
+    setMessage("New probation date must be greater than current probation date.");
+    return;
+  }
+
+  try {
+    await authAxios.post(`/admin/probation/extend/${selectedEmp._id}`, {
+      newEndDate: extendedDate,   
+      reason: reason.trim()
+    });
+
+    alert("Probation extended successfully!");
+    fetchEmployees(); 
+    setShowModal(false);
+    setExtendedDate("");
+    setReason("");
+  } catch (err) {
+    setMessage(err.response?.data?.error || "Failed to extend probation.");
+  }
+};
+
+
+
 
   const formatDate = (date) => {
     if (!date) return "N/A";
@@ -221,7 +222,8 @@ if (newDate <= oldDate) {
 
   {emp.probationStatus === "approved" ? (
     <button
-      className="btn btn-sm btn-success"
+      className="btn btn-sm custom-outline-btn"
+      style={{minWidth:"90px"}}
       disabled
     >
       Approved
@@ -229,6 +231,7 @@ if (newDate <= oldDate) {
   ) : (
     <button
       className="btn btn-sm custom-outline-btn"
+      style={{minWidth:"90px"}}
       onClick={() => handleApprove(emp)}
     >
       Approve
