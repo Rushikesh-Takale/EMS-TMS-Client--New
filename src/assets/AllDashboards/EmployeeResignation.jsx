@@ -1199,21 +1199,30 @@ function EmployeeResignation({ user }) {
                       </div>
 
                       <div className="row mb-2">
-                        <div
-                          className="col-5 col-sm-3 fw-semibold"
-                          style={{ color: "#212529" }}
-                        >
-                          Approved/Rejected Date
-                        </div>
-                        <div
-                          className="col-7 col-sm-9"
-                          style={{ color: "#212529" }}
-                        >
-                          {selectedResignation.approvedDate
-                            ? formatDateTime(selectedResignation.approvedDate)
-                            : "N/A"}
-                        </div>
-                      </div>
+  <div
+    className="col-5 col-sm-3 fw-semibold"
+    style={{ color: "#212529" }}
+  >
+    {selectedResignation.status?.toLowerCase() ===
+    "approved"
+      ? "Approved Date"
+      : selectedResignation.status?.toLowerCase() ===
+          "rejected"
+        ? "Rejected Date"
+        : "Status Date"}
+  </div>
+
+  <div
+    className="col-7 col-sm-9"
+    style={{ color: "#212529" }}
+  >
+    {selectedResignation.approvedDate
+      ? formatDateTime(
+          selectedResignation.approvedDate
+        )
+      : "N/A"}
+  </div>
+</div>
 
                       <div className="row mb-2">
                         <div

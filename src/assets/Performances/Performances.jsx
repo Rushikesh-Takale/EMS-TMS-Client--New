@@ -1709,23 +1709,21 @@ const handleSectionChange = (section) => {
                   )}
 
                 {/* DESCRIPTION */}
-                <div className="row mt-3">
-                  <div className="col-4 fw-semibold">Description</div>
-                  <div className="col-8 ps-3">
-                    <div
-                      className="p-2 border rounded bg-light"
-                     tabIndex={-1}
-                  style={{
-                        whiteSpace: "pre-wrap",
-                        maxHeight: "120px",
-                        overflowY: "auto",
-                        wordBreak: "break-word",
-                      }}
-                    >
-                      {selectedPerformance.description}
-                    </div>
-                  </div>
-                </div>
+             <div className="row mt-3">
+  <div className="col-4 fw-semibold">
+    Description
+  </div>
+
+  <div
+    className="col-8 ps-2"
+    style={{
+      whiteSpace: "pre-wrap",
+      wordBreak: "break-word",
+    }}
+  >
+    {selectedPerformance.description}
+  </div>
+</div>
               </div>
 
               <div className="modal-footer border-0">

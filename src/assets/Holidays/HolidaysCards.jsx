@@ -144,7 +144,7 @@ function HolidaysCard({}) {
             overflow: "hidden",
             textOverflow: "ellipsis",
             wordBreak: "break-word",
-            minHeight: "48px",
+            minHeight: "30px",
           }}
         >
           {holiday.name

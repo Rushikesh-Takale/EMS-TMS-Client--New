@@ -4,11 +4,12 @@ import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./MyAttendance.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareCheck } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
+
 
 function MyAttendance({ employeeId }) {
   const [attendance, setAttendance] = useState([]);
@@ -32,6 +33,7 @@ function MyAttendance({ employeeId }) {
   const [message, setMessage] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
+  const location = useLocation();
   // const [workMode, setWorkMode] = useState("WFO"); // Default to WFO
   const [workMode, setWorkMode] = useState(
     localStorage.getItem("workMode") || "WFO",
@@ -1556,10 +1558,14 @@ function MyAttendance({ employeeId }) {
                 <button
                   className="btn btn-sm custom-outline-btn p-2"
                   onClick={() =>
-                    navigate(
-                      `/dashboard/${role}/${username}/${id}/regularization`,
-                      { replace: true },
-                    )
+                   navigate(
+  `/dashboard/${role}/${username}/${id}/regularization`,
+  {
+    state: {
+      from: location.pathname,
+    },
+  },
+)
                   }
                 >
                   Apply Regularization

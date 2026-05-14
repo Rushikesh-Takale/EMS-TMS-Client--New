@@ -744,14 +744,8 @@ const HRFeedback = () => {
       </div>
 
       {/* CONDITIONAL RENDERING BASED ON ACTIVE TAB dipali 03-02-2026 */}
-      {currentFeedbacks.length === 0 ? (
-        <div className="text-center py-4">
-          <p style={{ color: "#6c757d", fontSize: "16px" }}>
-            No {activeTab} feedback yet.
-          </p>
-        </div>
-      ) : (
-        <>
+     
+        
           <div
             className="table-responsive mt-3 "
             style={{
@@ -869,9 +863,31 @@ const HRFeedback = () => {
                   )}
                 </tr>
               </thead>
-              <tbody>
-                {/* Change to paginatedfeedback dip 03-02-2026*/}
-                {paginatedFeedbacks.map((fb) => (
+            <tbody>
+
+  {paginatedFeedbacks.length === 0 ? (
+
+    <tr>
+      <td
+        colSpan={
+          activeTab === "received"
+            ? 7
+            : 7
+        }
+        style={{
+          textAlign: "center",
+          padding: "20px",
+          color: "#6c757d",
+          fontSize: "16px",
+        }}
+      >
+        No {activeTab} feedback yet.
+      </td>
+    </tr>
+
+  ) : (
+
+    paginatedFeedbacks.map((fb) => (
                   //addeed by Rushikesh
                   <tr
                     key={fb.id}
@@ -1060,7 +1076,8 @@ const HRFeedback = () => {
                       )}
                     </td>
                   </tr>
-                ))}
+              ))
+)}
               </tbody>
             </table>
           </div>
@@ -1074,8 +1091,8 @@ const HRFeedback = () => {
             // indexOfLastItemReceived,
             // handlePageChangeReceived, remove all of this dip 03-02-2026
           }
-        </>
-      )}
+        
+    
 
       {/* Modal */}
       {showForm && (

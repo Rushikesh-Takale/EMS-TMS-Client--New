@@ -29,6 +29,10 @@ const [lateItemsPerPage, setLateItemsPerPage] = useState(5);
 
 const [showLateModal, setShowLateModal] = useState(false);
 const [selectedLateEmployee, setSelectedLateEmployee] = useState(null);
+const [lateFilteredEmployees, setLateFilteredEmployees] = useState([]);
+const [isLateFilterApplied, setIsLateFilterApplied] = useState(false);
+const [downloadedFile, setDownloadedFile] =
+  useState("");
 
   const [summary, setSummary] = useState({
     present: 0,
@@ -69,7 +73,7 @@ const [selectedLateEmployee, setSelectedLateEmployee] = useState(null);
             if (checkIn) {
               const hours = checkIn.getHours();
               const minutes = checkIn.getMinutes();
-              if (hours > 10 || (hours === 10 && minutes > 0)) {
+              if (hours > 9 || (hours === 9 && minutes > 10)) {
                 lateCheckIn++;
               }
             }
@@ -113,6 +117,11 @@ const [selectedLateEmployee, setSelectedLateEmployee] = useState(null);
     return "Absent";
   };
 const lateCheckInEmployees = useMemo(() => {
+
+  if (isLateFilterApplied) {
+    return lateFilteredEmployees;
+  }
+
   return filteredEmployees.filter((emp) => {
     if (!emp.checkInTime) return false;
 
@@ -120,9 +129,14 @@ const lateCheckInEmployees = useMemo(() => {
     const hours = dt.getHours();
     const minutes = dt.getMinutes();
 
-    return hours > 10 || (hours === 10 && minutes > 0);
+    return hours > 9 || (hours === 9 && minutes > 10);
   });
-}, [filteredEmployees]);
+
+}, [
+  filteredEmployees,
+  lateFilteredEmployees,
+  isLateFilterApplied,
+]);
 const lateTotalPages = Math.ceil(
   lateCheckInEmployees.length / lateItemsPerPage
 );
@@ -150,51 +164,76 @@ const closeLateModal = () => {
 };
 
 const downloadLateCheckInExcel = () => {
-  const excelData = lateCheckInEmployees.map((emp) => ({
-    Name: emp.name,
 
-    "Check-In Time": new Date(
-      emp.checkInTime
-    ).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+  const employeeName =
+    lateSearch?.trim() ||
+    "All_Employees";
 
-    Date: new Date(
-      emp.checkInTime
-    ).toLocaleDateString(),
+  const safeName =
+    employeeName.replace(/\s+/g, "_");
 
-    Status: "Late Check-In",
-  }));
+  // prevent same file multiple times
+  if (downloadedFile === safeName) return;
 
-  const worksheet = XLSX.utils.json_to_sheet(excelData);
+  try {
 
-  const workbook = XLSX.utils.book_new();
+    const excelData =
+      lateCheckInEmployees.map((emp) => ({
+        Name: emp.name,
 
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    "Late Check-Ins"
-  );
+        "Check-In Time": new Date(
+          emp.checkInTime
+        ).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
 
-  XLSX.writeFile(
-    workbook,
-    "Late_CheckIn_Employees.xlsx"
-  );
+        Date: new Date(
+          emp.checkInTime
+        ).toLocaleDateString(),
+
+        Status: "Late Check-In",
+      }));
+
+    const worksheet =
+      XLSX.utils.json_to_sheet(excelData);
+
+    const workbook =
+      XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Late Check-Ins"
+    );
+
+    XLSX.writeFile(
+      workbook,
+      `${safeName}_Late_CheckIns.xlsx`
+    );
+
+    setDownloadedFile(safeName);
+
+  } catch (err) {
+
+    console.error(err);
+  }
 };
 const fetchLateCheckInHistory = async () => {
   try {
+
     const token = localStorage.getItem("accessToken");
 
     const res = await axios.get(
-      `http://localhost:8000/attendance/late-checkins`,
+      "http://localhost:8000/attendance/late-checkins",
       {
         params: {
-          from: lateFromDate,
-          to: lateToDate,
-          name: lateSearch,
+          from: lateFromDate || undefined,
+          to: lateToDate || undefined,
+          name: lateSearch || undefined,
           teamLeaderId: id,
         },
+
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -230,7 +269,7 @@ const fetchLateCheckInHistory = async () => {
               (status === "Present" ||
                 status === "Half Day" ||
                 status === "Working") &&
-              (hours > 10 || (hours === 10 && minutes > 0))
+              (hours > 9 || (hours === 9 && minutes > 10))
             );
           }
           return false;
@@ -279,6 +318,26 @@ const fetchLateCheckInHistory = async () => {
   }
 
   if (error) {
+
+    useEffect(() => {
+
+  if (showLateModal) {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow =
+      "hidden";
+  } else {
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow =
+      "";
+  }
+
+  return () => {
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow =
+      "";
+  };
+
+}, [showLateModal]);
     return (
       <div className="container-fluid">
         <div className="alert alert-danger" role="alert">
@@ -458,7 +517,13 @@ const fetchLateCheckInHistory = async () => {
             className="form-control"
             value={lateSearch}
               placeholder="Search by any field"
-            onChange={(e) => setLateSearch(e.target.value)}
+     onChange={(e) => {
+
+  const value = e.target.value;
+  if (/^[A-Za-z\s]*$/.test(value)) {
+    setLateSearch(value);
+  }
+}}
           />
       
       </div>
@@ -479,12 +544,15 @@ const fetchLateCheckInHistory = async () => {
                 From
               </label>
 
-    <input
-      type="date"
-      className="form-control"
-      value={lateFromDate}
-      onChange={(e) => setLateFromDate(e.target.value)}
-    />
+<input
+  type="date"
+  className="form-control"
+  value={lateFromDate}
+  max={new Date().toISOString().split("T")[0]}
+  onChange={(e) =>
+    setLateFromDate(e.target.value)
+  }
+/>
   
 </div>
 
@@ -504,12 +572,15 @@ const fetchLateCheckInHistory = async () => {
                 To
                 </label>
 
-    <input
-      type="date"
-      className="form-control"
-      value={lateToDate}
-      onChange={(e) => setLateToDate(e.target.value)}
-    />
+  <input
+  type="date"
+  className="form-control"
+  value={lateToDate}
+  max={new Date().toISOString().split("T")[0]}
+  onChange={(e) =>
+    setLateToDate(e.target.value)
+  }
+/>
   
 </div>
 
@@ -521,6 +592,13 @@ const fetchLateCheckInHistory = async () => {
   className="btn btn-sm custom-outline-btn"
   style={{ minWidth: 110 }}
   onClick={downloadLateCheckInExcel}
+  disabled={
+    downloadedFile ===
+    (
+      lateSearch?.trim() ||
+      "All_Employees"
+    ).replace(/\s+/g, "_")
+  }
 >
   Download Excel
 </button>
@@ -544,7 +622,10 @@ onClick={() => {
   setLateFromDate("");
   setLateToDate("");
   setLateCurrentPage(1);
-setLateCheckInEmployeesData([]);
+
+  setLateFilteredEmployees([]);
+  setIsLateFilterApplied(false);
+  setDownloadedFile("");
 }}
   >
     Reset
