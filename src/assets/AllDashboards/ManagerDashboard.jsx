@@ -1183,7 +1183,7 @@ function ManagerDashboard({ user }) {
       </h2>
 
       {regularizations.length === 0 ? (
-        <p>No regularization requests assigned to you.</p>
+        <p>No regularization records available.</p>
       ) : (
         <>
           <div className="card mb-4 shadow-sm border-0">
@@ -1480,7 +1480,7 @@ function ManagerDashboard({ user }) {
                         color: "#888",
                       }}
                     >
-                      No regularization requests assigned to you.
+                      No regularization records available.
                     </td>
                   </tr>
                 ) : (

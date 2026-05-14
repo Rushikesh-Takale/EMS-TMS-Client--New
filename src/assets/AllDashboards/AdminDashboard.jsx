@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import HolidaysCards from "../Holidays/HolidaysCards";
-//import AddHolidayForm from './AddHolidaysForms';
 import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 import EventCard from "../Events/EventCard";
 import ActivePolls from "../Polls/ActivePolls";
@@ -24,47 +23,47 @@ function AdminDashboard({ user }) {
 
   useEffect(() => {
     if (!user?._id) return;
-  
+
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-  
+
         const authAxios = axios.create({
           baseURL: "http://localhost:8000",
           headers: { Authorization: `Bearer ${token}` },
         });
-  
-    
-          const [empRes, attRes, leaveRegRes,probationRes] = await Promise.allSettled([
+
+
+        const [empRes, attRes, leaveRegRes, probationRes] = await Promise.allSettled([
           authAxios.get("/getAllEmployees"),
           authAxios.get("/attendance/today"),
           authAxios.get("/leaves-and-regularizations"),
           authAxios.get("/admin/probation-ending-soon"), // step 2
 
         ]);
-  
+
         if (empRes.status === "fulfilled") {
           setEmployees(empRes.value.data);
         }
-  
+
         if (attRes.status === "fulfilled") {
           setAttendanceData(attRes.value.data);
         }
-  
+
         if (leaveRegRes.status === "fulfilled") {
           const leavesData = leaveRegRes.value.data.leaves || [];
           const regsData = leaveRegRes.value.data.regularizations || [];
-  
+
           setLeaves(leavesData);
           setRegularizations(regsData);
           if (probationRes.status === "fulfilled") setProbationEmployees(probationRes.value.data);
-else console.warn("Probation fetch failed:", probationRes.reason);
-  
+          else console.warn("Probation fetch failed:", probationRes.reason);
+
           const merged = [
             ...leavesData.map(l => ({ ...l, type: "Leave" })),
             ...regsData.map(r => ({ ...r, type: "Regularization" })),
           ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
+
           setAllRequests(merged);
         }
       } catch (err) {
@@ -73,7 +72,7 @@ else console.warn("Probation fetch failed:", probationRes.reason);
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, [user?._id]);
   console.log("all request", allRequests);
@@ -162,7 +161,7 @@ else console.warn("Probation fetch failed:", probationRes.reason);
   console.log("allRequests", allRequests);
 
   return (
-<div className="container-fluid pt-2 px-3" style={{ marginTop: "-15px" }}>
+    <div className="container-fluid pt-2 px-3" style={{ marginTop: "-15px" }}>
       {/* Top Row: Summary Cards */}
       <div className="row g-2  align-items-stretch">
         {/* Total Employees */}
@@ -170,9 +169,9 @@ else console.warn("Probation fetch failed:", probationRes.reason);
           <div className="row g-3">
             <div className="col-md-6 ">
               <div
-                  className="card shadow-sm h-100 border-0 "
-                  style={{ borderRadius: "10px" }}
-                >
+                className="card shadow-sm h-100 border-0 "
+                style={{ borderRadius: "10px" }}
+              >
                 <div className="card-body d-flex justify-content-between align-items-center">
                   {/* Employee Count */}
                   {/* <h4 className="text-success mb-0" style={{fontSize:"50px"}}>{employees.length}</h4> */}
@@ -264,7 +263,7 @@ else console.warn("Probation fetch failed:", probationRes.reason);
                     >
                       Pending
                     </span>
-                     <br />
+                    <br />
                     Leave Requests
                   </p>
                   <button
@@ -283,10 +282,10 @@ else console.warn("Probation fetch failed:", probationRes.reason);
 
             {/* Attendance Regularization */}
             <div className="col-md-6 ">
-                <div
-      className="card shadow-sm h-100 border-0 "
-      style={{ borderRadius: "10px" }}
-    >
+              <div
+                className="card shadow-sm h-100 border-0 "
+                style={{ borderRadius: "10px" }}
+              >
                 <div className="card-body d-flex justify-content-between align-items-center">
                   <div
                     style={{
@@ -337,10 +336,10 @@ else console.warn("Probation fetch failed:", probationRes.reason);
             </div>
             {/* Todays Attendance */}
             <div className="col-md-6 ">
-             <div
-      className="card shadow-sm h-100 border-0 "
-      style={{ borderRadius: "10px" }}
-    >
+              <div
+                className="card shadow-sm h-100 border-0 "
+                style={{ borderRadius: "10px" }}
+              >
                 <div className="card-body d-flex justify-content-between align-items-center">
                   <div
                     style={{
@@ -370,10 +369,10 @@ else console.warn("Probation fetch failed:", probationRes.reason);
                   >
                     <span
                       style={{ marginLeft: "18px", display: "inline-block" }}
-                    > 
-                    Today's
+                    >
+                      Today's
                     </span>
-                    <br /> 
+                    <br />
                     Attendance
                   </p>
                   <button
@@ -395,22 +394,17 @@ else console.warn("Probation fetch failed:", probationRes.reason);
           <HolidaysCards />
         </div>
 
-         {/* Events Section */}
-      <div className="col-12 col-sm-6 col-md-4 g-3">
+        {/* Events Section */}
+        <div className="col-12 col-sm-6 col-md-4 g-3">
           <EventCard />
         </div>
-       
 
-        {/* Today’s Attendance */}
-     
-
-      {/* Row 3: Employee Registry + Leave Requests + Events */}
         {/* Recent Employee Registry */}
-       <div className="col-12 col-sm-6 col-md-4 order-3 order-sm-3 order-md-0 g-3">
-  <div
-      className="card shadow-sm h-100 border-0 "
-      style={{ borderRadius: "10px" }}
-    >
+        <div className="col-12 col-sm-6 col-md-4 order-3 order-sm-3 order-md-0 g-3">
+          <div
+            className="card shadow-sm h-100 border-0 "
+            style={{ borderRadius: "10px" }}
+          >
             <div
               className="card-header d-flex justify-content-between align-items-center"
               style={{ backgroundColor: "#fff" }}
@@ -463,39 +457,39 @@ else console.warn("Probation fetch failed:", probationRes.reason);
 
                   <tbody>
                     {mergedEmployees
-                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                    .slice(0, 3).map((emp) => {
-                      const formatDate = (date) => {
-                        if (!date) return "N/A";
-                        const d = new Date(date);
-                        if (isNaN(d.getTime())) return "Invalid Date";
-                        return d.toLocaleDateString("en-GB", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        });
-                      };
+                      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                      .slice(0, 3).map((emp) => {
+                        const formatDate = (date) => {
+                          if (!date) return "N/A";
+                          const d = new Date(date);
+                          if (isNaN(d.getTime())) return "Invalid Date";
+                          return d.toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          });
+                        };
 
-                      return (
-                        <tr key={emp._id}>
-                          <td
-                            className="text-capitalize"
-                            style={{ fontWeight: "400", fontSize: "14px" }}
-                          >
-                            {emp.name}
-                          </td>
-                          <td style={{ fontWeight: "400", fontSize: "14px" }}>
-                            {emp.designation}
-                          </td>
-                          <td style={{ fontWeight: "400", fontSize: "14px" }}>
-                            {emp.department}
-                          </td>
-                          <td style={{ fontWeight: "400", fontSize: "14px" }}>
-                            {formatDate(emp.doj)}
-                          </td>
-                        </tr>
-                      );
-                    })}
+                        return (
+                          <tr key={emp._id}>
+                            <td
+                              className="text-capitalize"
+                              style={{ fontWeight: "400", fontSize: "14px" }}
+                            >
+                              {emp.name}
+                            </td>
+                            <td style={{ fontWeight: "400", fontSize: "14px" }}>
+                              {emp.designation}
+                            </td>
+                            <td style={{ fontWeight: "400", fontSize: "14px" }}>
+                              {emp.department}
+                            </td>
+                            <td style={{ fontWeight: "400", fontSize: "14px" }}>
+                              {formatDate(emp.doj)}
+                            </td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>
@@ -504,11 +498,11 @@ else console.warn("Probation fetch failed:", probationRes.reason);
         </div>
 
         {/* Leave & Regularization Requests */}
-       <div className="col-12 col-sm-6 col-md-4 order-3 order-md-0 g-3">
-      <div
-      className="card shadow-sm h-100 border-0 "
-      style={{ borderRadius: "10px" }}
-    >
+        <div className="col-12 col-sm-6 col-md-4 order-3 order-md-0 g-3">
+          <div
+            className="card shadow-sm h-100 border-0 "
+            style={{ borderRadius: "10px" }}
+          >
             <div
               className="card-header d-flex justify-content-between align-items-center"
               style={{ backgroundColor: "#fff" }}
@@ -617,13 +611,12 @@ else console.warn("Probation fetch failed:", probationRes.reason);
 
                             <td>
                               <span
-                                className={`badge ${
-                                  displayStatus === "Approved"
+                                className={`badge ${displayStatus === "Approved"
                                     ? "text-dark"
                                     : displayStatus === "Rejected"
                                       ? "text-dark"
                                       : "text-dark"
-                                }`}
+                                  }`}
                                 style={{
                                   backgroundColor:
                                     displayStatus === "Approved"
@@ -645,82 +638,82 @@ else console.warn("Probation fetch failed:", probationRes.reason);
               </div>
             </div>
           </div>
-       
+
 
         </div>
-        
-      
 
-      {/*  Poll */}
-   <div className="col-12 col-md-4 g-3">
-        <ActivePolls user={user} />
-      </div>
- {(user?.role === "admin" || user?.role === "hr") && (
-      <div className="col-md-4">
-        <div className="card shadow-sm h-100">
-          <div
-            className="card-header d-flex justify-content-between align-items-center"
-            style={{ backgroundColor: "#fff" }}
-          >
-            <h6 className="mb-0" style={{ color: "#3A5FBE" }}>
-              Probation Ending This Week
-            </h6>
-            <button
-              className="btn btn-sm custom-outline-btn"
-              onClick={() =>
-                navigate(`/dashboard/${role}/${username}/${id}/probation`)
-              }
-            >
-              View All
-            </button>
-          </div>
-          <div className="card-body p-0">
-            <div className="table-responsive">
-              <table className="table table-hover mb-0">
-                <thead style={{ backgroundColor: "#fff" }}>
-                  <tr>
-                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Name</th>
-                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Department</th>
-                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Ends On</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {probationEmployees.length === 0 ? (
-                    <tr>
-                      <td colSpan="3" className="text-center text-muted py-3" style={{ fontSize: "14px" }}>
-                        No probations ending this week
-                      </td>
-                    </tr>
-                  ) : (
-                    probationEmployees.map((emp) => (
-                      <tr key={emp._id}>
-                        <td className="text-capitalize" style={{ fontWeight: "400", fontSize: "14px" }}>
-                          {emp.name}
-                        </td>
-                        <td style={{ fontWeight: "400", fontSize: "14px" }}>
-                          {emp.department}
-                        </td>
-                        <td style={{ fontWeight: "400", fontSize: "14px" }}>
-                          <span
-                            className="badge"
-                            style={{ backgroundColor: "#FFE493", color: "#000", fontWeight: "600" }}
-                          >
-                            {new Date(emp.probationEndDate).toLocaleDateString("en-GB", {
-                              day: "2-digit", month: "short", year: "numeric"
-                            })}
-                          </span>
-                        </td>
+
+
+        {/*  Poll */}
+        <div className="col-12 col-md-4 g-3">
+          <ActivePolls user={user} />
+        </div>
+        {(user?.role === "admin" || user?.role === "hr") && (
+          <div className="col-md-4">
+            <div className="card shadow-sm h-100">
+              <div
+                className="card-header d-flex justify-content-between align-items-center"
+                style={{ backgroundColor: "#fff" }}
+              >
+                <h6 className="mb-0" style={{ color: "#3A5FBE" }}>
+                  Probation Ending This Week
+                </h6>
+                <button
+                  className="btn btn-sm custom-outline-btn"
+                  onClick={() =>
+                    navigate(`/dashboard/${role}/${username}/${id}/probation`)
+                  }
+                >
+                  View All
+                </button>
+              </div>
+              <div className="card-body p-0">
+                <div className="table-responsive">
+                  <table className="table table-hover mb-0">
+                    <thead style={{ backgroundColor: "#fff" }}>
+                      <tr>
+                        <th style={{ fontWeight: "600", fontSize: "14px" }}>Name</th>
+                        <th style={{ fontWeight: "600", fontSize: "14px" }}>Department</th>
+                        <th style={{ fontWeight: "600", fontSize: "14px" }}>Ends On</th>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      {probationEmployees.length === 0 ? (
+                        <tr>
+                          <td colSpan="3" className="text-center text-muted py-3" style={{ fontSize: "14px" }}>
+                            No probations ending this week
+                          </td>
+                        </tr>
+                      ) : (
+                        probationEmployees.map((emp) => (
+                          <tr key={emp._id}>
+                            <td className="text-capitalize" style={{ fontWeight: "400", fontSize: "14px" }}>
+                              {emp.name}
+                            </td>
+                            <td style={{ fontWeight: "400", fontSize: "14px" }}>
+                              {emp.department}
+                            </td>
+                            <td style={{ fontWeight: "400", fontSize: "14px" }}>
+                              <span
+                                className="badge"
+                                style={{ backgroundColor: "#FFE493", color: "#000", fontWeight: "600" }}
+                              >
+                                {new Date(emp.probationEndDate).toLocaleDateString("en-GB", {
+                                  day: "2-digit", month: "short", year: "numeric"
+                                })}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      )}
-    
+        )}
+
       </div>
 
     </div>

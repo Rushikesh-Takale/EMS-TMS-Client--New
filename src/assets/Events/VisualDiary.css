@@ -2,7 +2,7 @@
 .gallery-wrapper {
   max-width: 1300px;
   margin: 40px auto;
-  padding: 40px 20px 60px;
+  padding: 40px 20px 0;
   background: #f6f8fc;
   border-radius: 20px;
   font-family: "Inter", sans-serif;
