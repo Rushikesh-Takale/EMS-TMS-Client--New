@@ -589,10 +589,25 @@ function EmployeeResignation({ user }) {
       <div className="d-flex justify-content-start mb-4">
         <button
           className="btn btn-sm custom-outline-btn"
-          onClick={() => {
-            resetApplyForm();
-            setShowApply(true);
-          }}
+      onClick={() => {
+
+  const alreadyApproved =
+    resignations.some(
+      (r) =>
+        r.status?.toLowerCase() ===
+        "approved"
+    );
+
+  if (alreadyApproved) {
+    alert(
+      "Your resignation has already been approved. You cannot apply again."
+    );
+    return;
+  }
+
+  resetApplyForm();
+  setShowApply(true);
+}}
         >
           Apply Resignation
         </button>

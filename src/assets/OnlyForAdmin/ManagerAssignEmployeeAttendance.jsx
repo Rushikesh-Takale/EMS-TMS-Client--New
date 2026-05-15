@@ -714,11 +714,14 @@ onClick={() => {
         {lateCheckInEmployees.length === 0 ? (
   <tr>
     <td
-      colSpan="3"
-      className="text-center py-4"
-      style={{ color: "#6c757d" }}
-    >
-      No data available
+    colSpan="6"
+                          className="text-center text-muted"
+                          style={{
+                            padding: "20px",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                       No data available
     </td>
   </tr>
 ) : (

@@ -486,6 +486,7 @@ function MyAttendance({ employeeId }) {
           bottom: 0,
           cursor: "pointer",
           zIndex: 2,
+          
         }}
       />
     );
@@ -1033,7 +1034,7 @@ function MyAttendance({ employeeId }) {
   id="attendance-tooltip"
   place="top"
   style={{
-    backgroundColor: "#1e293b",
+     backgroundColor: "#3A5FBE",
     color: "#fff",
     padding: "8px 14px",
     borderRadius: "8px",

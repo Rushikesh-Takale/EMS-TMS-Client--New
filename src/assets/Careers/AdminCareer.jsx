@@ -501,26 +501,42 @@ temp.sort((a, b) => {
   //   setFilteredJobs([...jobs]);
   //   setCurrentPage(1);
   // };
-  const resetFilters = () => {
-    setSearchTerm("");
-    setStatusFilter("All");
-    setAssignDateFromFilter("");
-    setAssignDateToFilter("");
-    setCurrentPage(1);
-temp.sort((a, b) => {
-  const aExpired = isExpired(a.dueOn) ? 1 : 0;
-  const bExpired = isExpired(b.dueOn) ? 1 : 0;
+const resetFilters = () => {
+  setSearchTerm("");
+  setStatusFilter("All");
+  setAssignDateFromFilter("");
+  setAssignDateToFilter("");
+  setCurrentPage(1);
 
-  // Active jobs first
-  if (aExpired !== bExpired) {
-    return aExpired - bExpired;
-  }
+  let temp = [...jobs];
 
-  // Latest due date first for active/repost jobs
-  return new Date(b.dueOn) - new Date(a.dueOn);
-});
-    setFilteredJobs(temp);
-  };
+  temp = temp.filter(
+    (job) =>
+      job.jobType === activeTab ||
+      job.jobType === "both"
+  );
+
+  temp.sort((a, b) => {
+    const aExpired = isExpired(a.dueOn)
+      ? 1
+      : 0;
+
+    const bExpired = isExpired(b.dueOn)
+      ? 1
+      : 0;
+
+    if (aExpired !== bExpired) {
+      return aExpired - bExpired;
+    }
+
+    return (
+      new Date(b.dueOn) -
+      new Date(a.dueOn)
+    );
+  });
+
+  setFilteredJobs(temp);
+};
 
   
    const handleFilterSubmit = (e) => {

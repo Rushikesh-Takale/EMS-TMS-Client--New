@@ -250,6 +250,7 @@ const formatTo12Hour = (time24) => {
 
   // ===== APPLY FILTERS =====
   const applyFilters = () => {
+    
     let filtered = [...allInterviews];
 
     if (statusFilter !== "All") {
@@ -368,6 +369,7 @@ const formatTo12Hour = (time24) => {
                   type="date"
                   className="form-control"
                   value={dateFromFilter}
+                      max={dateToFilter}
                   onChange={(e) => setDateFromFilter(e.target.value)}
                   style={{ minWidth: "140px" }}
                 />
@@ -392,6 +394,7 @@ const formatTo12Hour = (time24) => {
                   type="date"
                   className="form-control"
                   value={dateToFilter}
+                   min={dateFromFilter}
                   onChange={(e) => setDateToFilter(e.target.value)}
                   style={{ minWidth: "140px" }}
                 />
