@@ -8,6 +8,7 @@ const ProbationList = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedEmp, setSelectedEmp] = useState(null);
   const [additionalMonths, setAdditionalMonths] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const { role, username, id } = useParams();
   const [extendedDate, setExtendedDate] = useState("");
@@ -64,6 +65,7 @@ const totalPages = Math.ceil(
   );
 
   if (!confirm) return;
+  setIsSubmitting(true);
 
   try {
     await authAxios.post(
@@ -88,6 +90,9 @@ const totalPages = Math.ceil(
   } catch (err) {
     alert("Failed to approve probation.");
   }
+  finally {
+    setIsSubmitting(false); 
+  }
 };
 
 const handleExtend = async () => {
@@ -108,6 +113,7 @@ const handleExtend = async () => {
     setMessage("New probation date must be greater than current probation date.");
     return;
   }
+  setIsSubmitting(true);
 
   try {
     await authAxios.post(`/admin/probation/extend/${selectedEmp._id}`, {
@@ -122,6 +128,9 @@ const handleExtend = async () => {
     setReason("");
   } catch (err) {
     setMessage(err.response?.data?.error || "Failed to extend probation.");
+  }
+  finally {
+    setIsSubmitting(false); 
   }
 };
 
@@ -233,6 +242,7 @@ const handleExtend = async () => {
       className="btn btn-sm custom-outline-btn"
       style={{minWidth:"90px"}}
       onClick={() => handleApprove(emp)}
+      disabled={isSubmitting}
     >
       Approve
     </button>
@@ -426,6 +436,7 @@ const handleExtend = async () => {
                 <button
                   className="btn btn-sm custom-outline-btn"
                   onClick={handleExtend}
+                  disabled={isSubmitting}
                 >
                   Extend Probation
                 </button>
