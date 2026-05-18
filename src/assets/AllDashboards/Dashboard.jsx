@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback} from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   useNavigate,
   useParams,
@@ -7,6 +7,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
+import ProbationReminderPopup from "../OnlyForAdmin/ProbationReminderPopup";
 import axios from "axios";
 import AdminDashboard from "./AdminDashboard";
 import HRDashboard from "./HRDashboard";
@@ -84,6 +85,8 @@ function Dashboard() {
   const [user, setUser] = useState(null);
   const location = useLocation(); /////ems tms button
   const navigate = useNavigate();
+  const popupShownForSession = useRef(false);
+  const [showProbationPopup, setShowProbationPopup] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false); // 🧩 spinner state
 
   console.log("Dashboard rendered");
@@ -223,6 +226,48 @@ const [notifications, setNotifications] = useState([]);
     fetchNotifications();
   }, [user?._id, fetchNotifications]);
 
+  useEffect(() => {
+    if (!user?._id) return;
+    const allowedRoles = ["admin", "hr"];
+  
+    const popupKey = `probationPopupShown_${user._id}`;
+    const alreadyShown = sessionStorage.getItem(popupKey);
+  
+    if (allowedRoles.includes(user.role) && !alreadyShown) {
+      setShowProbationPopup(true);
+      sessionStorage.setItem(popupKey, "true");
+    }
+  }, [user?._id]);
+
+  useEffect(() => {
+    if (showProbationPopup) {
+      const scrollY = window.scrollY;
+      
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      
+      document.body.dataset.scrollY = scrollY;
+    } else {
+      const scrollY = document.body.dataset.scrollY;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY));
+        delete document.body.dataset.scrollY;
+      }
+    }
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+    };
+  }, [showProbationPopup]);
 
   const handleLogout = async () => {
     try {
@@ -233,14 +278,18 @@ const [notifications, setNotifications] = useState([]);
         "http://localhost:8000/logout",
         { refreshToken }
       );
-
+      
+      popupShownForSession.current = false;
+      setShowProbationPopup(false); 
       localStorage.clear();
+      sessionStorage.clear(); 
 
       setTimeout(() => {
         navigate("/", { replace: true });
       }, 800);
     } catch (err) {
       localStorage.clear();
+      sessionStorage.clear(); 
       navigate("/", { replace: true });
     } finally {
       setIsLoggingOut(false);
@@ -837,6 +886,17 @@ const [notifications, setNotifications] = useState([]);
           </div>
         </div>
       </div>
+
+      {showProbationPopup && (
+        <ProbationReminderPopup 
+          user={user}
+          role={role || user?.role}
+          username={username || user?.username || user?.name}
+          id={id || user?._id}
+          onClose={() => setShowProbationPopup(false)}
+        />
+      )}
+      
     </div>
   );
 }

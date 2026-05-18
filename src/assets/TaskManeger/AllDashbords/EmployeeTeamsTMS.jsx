@@ -31,6 +31,7 @@ const EmployeeTeamsTMS = ({ user }) => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const [selectedTeam, setSelectedTeam] = useState(null);
+  
   const normalizeDepartment = (value) => {
     if (!value) return "";
     const v = String(value).trim().toLowerCase();

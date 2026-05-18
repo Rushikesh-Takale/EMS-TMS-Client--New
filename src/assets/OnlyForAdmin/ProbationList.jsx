@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useRef } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -22,6 +22,8 @@ const [errors, setErrors] = useState({
   probationEndDate: "",
   reason: "",
 });
+const viewModalRef = useRef(null);
+const updateModalRef = useRef(null);
 
   const token = localStorage.getItem("accessToken");
   const authAxios = axios.create({
@@ -180,6 +182,58 @@ const handleExtend = async () => {
   }
 };
 
+const trapFocus = (e, modalRef) => {
+  if (!modalRef.current) return;
+  
+  const focusableElements = modalRef.current.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  
+  if (focusableElements.length === 0) return;
+  
+  const first = focusableElements[0];
+  const last = focusableElements[focusableElements.length - 1];
+  
+  if (e.key === "Tab") {
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+};
+
+
+// Focus when modal opens
+useEffect(() => {
+  if (showViewModal && viewModalRef.current) {
+    viewModalRef.current.focus();
+  }
+  if (showModal && updateModalRef.current) {
+    updateModalRef.current.focus();
+  }
+}, [showViewModal, showModal]);
+
+// Body scroll lock
+useEffect(() => {
+  if (showViewModal || showModal) {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+  }
+  return () => {
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+  };
+}, [showViewModal, showModal]);
 
 
 
@@ -416,7 +470,10 @@ const handleExtend = async () => {
 
   <button
     className="btn btn-sm custom-outline-btn"
-    onClick={() => handleUpdateClick(emp)}
+    onClick={(e) => {
+      e.stopPropagation(); 
+      handleUpdateClick(emp);
+    }}
     disabled={emp.probationStatus === "approved"}
   >
     Update
@@ -512,146 +569,153 @@ const handleExtend = async () => {
           Back
         </button>
       </div>
-{showViewModal && selectedEmp && (
-  <div
-    className="modal fade show"
-    style={{
-      display: "block",
-      backgroundColor: "rgba(0,0,0,0.5)",
-    }}
-  >
-    <div
-      className="modal-dialog modal-dialog-centered"
-      style={{ maxWidth: "550px" }}
-    >
-      <div className="modal-content">
-
-        <div className="custom-modal-header">
-          <span className="modal-title">
-            Employee Details
-          </span>
-
-          <button
-            type="button"
-            className="btn-close btn-close-white"
-            onClick={() =>
-              setShowViewModal(false)
-            }
-          />
-        </div>
-
-        <div className="modal-body">
-
-         <div className="d-flex mb-2">
-<label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
-    Employee ID:
-  </label>
-            {selectedEmp.employeeId}
-          </div>
-
-<div className="d-flex mb-2">
-  <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
-    Name:
-  </label>
-
-  <span className="text-capitalize">
-    {selectedEmp.name}
-  </span>
-</div>
-
-<div className="d-flex mb-2">
- <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
-    Department:
-  </label>
-
-  <span>{selectedEmp.department}</span>
-</div>
-
-<div className="d-flex mb-2">
-<label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
-    Designation:
-  </label>
-
-  <span>{selectedEmp.designation}</span>
-</div>
-
-<div className="d-flex mb-2">
-<label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
-    DOJ:
-  </label>
-
-  <span>{formatDate(selectedEmp.doj)}</span>
-</div>
-
-<div className="d-flex mb-2">
-  <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
-    Probation End:
-  </label>
-
-  <span>
-    {formatDate(selectedEmp.probationEndDate)}
-  </span>
-</div>
-
-<div className="d-flex mb-2 align-items-center">
-    <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
-    Status:
-  </label>
-
-  <span
-    className="badge"
-    style={{
-      backgroundColor:
-        selectedEmp.probationStatus ===
-        "approved"
-          ? "#cce5ff"
-          : selectedEmp.probationStatus ===
-            "extended"
-          ? "#d1f2dd"
-          : new Date(
-              selectedEmp.probationEndDate
-            ) < new Date()
-          ? "#f8d7da"
-          : "#FFE493",
-      color: "#000",
-      fontWeight: 600,
-    }}
-  >
-    {selectedEmp.probationStatus ===
-    "approved"
-      ? "Approved"
-      : selectedEmp.probationStatus ===
-        "extended"
-      ? "Extended"
-      : new Date(
-          selectedEmp.probationEndDate
-        ) < new Date()
-      ? "Overdue"
-      : "Pending"}
-  </span>
-</div>
-
-        </div>
-
-        <div className="modal-footer">
-          <button
-            className="btn btn-sm custom-outline-btn"
-             style={{ minWidth: "90px" }}
-            onClick={() =>
-              setShowViewModal(false)
-            }
+      {showViewModal && selectedEmp && (
+        <div
+          ref={viewModalRef}
+          tabIndex="-1"
+          onKeyDown={(e) => trapFocus(e, viewModalRef)}
+          className="modal fade show"
+          style={{
+            display: "block",
+            backgroundColor: "rgba(0,0,0,0.5)",
+          }}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered"
+            style={{ maxWidth: "550px" }}
           >
-            Close
-          </button>
-        </div>
+            <div className="modal-content">
 
+              <div className="custom-modal-header">
+                <span className="modal-title">
+                  Employee Details
+                </span>
+
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() =>
+                    setShowViewModal(false)
+                  }
+                />
+              </div>
+
+              <div className="modal-body">
+
+              <div className="d-flex mb-2">
+      <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
+          Employee ID:
+        </label>
+                  {selectedEmp.employeeId}
+                </div>
+
+      <div className="d-flex mb-2">
+        <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
+          Name:
+        </label>
+
+        <span className="text-capitalize">
+          {selectedEmp.name}
+        </span>
       </div>
-    </div>
-  </div>
-)}
+
+      <div className="d-flex mb-2">
+      <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
+          Department:
+        </label>
+
+        <span>{selectedEmp.department}</span>
+      </div>
+
+      <div className="d-flex mb-2">
+      <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
+          Designation:
+        </label>
+
+        <span>{selectedEmp.designation}</span>
+      </div>
+
+      <div className="d-flex mb-2">
+      <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
+          DOJ:
+        </label>
+
+        <span>{formatDate(selectedEmp.doj)}</span>
+      </div>
+
+      <div className="d-flex mb-2">
+        <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
+          Probation End:
+        </label>
+
+        <span>
+          {formatDate(selectedEmp.probationEndDate)}
+        </span>
+      </div>
+
+      <div className="d-flex mb-2 align-items-center">
+          <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
+          Status:
+        </label>
+
+        <span
+          className="badge"
+          style={{
+            backgroundColor:
+              selectedEmp.probationStatus ===
+              "approved"
+                ? "#cce5ff"
+                : selectedEmp.probationStatus ===
+                  "extended"
+                ? "#d1f2dd"
+                : new Date(
+                    selectedEmp.probationEndDate
+                  ) < new Date()
+                ? "#f8d7da"
+                : "#FFE493",
+            color: "#000",
+            fontWeight: 600,
+          }}
+        >
+          {selectedEmp.probationStatus ===
+          "approved"
+            ? "Approved"
+            : selectedEmp.probationStatus ===
+              "extended"
+            ? "Extended"
+            : new Date(
+                selectedEmp.probationEndDate
+              ) < new Date()
+            ? "Overdue"
+            : "Pending"}
+        </span>
+      </div>
+
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  className="btn btn-sm custom-outline-btn"
+                  style={{ minWidth: "90px" }}
+                  onClick={() =>
+                    setShowViewModal(false)
+                  }
+                >
+                  Close
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Update Modal */}
       {showModal && selectedEmp && (
         <div
+          ref={updateModalRef}
+          tabIndex="-1"
+          onKeyDown={(e) => trapFocus(e, updateModalRef)}
           className="modal fade show"
           style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
         >
