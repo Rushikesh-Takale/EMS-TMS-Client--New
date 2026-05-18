@@ -18,7 +18,11 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
   const [weeklyOffs, setWeeklyOffs] = useState({});
   const [publicHolidays, setPublicHolidays] = useState([]);
   const [daysCount, setDaysCount] = useState(0);
+  const [previewData, setPreviewData] = useState(null);
   const [loadingHolidays, setLoadingHolidays] = useState(false);
+  const [showPreviewModal,
+  setShowPreviewModal] =
+  useState(false);
 
   useEffect(() => {
     const fetchWeeklyOffs = async () => {
@@ -206,7 +210,17 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
           }
         );
 
-        setDaysCount(res.data.previewDays || res.data.totalDays || 0);
+        //setDaysCount(res.data.previewDays || res.data.totalDays || 0);
+
+        const preview = res.data.preview || {};
+
+        setPreviewData(preview);
+
+        setDaysCount(
+          preview.totalDays ||
+          res.data.totalDays ||
+          0
+        );
       } catch (err) {
         console.error("Error calculating leave days:", err);
         setDaysCount(0);
@@ -276,57 +290,78 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
     setIsSubmitting(true);
 
     try {
-      const existingLeavesRes = await axios.get(`http://localhost:8000/leave/my/${user._id}`);
-      const existingLeaves = existingLeavesRes.data || [];
+      // const existingLeavesRes = await axios.get(`http://localhost:8000/leave/my/${user._id}`);
+      // const existingLeaves = existingLeavesRes.data || [];
       
-      let overlappingLeaveDetails = [];
-      for (let i = 0; i < existingLeaves.length; i++) {
-        const leave = existingLeaves[i];
-        if (leave.status !== "rejected") {
-          const leaveFrom = new Date(leave.dateFrom);
-          const leaveTo = new Date(leave.dateTo);
-          leaveFrom.setHours(0, 0, 0, 0);
-          leaveTo.setHours(23, 59, 59, 999);
-          fromDate.setHours(0, 0, 0, 0);
-          toDate.setHours(23, 59, 59, 999);
+      // let overlappingLeaveDetails = [];
+      // for (let i = 0; i < existingLeaves.length; i++) {
+      //   const leave = existingLeaves[i];
+      //   if (leave.status !== "rejected") {
+      //     const leaveFrom = new Date(leave.dateFrom);
+      //     const leaveTo = new Date(leave.dateTo);
+      //     leaveFrom.setHours(0, 0, 0, 0);
+      //     leaveTo.setHours(23, 59, 59, 999);
+      //     fromDate.setHours(0, 0, 0, 0);
+      //     toDate.setHours(23, 59, 59, 999);
           
-          if (fromDate <= leaveTo && toDate >= leaveFrom) {
-            const existingFromStr = leave.dateFrom;
-            const existingToStr = leave.dateTo;
-            overlappingLeaveDetails.push(`${existingFromStr} to ${existingToStr}`);
-          }
-        }
-      }
+      //     if (fromDate <= leaveTo && toDate >= leaveFrom) {
+      //       const existingFromStr = leave.dateFrom;
+      //       const existingToStr = leave.dateTo;
+      //       overlappingLeaveDetails.push(`${existingFromStr} to ${existingToStr}`);
+      //     }
+      //   }
+      // }
       
-      if (overlappingLeaveDetails.length > 0) {
-        const leaveDates = overlappingLeaveDetails.join(", ");
-        alert(`❌ You already have a leave application from ${form.dateFrom} to ${form.dateTo}.`);
-        return;
+      // if (overlappingLeaveDetails.length > 0) {
+      //   const leaveDates = overlappingLeaveDetails.join(", ");
+      //   alert(`❌ You already have a leave application from ${form.dateFrom} to ${form.dateTo}.`);
+      //   return;
 
-      }
-      await axios.post("http://localhost:8000/leave/apply", {
-        employeeId: user._id,
-        leaveType: form.leaveType,
-        dateFrom: dateFromParsed,
-        dateTo: dateToParsed,
-        duration: form.duration,
-        reason: form.reason,
-        reportingManagerId: manager?._id || null,
-      });
+      // }
+      // await axios.post("http://localhost:8000/leave/apply", {
+      //   employeeId: user._id,
+      //   leaveType: form.leaveType,
+      //   dateFrom: dateFromParsed,
+      //   dateTo: dateToParsed,
+      //   duration: form.duration,
+      //   reason: form.reason,
+      //   reportingManagerId: manager?._id || null,
+      // });
 
-      alert("Leave applied successfully! Waiting for approval.");
-      if (typeof onLeaveApplied === "function") onLeaveApplied();
-      setForm({ leaveType: availableLeaveTypes[0], dateFrom: "", dateTo: "", duration: "full", reason: "" });
-      setShowModal(false);
-      setDaysCount(0);
-    } catch (err) {
-      setMessage(err.response?.data?.error || "Error applying leave");
-      alert(err.response?.data?.error || "Error applying leave");
-    }
-    finally {
-      setIsSubmitting(false);
-    }
-  };
+    //   alert("Leave applied successfully! Waiting for approval.");
+    //   if (typeof onLeaveApplied === "function") onLeaveApplied();
+    //   setForm({ leaveType: availableLeaveTypes[0], dateFrom: "", dateTo: "", duration: "full", reason: "" });
+    //   setShowModal(false);
+    //   setDaysCount(0);
+    // } catch (err) {
+    //   setMessage(err.response?.data?.error || "Error applying leave");
+    //   alert(err.response?.data?.error || "Error applying leave");
+    // }
+    // finally {
+    //   setIsSubmitting(false);
+    // }
+
+        setShowModal(false);
+
+    setShowPreviewModal(true);
+
+  } catch (err) {
+
+    setMessage(
+      err.response?.data?.error ||
+      "Error applying leave"
+    );
+
+    alert(
+      err.response?.data?.error ||
+      "Error applying leave"
+    );
+
+  } finally {
+
+    setIsSubmitting(false);
+  }
+};
 
   // Helper functions
   const parseDate = (dateStr) => {
@@ -379,6 +414,71 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
     }
     return "No approver assigned";
   };
+
+    const confirmApplyLeave = async () => {
+
+  try {
+
+    const dateFromParsed =
+      parseDate(form.dateFrom);
+
+    const dateToParsed =
+      parseDate(form.dateTo);
+
+    await axios.post(
+      "http://localhost:8000/leave/apply",
+      {
+        employeeId: user._id,
+        leaveType: form.leaveType,
+        dateFrom: dateFromParsed,
+        dateTo: dateToParsed,
+        duration: form.duration,
+        reason: form.reason,
+        reportingManagerId:
+          manager?._id || null,
+      }
+    );
+
+    alert(
+      "Leave applied successfully!"
+    );
+
+    if (
+      typeof onLeaveApplied ===
+      "function"
+    ) {
+      onLeaveApplied();
+    }
+
+    setForm({
+      leaveType: "SL",
+      dateFrom: "",
+      dateTo: "",
+      duration: "full",
+      reason: "",
+    });
+
+    setShowPreviewModal(false);
+
+    setShowModal(false);
+
+    setDaysCount(0);
+
+    setPreviewData(null);
+
+  } catch (err) {
+
+    setMessage(
+      err.response?.data?.error ||
+      "Error applying leave"
+    );
+
+    alert(
+      err.response?.data?.error ||
+      "Error applying leave"
+    );
+  }
+};
 
 useEffect(() => {
   if (showModal) {
@@ -825,6 +925,154 @@ style={{
               </div>
             </div>
           </div>
+        </div>
+      )}
+      {showPreviewModal && (
+
+        <div
+          className="modal d-block"
+          style={{
+            backgroundColor:
+              "rgba(0,0,0,0.5)"
+          }}
+        >
+
+          <div
+            className="modal-dialog"
+            style={{
+              maxWidth: "450px",
+              marginTop: "180px"
+            }}
+          >
+
+            <div className="modal-content">
+
+              <div
+                className="modal-header text-white"
+                style={{
+                  backgroundColor:
+                    "#3A5FBE"
+                }}
+              >
+
+                <h5 className="modal-title">
+                  Leave Preview
+                </h5>
+
+                <button
+                  type="button"
+                  className=
+                    "btn-close btn-close-white"
+                  onClick={() => {
+                    setShowPreviewModal(false);
+                    setShowModal(true);
+                  }}
+                />
+
+              </div>
+
+              <div className="modal-body">
+
+                <div className="mb-2">
+                  <strong>
+                    Actual Leave:
+                  </strong>{" "}
+                  {previewData?.actualDays || 0}
+                </div>
+
+                <div className="mb-2">
+                  <strong>
+                    Weekend/Holiday:
+                  </strong>{" "}
+                  {previewData?.sandwichDays || 0}
+                </div>
+
+                {/* <div className="mb-2">
+                  <strong>
+                    Final Deduction:
+                  </strong>{" "}
+                  {previewData?.totalDays || 0}
+                </div> */}
+                <div className="mb-2">
+
+  <strong>
+    Previously Approved Leave:
+  </strong>{" "}
+
+  {previewData?.previousApprovedLeave || 0}
+
+</div>
+
+<div className="mb-2">
+
+  <strong>
+    New Additional Deduction:
+  </strong>{" "}
+
+  {previewData?.newAdditionalDeduction || 0}
+
+</div>
+
+<div className="mb-2">
+
+  <strong>
+    Final Total Chain:
+  </strong>{" "}
+
+  {previewData?.totalDays || 0}
+
+</div>
+
+                {previewData?.isSandwich && (
+
+                  <div
+                    style={{
+                      color: "#d97706",
+                      fontWeight: "600",
+                      marginTop: "10px"
+                    }}
+                  >
+                    Sandwich leave rule applied
+                  </div>
+                )}
+
+              </div>
+
+              <div className="modal-footer">
+
+                <button
+                 className="btn btn-sm custom-outline-btn"
+                      style={{ minWidth: 90 }}
+                  // onClick={() =>
+                  //   setShowPreviewModal(false),
+                  //   setShowModal(true)
+                  // }
+                  onClick={() => {
+
+                  setShowPreviewModal(false);
+
+                  setShowModal(true);
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                            className="btn btn-sm custom-outline-btn"
+          style={{ minWidth: 90 }}
+                  onClick={
+                    confirmApplyLeave
+                  }
+                >
+                  Confirm Apply
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
       )}
     </>

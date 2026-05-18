@@ -8,6 +8,7 @@ const ProbationList = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedEmp, setSelectedEmp] = useState(null);
   const [additionalMonths, setAdditionalMonths] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const { role, username, id } = useParams();
   const [extendedDate, setExtendedDate] = useState("");
@@ -77,6 +78,7 @@ const handleRowClick = (emp) => {
   );
 
   if (!confirm) return;
+  setIsSubmitting(true);
 
   try {
     await authAxios.post(
@@ -100,6 +102,9 @@ const handleRowClick = (emp) => {
 
   } catch (err) {
     alert("Failed to approve probation.");
+  }
+  finally {
+    setIsSubmitting(false); 
   }
 };
 
@@ -142,6 +147,7 @@ const handleExtend = async () => {
   ) {
     return;
   }
+  setIsSubmitting(true);
 
   try {
     await authAxios.post(
@@ -168,6 +174,9 @@ const handleExtend = async () => {
       err.response?.data?.error ||
       "Failed to extend probation."
     );
+  }
+  finally {
+    setIsSubmitting(false); 
   }
 };
 
@@ -403,49 +412,36 @@ const handleExtend = async () => {
                         "Pending"}
                       </span>
                     </td>
-                     <td className="d-flex gap-2"
-                     style={{
-                      padding: "12px",
-                      verticalAlign: "middle",
-                      fontSize: "14px",
-                      borderBottom: "1px solid #dee2e6",
-                      whiteSpace: "nowrap",
-                    }}>
- <div className="d-flex flex-nowrap align-items-center gap-2">
-                      <button
-                        className="btn btn-sm custom-outline-btn"
-                      onClick={(e) => {
-                      e.stopPropagation();
-                      handleUpdateClick(emp);
-                    }}
-                        
-                        disabled={emp.probationStatus === "approved"}
-                      >
-                        Update
-                      </button>
+                     <td className="d-flex gap-2">
 
-                      {emp.probationStatus === "approved" ? (
-                        <button
-                          className="btn btn-sm custom-outline-btn"
-                          style={{minWidth:"90px"}}
-                          disabled
-                        >
-                          Approved
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-sm custom-outline-btn"
-                          style={{minWidth:"90px"}}
-                      onClick={(e) => {
-                      e.stopPropagation();
-                      handleApprove(emp);
-                    }}
-                        >
-                          Approve
-                        </button>
-                      )}
-</div>
-                    </td>
+  <button
+    className="btn btn-sm custom-outline-btn"
+    onClick={() => handleUpdateClick(emp)}
+    disabled={emp.probationStatus === "approved"}
+  >
+    Update
+  </button>
+
+  {emp.probationStatus === "approved" ? (
+    <button
+      className="btn btn-sm custom-outline-btn"
+      style={{minWidth:"90px"}}
+      disabled
+    >
+      Approved
+    </button>
+  ) : (
+    <button
+      className="btn btn-sm custom-outline-btn"
+      style={{minWidth:"90px"}}
+      onClick={() => handleApprove(emp)}
+      disabled={isSubmitting}
+    >
+      Approve
+    </button>
+  )}
+
+</td>
                     </tr>
                   ))
                 )}
@@ -794,6 +790,7 @@ const handleExtend = async () => {
                 <button
                   className="btn btn-sm custom-outline-btn"
                   onClick={handleExtend}
+                  disabled={isSubmitting}
                 >
                   Extend Probation
                 </button>
