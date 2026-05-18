@@ -400,102 +400,73 @@ function AdminDashboard({ user }) {
         </div>
 
         {/* Recent Employee Registry */}
-        <div className="col-12 col-sm-6 col-md-4 order-3 order-sm-3 order-md-0 g-3">
-          <div
+       {(user?.role === "admin" || user?.role === "hr") && (
+           <div className="col-12 col-sm-6 col-md-4 g-3">
+                   <div
             className="card shadow-sm h-100 border-0 "
-            style={{ borderRadius: "10px" }}
-          >
-            <div
-              className="card-header d-flex justify-content-between align-items-center"
-              style={{ backgroundColor: "#fff" }}
-            >
-              <h6 className="mb-0" style={{ color: "#3A5FBE" }}>
-                Recent Employee Registration
-              </h6>
-              <button
-                className="btn btn-sm custom-outline-btn"
-                onClick={() =>
-                  navigate(
-                    `/dashboard/${role}/${username}/${id}/allemployeedetails`,
-                  )
-                }
+            style={{ borderRadius: "10px" }}>
+              <div
+                className="card-header d-flex justify-content-between align-items-center"
+                style={{ backgroundColor: "#fff" }}
               >
-                View All
-              </button>
-            </div>
-            <div className="card-body p-0">
-              <div className="table-responsive">
-                <table className="table table-hover mb-0">
-                  <thead style={{ backgroundColor: "#fff" }}>
-                    <tr>
-                      <th
-                        style={{
-                          fontWeight: "600",
-                          fontSize: "14px",
-                          width: "130px",
-                        }}
-                      >
-                        Name
-                      </th>
-                      <th style={{ fontWeight: "600", fontSize: "14px" }}>
-                        Position
-                      </th>
-                      <th style={{ fontWeight: "600", fontSize: "14px" }}>
-                        Department
-                      </th>
-                      <th
-                        style={{
-                          fontWeight: "600",
-                          fontSize: "14px",
-                          width: "130px",
-                        }}
-                      >
-                        DOJ
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {mergedEmployees
-                      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                      .slice(0, 3).map((emp) => {
-                        const formatDate = (date) => {
-                          if (!date) return "N/A";
-                          const d = new Date(date);
-                          if (isNaN(d.getTime())) return "Invalid Date";
-                          return d.toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          });
-                        };
-
-                        return (
+                <h6 className="mb-0" style={{ color: "#3A5FBE" }}>
+                  Probation Ending This Week
+                </h6>
+                <button
+                  className="btn btn-sm custom-outline-btn"
+                  onClick={() =>
+                    navigate(`/dashboard/${role}/${username}/${id}/probation`)
+                  }
+                >
+                  View All
+                </button>
+              </div>
+              <div className="card-body p-0">
+                <div className="table-responsive">
+                  <table className="table table-hover mb-0">
+                    <thead style={{ backgroundColor: "#fff" }}>
+                      <tr>
+                        <th style={{ fontWeight: "600", fontSize: "14px" }}>Name</th>
+                        <th style={{ fontWeight: "600", fontSize: "14px" }}>Department</th>
+                        <th style={{ fontWeight: "600", fontSize: "14px" }}>Ends On</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {probationEmployees.length === 0 ? (
+                        <tr>
+                          <td colSpan="3" className="text-center text-muted py-3" style={{ fontSize: "14px" }}>
+                            No probations ending this week
+                          </td>
+                        </tr>
+                      ) : (
+                        probationEmployees.map((emp) => (
                           <tr key={emp._id}>
-                            <td
-                              className="text-capitalize"
-                              style={{ fontWeight: "400", fontSize: "14px" }}
-                            >
+                            <td className="text-capitalize" style={{ fontWeight: "400", fontSize: "14px" }}>
                               {emp.name}
-                            </td>
-                            <td style={{ fontWeight: "400", fontSize: "14px" }}>
-                              {emp.designation}
                             </td>
                             <td style={{ fontWeight: "400", fontSize: "14px" }}>
                               {emp.department}
                             </td>
                             <td style={{ fontWeight: "400", fontSize: "14px" }}>
-                              {formatDate(emp.doj)}
+                              <span
+                                className="badge"
+                                style={{ backgroundColor: "#FFE493", color: "#000", fontWeight: "600" }}
+                              >
+                                {new Date(emp.probationEndDate).toLocaleDateString("en-GB", {
+                                  day: "2-digit", month: "short", year: "numeric"
+                                })}
+                              </span>
                             </td>
                           </tr>
-                        );
-                      })}
-                  </tbody>
-                </table>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Leave & Regularization Requests */}
         <div className="col-12 col-sm-6 col-md-4 order-3 order-md-0 g-3">
@@ -645,77 +616,109 @@ function AdminDashboard({ user }) {
 
 
         {/*  Poll */}
-        <div className="col-12 col-md-4 g-3">
-          <ActivePolls user={user} />
-        </div>
-        {(user?.role === "admin" || user?.role === "hr") && (
-          <div className="col-md-4">
-            <div className="card shadow-sm h-100">
-              <div
-                className="card-header d-flex justify-content-between align-items-center"
-                style={{ backgroundColor: "#fff" }}
+      
+          <div className="col-12 col-sm-6 col-md-4 order-3 order-sm-3 order-md-0 g-3">
+          <div
+            className="card shadow-sm h-100 border-0 "
+            style={{ borderRadius: "10px" }}
+          >
+            <div
+              className="card-header d-flex justify-content-between align-items-center"
+              style={{ backgroundColor: "#fff" }}
+            >
+              <h6 className="mb-0" style={{ color: "#3A5FBE" }}>
+                Recent Employee Registration
+              </h6>
+              <button
+                className="btn btn-sm custom-outline-btn"
+                onClick={() =>
+                  navigate(
+                    `/dashboard/${role}/${username}/${id}/allemployeedetails`,
+                  )
+                }
               >
-                <h6 className="mb-0" style={{ color: "#3A5FBE" }}>
-                  Probation Ending This Week
-                </h6>
-                <button
-                  className="btn btn-sm custom-outline-btn"
-                  onClick={() =>
-                    navigate(`/dashboard/${role}/${username}/${id}/probation`)
-                  }
-                >
-                  View All
-                </button>
-              </div>
-              <div className="card-body p-0">
-                <div className="table-responsive">
-                  <table className="table table-hover mb-0">
-                    <thead style={{ backgroundColor: "#fff" }}>
-                      <tr>
-                        <th style={{ fontWeight: "600", fontSize: "14px" }}>Name</th>
-                        <th style={{ fontWeight: "600", fontSize: "14px" }}>Department</th>
-                        <th style={{ fontWeight: "600", fontSize: "14px" }}>Ends On</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {probationEmployees.length === 0 ? (
-                        <tr>
-                          <td colSpan="3" className="text-center text-muted py-3" style={{ fontSize: "14px" }}>
-                            No probations ending this week
-                          </td>
-                        </tr>
-                      ) : (
-                        probationEmployees.map((emp) => (
+                View All
+              </button>
+            </div>
+            <div className="card-body p-0">
+              <div className="table-responsive">
+                <table className="table table-hover mb-0">
+                  <thead style={{ backgroundColor: "#fff" }}>
+                    <tr>
+                      <th
+                        style={{
+                          fontWeight: "600",
+                          fontSize: "14px",
+                          width: "130px",
+                        }}
+                      >
+                        Name
+                      </th>
+                      <th style={{ fontWeight: "600", fontSize: "14px" }}>
+                        Position
+                      </th>
+                      <th style={{ fontWeight: "600", fontSize: "14px" }}>
+                        Department
+                      </th>
+                      <th
+                        style={{
+                          fontWeight: "600",
+                          fontSize: "14px",
+                          width: "130px",
+                        }}
+                      >
+                        DOJ
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {mergedEmployees
+                      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                      .slice(0, 3).map((emp) => {
+                        const formatDate = (date) => {
+                          if (!date) return "N/A";
+                          const d = new Date(date);
+                          if (isNaN(d.getTime())) return "Invalid Date";
+                          return d.toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          });
+                        };
+
+                        return (
                           <tr key={emp._id}>
-                            <td className="text-capitalize" style={{ fontWeight: "400", fontSize: "14px" }}>
+                            <td
+                              className="text-capitalize"
+                              style={{ fontWeight: "400", fontSize: "14px" }}
+                            >
                               {emp.name}
+                            </td>
+                            <td style={{ fontWeight: "400", fontSize: "14px" }}>
+                              {emp.designation}
                             </td>
                             <td style={{ fontWeight: "400", fontSize: "14px" }}>
                               {emp.department}
                             </td>
                             <td style={{ fontWeight: "400", fontSize: "14px" }}>
-                              <span
-                                className="badge"
-                                style={{ backgroundColor: "#FFE493", color: "#000", fontWeight: "600" }}
-                              >
-                                {new Date(emp.probationEndDate).toLocaleDateString("en-GB", {
-                                  day: "2-digit", month: "short", year: "numeric"
-                                })}
-                              </span>
+                              {formatDate(emp.doj)}
                             </td>
                           </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                        );
+                      })}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
-        )}
-
+        </div>
+       
+ <div className="col-12 col-md-4 g-3">
+          <ActivePolls user={user} />
+        </div>
       </div>
-
+ 
     </div>
   );
 }

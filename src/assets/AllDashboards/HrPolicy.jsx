@@ -1266,7 +1266,7 @@ const getFileType = (url) => {
   >
     <div
       className="modal-dialog modal-dialog-centered"
-      style={{ maxWidth: "520px", width: "95%" }}
+      style={{ maxWidth: "560px", width: "95%" }}
     >
       <div className="modal-content">
         {/* HEADER */}
@@ -1275,7 +1275,7 @@ const getFileType = (url) => {
           style={{ backgroundColor: "#3A5FBE" }}
         >
           <h5 className="modal-title mb-0">
-            Policy Status – {statusPolicy.title}
+             {statusPolicy.title}
           </h5>
           <button
             type="button"

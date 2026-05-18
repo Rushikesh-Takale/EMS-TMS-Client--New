@@ -428,15 +428,82 @@ setProbationEmployees(probationRes.data || []);
         </div>
 
         {/* Holidays Card */}
-        <div className="col-md-4" s>
+        <div className="col-md-4" >
           <HolidaysCards />
         </div>
-      </div>
-
+        <div className="row g-2 ">
+  <div className=" col-md-4">
+          <EventCard />
+        </div>
       {/* ================= Requests Table ================= */}
-      <div className="row g-3 mt-1">
+    
+            {(user?.role === "admin" || user?.role === "hr") && (
+      <div className="col-md-4">
+        <div className="card shadow-sm h-100">
+          <div
+            className="card-header d-flex justify-content-between align-items-center"
+            style={{ backgroundColor: "#fff" }}
+          >
+            <h6 className="mb-0" style={{ color: "#3A5FBE" }}>
+              Probation Ending This Week
+            </h6>
+            <button
+              className="btn btn-sm custom-outline-btn"
+              onClick={() =>
+                navigate(`/dashboard/${role}/${username}/${id}/probation`)
+              }
+            >
+              View All
+            </button>
+          </div>
+          <div className="card-body p-0">
+            <div className="table-responsive">
+              <table className="table table-hover mb-0">
+                <thead style={{ backgroundColor: "#fff" }}>
+                  <tr>
+                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Name</th>
+                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Department</th>
+                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Ends On</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {probationEmployees.length === 0 ? (
+                    <tr>
+                      <td colSpan="3" className="text-center text-muted py-3" style={{ fontSize: "14px" }}>
+                        No probations ending this week
+                      </td>
+                    </tr>
+                  ) : (
+                    probationEmployees.map((emp) => (
+                      <tr key={emp._id}>
+                        <td className="text-capitalize" style={{ fontWeight: "400", fontSize: "14px" }}>
+                          {emp.name}
+                        </td>
+                        <td style={{ fontWeight: "400", fontSize: "14px" }}>
+                          {emp.department}
+                        </td>
+                        <td style={{ fontWeight: "400", fontSize: "14px" }}>
+                          <span
+                            className="badge"
+                            style={{ backgroundColor: "#FFE493", color: "#000", fontWeight: "600" }}
+                          >
+                            {new Date(emp.probationEndDate).toLocaleDateString("en-GB", {
+                              day: "2-digit", month: "short", year: "numeric"
+                            })}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      )}
         {/* Recent Employees */}
-        <div className="col-md-4">
+       <div className="col-md-4">
           <div className="card shadow-sm h-100 border-0 "style={{ borderRadius: "10px" }} >
             <div
               className="card-header d-flex justify-content-between align-items-center"
@@ -524,9 +591,11 @@ setProbationEmployees(probationRes.data || []);
             </div>
           </div>
         </div>
+         </div>
+      
 
         {/* Leave & Regularization */}
-        <div className="col-md-4">
+        <div className="col-12 col-sm-6 col-md-4 order-3 order-sm-3 order-md-0 g-3">
           <div className="card shadow-sm h-100 border-0 "style={{ borderRadius: "10px" }}>
             <div
               className="card-header d-flex justify-content-between align-items-center"
@@ -642,7 +711,7 @@ setProbationEmployees(probationRes.data || []);
         </div>
 
         {/* Events */}
-        <div className="col-md-4">
+      
           {/* <div className="card shadow-sm h-100">
             <div className="card-header bg-white d-flex justify-content-between align-items-center">
               <button
@@ -711,75 +780,10 @@ setProbationEmployees(probationRes.data || []);
             </div>
           </div> */}
 
-          <EventCard />
-        </div>
-         {(user?.role === "admin" || user?.role === "hr") && (
-      <div className="col-md-4">
-        <div className="card shadow-sm h-100">
-          <div
-            className="card-header d-flex justify-content-between align-items-center"
-            style={{ backgroundColor: "#fff" }}
-          >
-            <h6 className="mb-0" style={{ color: "#3A5FBE" }}>
-              Probation Ending This Week
-            </h6>
-            <button
-              className="btn btn-sm custom-outline-btn"
-              onClick={() =>
-                navigate(`/dashboard/${role}/${username}/${id}/probation`)
-              }
-            >
-              View All
-            </button>
-          </div>
-          <div className="card-body p-0">
-            <div className="table-responsive">
-              <table className="table table-hover mb-0">
-                <thead style={{ backgroundColor: "#fff" }}>
-                  <tr>
-                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Name</th>
-                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Department</th>
-                    <th style={{ fontWeight: "600", fontSize: "14px" }}>Ends On</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {probationEmployees.length === 0 ? (
-                    <tr>
-                      <td colSpan="3" className="text-center text-muted py-3" style={{ fontSize: "14px" }}>
-                        No probations ending this week
-                      </td>
-                    </tr>
-                  ) : (
-                    probationEmployees.map((emp) => (
-                      <tr key={emp._id}>
-                        <td className="text-capitalize" style={{ fontWeight: "400", fontSize: "14px" }}>
-                          {emp.name}
-                        </td>
-                        <td style={{ fontWeight: "400", fontSize: "14px" }}>
-                          {emp.department}
-                        </td>
-                        <td style={{ fontWeight: "400", fontSize: "14px" }}>
-                          <span
-                            className="badge"
-                            style={{ backgroundColor: "#FFE493", color: "#000", fontWeight: "600" }}
-                          >
-                            {new Date(emp.probationEndDate).toLocaleDateString("en-GB", {
-                              day: "2-digit", month: "short", year: "numeric"
-                            })}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+         
       </div>
-      )}
       </div>
-    </div>
+    
   );
 }
 
