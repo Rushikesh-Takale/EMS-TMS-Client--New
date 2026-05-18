@@ -761,29 +761,31 @@ function Gallery() {
                     onClick={() => handleRowClick(item)}
                   >
                     <td
-                      style={{
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap",
-                        maxWidth: "100px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis"
-                      }}
+                   style={{
+  padding: "12px 20px 12px 12px",
+  fontSize: "14px",
+  borderBottom: "1px solid #dee2e6",
+  whiteSpace: "nowrap",
+  minWidth: "260px",
+  maxWidth: "260px",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+}}
                       title={item.title}
                     >
                       {item.title}
                     </td>
                     <td
-                      style={{
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        maxWidth: "100px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
+    style={{
+  padding: "12px 20px 12px 12px",
+  fontSize: "14px",
+  borderBottom: "1px solid #dee2e6",
+  minWidth: "260px",
+  maxWidth: "260px",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+}}
                       title={item.description}
                     >
                       {item.description || "-"}
@@ -794,20 +796,25 @@ function Gallery() {
                         padding: "12px",
                         fontSize: "14px",
                         borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap",
+                         width: "250px",
+                        
+                        
                       }}
                     >
                       {item.category}
                     </td>
 
-                    <td
-                      style={{
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
+                  <td
+  style={{
+    padding: "12px",
+    fontSize: "14px",
+    borderBottom: "1px solid #dee2e6",
+    width: "120px",
+    maxWidth: "120px",
+    textAlign: "center",
+    verticalAlign: "middle",
+  }}
+>
                       {item.type === "image" && (
                         <img
                           src={item.url}

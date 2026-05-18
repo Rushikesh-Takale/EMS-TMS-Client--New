@@ -592,18 +592,30 @@ if (!user || role !== "hr") {
       </h4>
 
       {/* Toggle Buttons */}
-      <div className="d-flex justify-content-center gap-3 mb-4">
-        <button
-          className="btn btn-sm custom-outline-btn"
-          style={{ minWidth: 120 }}
-          onClick={() => setActiveTab("my")}
-        >
-          My Resignation
-        </button>
+       <div className="d-flex justify-content-center gap-3 mb-4">
+    <button
+    className="btn btn-sm"
+          style={{
+            minWidth: 120,
+            backgroundColor: activeTab === "my" ? "#3A5FBE" : "transparent",
+            borderColor: "#3A5FBE",
+            color: activeTab === "my" ? "#fff" : "#3A5FBE",
+            transition: "all 0.2s ease"
+          }}
+  onClick={() => setActiveTab("my")}
+>
+  My Resignation
+</button>
 
-  <button
-  className="btn btn-sm custom-outline-btn"
-  style={{ minWidth: 120 }}
+<button
+   className="btn btn-sm"
+          style={{
+            minWidth: 120,
+            backgroundColor: activeTab === "team" ? "#3A5FBE" : "transparent",
+            borderColor: "#3A5FBE",
+            color: activeTab === "team" ? "#fff" : "#3A5FBE",
+            transition: "all 0.2s ease"
+          }}
   onClick={() => setActiveTab("team")}
 >
   Team Resignation
