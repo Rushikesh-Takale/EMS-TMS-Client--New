@@ -701,11 +701,14 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
                   >
                    {/* {calculateDays(l.dateFrom, l.dateTo)} */}
                    {/* {l.status === "approved" ? (l.totalDays ?? 1) : (previewDaysMap[l._id] ?? l.totalDays ?? 1)} */}
-                   {l.duration === "half"
+                   {/* {l.duration === "half"
                           ? "0.5"
                           : l.isSandwich && l.totalDays === 0
                           ? "Sandwich Leave"
-                          : l.totalDays}
+                          : l.totalDays} */}
+                      {l.isMerged
+                        ? "Merged Leave"
+                        : (l.totalDays ?? 1)}
                   </td>
                   <td
                     style={{
