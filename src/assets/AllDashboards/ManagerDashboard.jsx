@@ -101,50 +101,13 @@ function ManagerDashboard({ user }) {
     }
     try {
       // 🔥 Optimistic UI update
- const updatedLeaves = leaves.map((l) =>
-  l._id === leaveId ? { ...l, status } : l
-);
+      setLeaves((prev) =>
+        prev.map((l) => (l._id === leaveId ? { ...l, status } : l)),
+      );
 
-setLeaves(updatedLeaves);
-
-// Re-apply current filters
-let temp = [...updatedLeaves];
-
-if (leaveStatusFilter !== "All") {
-  temp = temp.filter(
-    (l) =>
-      l.status.toLowerCase() ===
-      leaveStatusFilter.toLowerCase()
-  );
-}
-
-if (leaveNameFilter.trim()) {
-  temp = temp.filter((l) =>
-    l.employee?.name
-      .toLowerCase()
-      .includes(leaveNameFilter.trim().toLowerCase())
-  );
-}
-
-if (leaveDateFromFilter) {
-  temp = temp.filter(
-    (l) =>
-      new Date(l.dateFrom) >=
-      new Date(leaveDateFromFilter)
-  );
-}
-
-if (leaveDateToFilter) {
-  temp = temp.filter(
-    (l) =>
-      new Date(l.dateTo) <=
-      new Date(leaveDateToFilter)
-  );
-}
-
-setFilteredLeaves(temp);
-
-  // keep current filter applied
+      setFilteredLeaves((prev) =>
+        prev.map((l) => (l._id === leaveId ? { ...l, status } : l)),
+      );
 
       if (selectedLeave?._id === leaveId) {
         setSelectedLeave((prev) => ({ ...prev, status }));

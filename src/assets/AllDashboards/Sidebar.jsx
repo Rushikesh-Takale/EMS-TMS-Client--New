@@ -335,7 +335,7 @@ useEffect(() => {
 
           {/* jayashree */}
           {(role === "employee" ||
-           
+            role === "IT_Support" ||
             role === "Team_Leader"||   //rutuja
             role === "manager") && (
             <li className="nav-item">
