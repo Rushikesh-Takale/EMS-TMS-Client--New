@@ -755,7 +755,7 @@ const [notifications, setNotifications] = useState([]);
                 path="teams"
                 element={
                   user.role === "employee" ||
-                    user.role === "IT_Support" ||
+                   
                     user.role === "manager" ? (
                     <EmployeeTeams user={user}/>
                     //rutuja

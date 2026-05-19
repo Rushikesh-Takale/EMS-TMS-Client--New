@@ -470,10 +470,13 @@ function AdminDashboard({ user }) {
 
         {/* Leave & Regularization Requests */}
         <div className="col-12 col-sm-6 col-md-4 order-3 order-md-0 g-3">
-          <div
-            className="card shadow-sm h-100 border-0 "
-            style={{ borderRadius: "10px" }}
-          >
+       <div
+  className="card shadow-sm border-0"
+  style={{
+    borderRadius: "10px",
+    height: "245px",
+  }}
+>
             <div
               className="card-header d-flex justify-content-between align-items-center"
               style={{ backgroundColor: "#fff" }}
