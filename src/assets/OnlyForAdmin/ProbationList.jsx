@@ -710,22 +710,6 @@ useEffect(() => {
         </div>
       )}
 
-        <div className="modal-footer">
-          <button
-            className="btn btn-sm custom-outline-btn"
-             style={{ minWidth: "90px" }}
-            onClick={() =>
-              setShowViewModal(false)
-            }
-          >
-            Close
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-)}
       {/* Update Modal */}
       {showModal && selectedEmp && (
         <div

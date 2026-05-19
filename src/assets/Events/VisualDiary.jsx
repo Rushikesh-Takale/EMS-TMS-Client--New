@@ -371,7 +371,7 @@ const VisualDiary = () => {
       <div className="text-end mt-3">
         <button
           className="btn btn-sm custom-outline-btn"
-          style={{ minWidth: 90 ,marginRight:"22px"}}
+          style={{ minWidth: 90 }}
           onClick={() => {
             if (activeType === "pdf") {
               setActiveType("video");

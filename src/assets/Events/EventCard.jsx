@@ -77,10 +77,10 @@ const EventCard = () => {
 
   return (
     <div
-          className="card shadow-sm  border-0"
+          className="card shadow-sm h-100 border-0"
         style={{
           borderRadius: "10px",
-         
+          height: "340px",
           width: "100%",
         }}
         >

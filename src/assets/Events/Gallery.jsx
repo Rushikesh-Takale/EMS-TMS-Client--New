@@ -333,40 +333,11 @@ function Gallery() {
       // setEditFile(null);
 
       // alert("Updated successfully ✅");
-const updatedItems = galleryItems.map((it) =>
-  it._id === editId ? res.data : it
-);
-
-setGalleryItems(updatedItems);
-
-// Re-apply current filters
-const filtered = updatedItems.filter((item) => {
-  const textMatch =
-    item.title
-      ?.toLowerCase()
-      .includes(searchInput.toLowerCase()) ||
-    item.description
-      ?.toLowerCase()
-      .includes(searchInput.toLowerCase()) ||
-    item.category
-      ?.toLowerCase()
-      .includes(searchInput.toLowerCase());
-
-  const categoryMatch =
-    !searchCategory || item.category === searchCategory;
-
-  const typeMatch = item.type === activeTable;
-
-  return textMatch && categoryMatch && typeMatch;
-});
-
-setFilteredItems(filtered);
-
-setShowEditModal(false);
-setEditId(null);
-setEditFile(null);
-
-alert("Updated successfully ✅");
+      await fetchGallery();
+      setShowEditModal(false);
+      setEditId(null);
+      setEditFile(null);
+      alert("Updated successfully ✅");
     } catch (e) {
       alert(e?.response?.data?.message || "Update failed ❌");
     }

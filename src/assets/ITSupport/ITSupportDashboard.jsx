@@ -84,23 +84,6 @@ function ITSupportDashboard() {
     /* //snehal code 03-02-2026 */
   }
   // Limit words (for description)
-
-  useEffect(() => {
-    const isModalOpen = selectedTicket || editData;
-
-    if (isModalOpen) {
-      document.body.style.overflow = "hidden";
-      document.documentElement.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
-    };
-  }, [selectedTicket, editData]);
   const limitWords = (text, wordLimit = 2) => {
     if (!text) return "-";
     const words = text.trim().split(/\s+/);
@@ -243,11 +226,8 @@ function ITSupportDashboard() {
       setSelectedTicket(res.data);
       setComment("");
 
-     alert("✅ Ticket saved successfully");
-
-closeModal();
-
-fetchTickets();
+      alert("✅ Ticket saved successfully");
+      fetchTickets();
     } catch (err) {
       console.error("Save error:", err);
       alert("❌ Failed to save changes");
@@ -285,8 +265,6 @@ fetchTickets();
     else if (s === "Resolved") bgColor = "#D7F5E4";
     else if (s === "Closed") bgColor = "#E2E3E5";
     else bgColor = "#F8D7DA";
-
- 
 
     return {
       backgroundColor: bgColor,
@@ -493,7 +471,7 @@ fetchTickets();
               </select>
             </div>
 
-            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-1">
+            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
               <label
                 htmlFor="fromDate"
                 className="fw-bold mb-0"
@@ -507,12 +485,11 @@ fetchTickets();
                 className="form-control"
                 style={{ minWidth: 140 }}
                 value={fromDate}
-                max={toDate}
                 onChange={(e) => setFromDate(e.target.value)}
               />
             </div>
 
-            <div className="col-12 col-md-auto d-flex align-items-center mb-1 gap-4 ms-1">
+            <div className="col-12 col-md-auto d-flex align-items-center mb-1">
               <label
                 htmlFor="toDate"
                 className="fw-bold mb-0"
@@ -530,7 +507,6 @@ fetchTickets();
                 className="form-control"
                 style={{ minWidth: 140 }}
                 value={toDate}
-                min={fromDate}
                 onChange={(e) => setToDate(e.target.value)}
               />
             </div>
@@ -696,11 +672,8 @@ fetchTickets();
               </tr>
             </thead>
 
-            
-           <tbody>
-  {paginatedTickets.length > 0 ? (
-    
-    paginatedTickets.map((t) => (
+            <tbody>
+              {paginatedTickets.map((t) => (
                 <tr
                   key={t._id}
                   style={{ cursor: "pointer" }}
@@ -748,23 +721,17 @@ fetchTickets();
                   {/* //snehal code 03-02-2026 */}
                   <td
                     title={t.description} // full text on hover
-                
-
-  style={{
-    padding: "12px",
-    verticalAlign: "middle",
-    fontSize: "14px",
-    borderBottom: "1px solid #dee2e6",
-    color: "#212529",
-    maxWidth: "200px",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  }}
->
-  {t.description || "-"}
-</td>
-                
+                    style={{
+                      padding: "12px",
+                      verticalAlign: "middle",
+                      fontSize: "14px",
+                      borderBottom: "1px solid #dee2e6",
+                      color: "#212529",
+                      maxWidth: "200px",
+                    }}
+                  >
+                    {limitWords(t.description, 2)}
+                  </td>
                   {/* //snehal code 03-02-2026 */}
                   <td
                     style={{
@@ -886,26 +853,7 @@ fetchTickets();
                     </div>
                   </td>
                 </tr>
-     
-    ))
-  ) : (
-    <tr>
-      <td
-        colSpan="11"
-        style={{
-          textAlign: "center",
-          padding: "20px",
-          color: "#6c757d",
-          fontWeight: "400",
-          fontSize: "16px",
-        }}
-      >
-        No Data Found
-      </td>
-    </tr>
-  )}
-
-              
+              ))}
             </tbody>
           </table>
         </div>
@@ -979,22 +927,20 @@ fetchTickets();
 
       {/* 👁 VIEW MODAL */}
       {selectedTicket && viewOnly && (
-     <div
-  className="modal fade show"
-  onWheel={(e) => e.stopPropagation()}
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "rgba(0,0,0,0.5)",
-    position: "fixed",
-    inset: 0,
-    zIndex: 1050,
-    overflow: "hidden",
-  }}
->
+        <div
+          className="modal fade show"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0,0,0,0.5)",
+            position: "fixed",
+            inset: 0,
+            zIndex: 1050,
+          }}
+        >
           <div
-            className="modal-dialog "
+            className="modal-dialog modal-dialog-scrollable"
             style={{ maxWidth: "650px", width: "95%" }}
           >
             <div className="modal-content">
@@ -1011,92 +957,64 @@ fetchTickets();
               </div>
 
               <div className="modal-body">
-                 <div className="row mb-3">
-                      <div className="col-4 fw-bold">Ticket ID:</div>
-                      <div className="col-8">{selectedTicket.ticketId}</div>
-                    </div>
-                 <div className="row mb-3">
-                      <div className="col-4 fw-bold">Employee:</div>
-                      <div className="col-8">{selectedTicket.employeeName}</div>
-                    </div>
-                <div className="row mb-3">
-                      <div className="col-4 fw-bold">Category:</div>
-                      <div className="col-8">{selectedTicket.category}</div>
-                    </div>
-
-                  <div className="row mb-3">
-                    <div className="col-4 fw-bold">Description:</div>
-                    <div
-                      className="col-8"
-                      style={{
-                        wordBreak: "break-word",
-                        overflowWrap: "break-word",
-                        whiteSpace: "normal",
-                      }}
-                    >
-                      {selectedTicket.description}
-                    </div>
-                  </div>
-               <div className="row mb-3">
-                      <div className="col-4 fw-bold">Priority:</div>
-                      <div className="col-8">{selectedTicket.priority}</div>
-                    </div>
-           
-                  <div className="row mb-3">
-                    <div className="col-4 fw-bold">Status:</div>
-                    <div className="col-8">
-                      <span style={statusBadge(selectedTicket.status)}>
-                        {selectedTicket.status}
-                      </span>
-                    </div>
-                  </div>
-                   <div className="row mb-3">
-                    <div className="col-4 fw-bold">Attachment:</div>
-                    <div className="col-8">
-                      {Array.isArray(selectedTicket.attachment) &&
-                      selectedTicket.attachment.length > 0
-                        ? selectedTicket.attachment.map((file, i) => (
-                            <div key={i}>
-                              <a
-                                href={`http://localhost:8000/uploads/${file}`}
-                                download
-                                className="btn btn-sm btn-outline-primary"
-                              >
-                                ⬇ {file.split("/").pop()}
-                              </a>
-                            </div>
-                          ))
-                        : "-"}
-                    </div>
-                  </div>
-
-                <div className="row mb-3">
-                    <div className="col-4 fw-bold">Assigned:</div>
-                    <div className="col-8">{selectedTicket.assignedTo || "-"}</div>
-                  </div>
-                 <div className="row mb-3">
-                    <div className="col-4 fw-bold">Raised:</div>
-                    <div className="col-8">
-                      {formatDateTime(selectedTicket.raisedDate)}
-                    </div>
-                  </div>
-               <div className="row mb-3">
-                        <div className="col-4 fw-bold">Closed:</div>
-                        <div className="col-8">
-                          {formatDateTime(selectedTicket.closedDate)}
+                <p>
+                  <b>Ticket ID:</b> {selectedTicket.ticketId}
+                </p>
+                <p>
+                  <b>Employee:</b> {selectedTicket.employeeName}
+                </p>
+                <p>
+                  <b>Category:</b> {selectedTicket.category}
+                </p>
+                <p>
+                  <b>Description:</b> {selectedTicket.description}
+                </p>
+                <p>
+                  <b>Priority:</b> {selectedTicket.priority}
+                </p>
+                <p>
+                  <b>Status:</b>{" "}
+                  <span style={statusBadge(selectedTicket.status)}>
+                    {selectedTicket.status}
+                  </span>
+                </p>
+                <p>
+                  <b>Attachment:</b>{" "}
+                  {Array.isArray(selectedTicket.attachment) &&
+                  selectedTicket.attachment.length > 0
+                    ? selectedTicket.attachment.map((file, i) => (
+                        <div key={i}>
+                          <a
+                            href={`http://localhost:8000/uploads/${file}`}
+                            download
+                            className="btn btn-sm btn-outline-primary ms-2"
+                          >
+                            ⬇ {file.split("/").pop()}
+                          </a>
                         </div>
-                      </div>
-                      
+                      ))
+                    : "-"}
+                </p>
 
-                 <div className="row mb-3">
+                <p>
+                  <b>Assigned:</b> {selectedTicket.assignedTo || "-"}
+                </p>
+                <p>
+                  <b>Raised:</b> {formatDateTime(selectedTicket.raisedDate)}
+                </p>
+                <p>
+                  <b>Closed:</b> {formatDateTime(selectedTicket.closedDate)}
+                </p>
+
+                <div className="row mb-2">
                   <div
-                    className="col-4 fw-bold"
+                    className="col-5 col-sm-3 fw-semibold"
                     style={{ color: "#212529" }}
                   >
-                    Comments:
+                    Comments
                   </div>
 
-               <div className="col-8">
+                  <div className="col-7 col-sm-9">
                     <div style={{ maxHeight: "150px", overflowY: "auto" }}>
                       {selectedTicket.comments &&
                       selectedTicket.comments.length > 0 ? (
@@ -1106,25 +1024,16 @@ fetchTickets();
                             <div
                               key={index}
                               className="mb-2 p-2 bg-light rounded"
-                                style={{
-                                overflow: "hidden",
-                              }}
                             >
                               {comment.timestamp && (
                                 <small className="text-muted d-block">
                                   {new Date(comment.timestamp).toLocaleString()}
                                 </small>
                               )}
-                            <div
-                              style={{
-                                wordBreak: "break-word",
-                                overflowWrap: "break-word",
-                                whiteSpace: "normal",
-                              }}
-                            >
-                              <b>{comment.role || "User"}:</b>{" "}
-                              {comment.message}
-                            </div>
+                              <div>
+                                <b>{comment.role || "User"}:</b>{" "}
+                                {comment.message}
+                              </div>
                             </div>
                           ))
                       ) : (
@@ -1175,7 +1084,7 @@ fetchTickets();
           }}
         >
           <div
-            className="modal-dialog modal-dialog"
+            className="modal-dialog modal-dialog-scrollable"
             style={{ maxWidth: "650px", width: "95%" }}
           >
             <div className="modal-content">
@@ -1192,108 +1101,88 @@ fetchTickets();
               </div>
 
               {/* //snehal code 03-02-2026 */}
-           <div className="modal-body">
-
-  <div className="row mb-3">
-    <div className="col-3 fw-bold">Status:</div>
-
-    <div className="col-9">
-      <select
-        className="form-select"
-        value={editData.status}
-        onChange={(e) =>
-          setEditData({ ...editData, status: e.target.value })
-        }
-      >
-        <option>Open</option>
-        <option>In Progress</option>
-        <option>Resolved</option>
-        <option>Closed</option>
-      </select>
-    </div>
-  </div>
-
-  {/* Assigned */}
-  <div className="row mb-3">
-    <div className="col-3 fw-bold">Assigned To:</div>
-
-    <div className="col-9">
-      <select
-        className="form-select"
-        value={editData.assignedTo || ""}
-        onChange={(e) =>
-          setEditData({ ...editData, assignedTo: e.target.value })
-        }
-      >
-        <option value="">Assign To</option>
-        <option>IT Admin</option>
-        <option>Network Team</option>
-        <option>Hardware Team</option>
-      </select>
-    </div>
-  </div>
-
-  {/* Comment */}
-  <div className="row mb-3">
-    <div className="col-3 fw-bold">Add Comment:</div>
-
-    <div className="col-9">
-    <input
-        className="form-control"
-        value={comment}
-        maxLength={200}
-        onChange={(e) => setComment(e.target.value)}
-        placeholder="Add IT Comment"
-      />
-
-      <small  className="text-muted d-block text-end">
-        {comment.length}/200 characters
-      </small>
-    </div>
-  </div>
-
-  {/* Previous Comments */}
-  {editData.comments && editData.comments.length > 0 && (
-    <div className="row mb-3">
-      <div className="col-3 fw-bold">Previous Comments:</div>
-
-      <div className="col-9">
-        <div style={{ maxHeight: "150px", overflowY: "auto" }}>
-          {[...(editData.comments || [])]
-            .reverse()
-            .map((comment, index) => (
-              <div
-                key={index}
-                className="mb-2 p-2 bg-light rounded"
-                  style={{
-                      overflow: "hidden",
-                    }}
-
-              >
-                {comment.timestamp && (
-                  <small className="text-muted d-block">
-                    {new Date(comment.timestamp).toLocaleString()}
-                  </small>
-                )}
-
-              <div
-                  style={{
-                    wordBreak: "break-word",
-                    overflowWrap: "break-word",
-                    whiteSpace: "normal",
-                  }}
-                >
-                  <b>{comment.role || "User"}:</b>{" "}
-                  {comment.message}
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Status</label>
+                  <select
+                    className="form-select"
+                    value={editData.status}
+                    onChange={(e) =>
+                      setEditData({ ...editData, status: e.target.value })
+                    }
+                  >
+                    <option>Open</option>
+                    <option>In Progress</option>
+                    <option>Resolved</option>
+                    <option>Closed</option>
+                  </select>
                 </div>
-              </div>
-            ))}
-        </div>
-      </div>
-    </div>
-  )}
 
-</div>
+                {/* Assigned */}
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Assigned To</label>
+                  <select
+                    className="form-select"
+                    value={editData.assignedTo || ""}
+                    onChange={(e) =>
+                      setEditData({ ...editData, assignedTo: e.target.value })
+                    }
+                  >
+                    <option value="">Assign To</option>
+                    <option>IT Admin</option>
+                    <option>Network Team</option>
+                    <option>Hardware Team</option>
+                  </select>
+                </div>
+
+                {/* Comment */}
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Add Comment</label>
+                  <input
+                    className="form-control"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Add IT Comment"
+                  />
+                  <small className="text-muted">Max 100 words</small>
+                </div>
+                {/* //snehal code 03-02-2026 */}
+
+                {/* Display Previous Comments*/}
+                {editData.comments && editData.comments.length > 0 && (
+                  <div className="row mb-2">
+                    <div
+                      className="col-5 col-sm-3 fw-semibold"
+                      style={{ color: "#212529" }}
+                    >
+                      Previous Comments
+                    </div>
+
+                    <div className="col-7 col-sm-9">
+                      <div style={{ maxHeight: "150px", overflowY: "auto" }}>
+                        {[...(editData.comments || [])]
+                          .reverse()
+                          .map((comment, index) => (
+                            <div
+                              key={index}
+                              className="mb-2 p-2 bg-light rounded"
+                            >
+                              {comment.timestamp && (
+                                <small className="text-muted d-block">
+                                  {new Date(comment.timestamp).toLocaleString()}
+                                </small>
+                              )}
+                              <div>
+                                <b>{comment.role || "User"}:</b>{" "}
+                                {comment.message}
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <div className="modal-footer">
                 <button
