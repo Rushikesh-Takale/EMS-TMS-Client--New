@@ -25,6 +25,7 @@ function TodaysEmployeeDetails() {
   const [employeeBreaks, setEmployeeBreaks] = useState([]);
   const [breakLoading, setBreakLoading] = useState(false);
   const modalRef = useRef(null);
+  const lateModalRef = useRef(null);
   const [lateSearch, setLateSearch] = useState("");
  
   const [appliedLateSearch, setAppliedLateSearch] = useState("");
@@ -40,50 +41,68 @@ const [showLateModal, setShowLateModal] = useState(false);
 const [selectedLateEmployee, setSelectedLateEmployee] = useState(null);
 const [downloadedFile, setDownloadedFile] =
   useState("");
-  useEffect(() => {
-    if (!showModal || !modalRef.current) return;
 
-    const modal = modalRef.current;
+      useEffect(() => {
+            const isModalOpen = showModal || showLateModal;
+          
+            if (
+              (!showModal && !showLateModal) ||
+              (!modalRef.current && !lateModalRef.current)
+            )
+              return;
+          
+            const modal = showModal
+              ? modalRef.current
+              : lateModalRef.current;
+          
+            const focusableElements = modal.querySelectorAll(
+              'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+          
+            const firstEl = focusableElements[0];
+            const lastEl =
+              focusableElements[focusableElements.length - 1];
+          
+            modal.focus();
+          
+            const handleKeyDown = (e) => {
+              if (e.key === "Escape") {
+                e.preventDefault();
+          
+                if (showModal) {
+                  setShowModal(false);
+                }
+          
+                if (showLateModal) {
+                  setShowLateModal(false);
+                }
+              }
+          
+              if (e.key === "Tab") {
+                if (e.shiftKey) {
+                  if (document.activeElement === firstEl) {
+                    e.preventDefault();
+                    lastEl.focus();
+                  }
+                } else {
+                  if (document.activeElement === lastEl) {
+                    e.preventDefault();
+                    firstEl.focus();
+                  }
+                }
+              }
+            };
+          
+            modal.addEventListener("keydown", handleKeyDown);
+          
+            return () => {
+              modal.removeEventListener(
+                "keydown",
+                handleKeyDown
+              );
+            };
+      }, [showModal, showLateModal]);
 
-    const focusableElements = modal.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-    );
-
-    const firstEl = focusableElements[0];
-    const lastEl = focusableElements[focusableElements.length - 1];
-
-    // ⭐ modal open होताच focus
-    modal.focus();
-
-    const handleKeyDown = (e) => {
-      // ESC key → modal close
-      if (e.key === "Escape") {
-        e.preventDefault();
-        setShowModal(null);
-      }
-
-      // TAB key → focus trap
-      if (e.key === "Tab") {
-        if (e.shiftKey) {
-          if (document.activeElement === firstEl) {
-            e.preventDefault();
-            lastEl.focus();
-          }
-        } else {
-          if (document.activeElement === lastEl) {
-            e.preventDefault();
-            firstEl.focus();
-          }
-        }
-      }
-    };
-
-    modal.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      modal.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [showModal]);
   useEffect(() => {
   const isModalOpen = showModal || showLateModal;
 
@@ -764,7 +783,7 @@ onChange={(e) => {
   type="date"
   className="form-control"
   value={lateFromDate}
-  max={new Date().toISOString().split("T")[0]}
+  max={lateToDate ||new Date().toISOString().split("T")[0]}
   onChange={(e) =>
     setLateFromDate(e.target.value)
   }
@@ -792,6 +811,7 @@ onChange={(e) => {
   type="date"
   className="form-control"
   value={lateToDate}
+  min={lateFromDate}
   max={new Date().toISOString().split("T")[0]}
   onChange={(e) =>
     setLateToDate(e.target.value)
@@ -1064,6 +1084,8 @@ currentLateEmployees.map((emp) => (
 </nav>
   {showLateModal && selectedLateEmployee && (
   <div
+  ref={lateModalRef}
+          tabIndex="-1"
     className="modal fade show"
     style={{
       display: "flex",

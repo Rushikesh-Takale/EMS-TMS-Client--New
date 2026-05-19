@@ -1,4 +1,4 @@
-import React, { useState, useEffect,  useMemo, } from "react";
+import React, { useState, useEffect,  useMemo, useRef } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { useNavigate, useParams } from "react-router-dom";
@@ -9,6 +9,7 @@ function ManagerAssignedEmployeesAttendance() {
   const [error, setError] = useState(null);
   const { role, username, id } = useParams(); // 👈 id = managerId
   const navigate = useNavigate();
+  const modalRef = useRef(null);
 
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,6 +45,43 @@ const [downloadedFile, setDownloadedFile] =
     absent: 0,
     lateCheckIn: 0,
   });
+
+  useEffect(() => {
+    if (!showLateModal) return;
+  
+    const handleTabKey = (e) => {
+      if (e.key !== "Tab") return;
+  
+      const focusableElements = modalRef.current.querySelectorAll(
+        "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+      );
+  
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+  
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+  
+    document.addEventListener("keydown", handleTabKey);
+  
+    setTimeout(() => {
+      modalRef.current?.focus();
+    }, 100);
+  
+    return () => {
+      document.removeEventListener("keydown", handleTabKey);
+    };
+  }, [showLateModal]);
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -304,7 +342,11 @@ const fetchLateCheckInHistory =
             );
           }
           return false;
-        } else {
+        }
+        if (statusFilter === "Present") {
+          return status === "Present" || status === "Working";
+        } 
+        else {
           return status === statusFilter;
         }
       });
@@ -557,7 +599,7 @@ const fetchLateCheckInHistory =
   type="date"
   className="form-control"
   value={lateFromDate}
-  max={new Date().toISOString().split("T")[0]}
+  max={lateToDate || new Date().toISOString().split("T")[0]}
   onChange={(e) =>
     setLateFromDate(e.target.value)
   }
@@ -585,6 +627,7 @@ const fetchLateCheckInHistory =
   type="date"
   className="form-control"
   value={lateToDate}
+  min={lateFromDate} 
   max={new Date().toISOString().split("T")[0]}
   onChange={(e) =>
     setLateToDate(e.target.value)
@@ -860,6 +903,8 @@ currentLateEmployees.map((emp) => (
   {showLateModal && selectedLateEmployee && (
   <div
     className="modal fade show"
+    ref={modalRef}
+    tabIndex={-1}
     style={{
       display: "flex",
       alignItems: "center",

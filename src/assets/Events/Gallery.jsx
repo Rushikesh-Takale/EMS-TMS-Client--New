@@ -308,6 +308,17 @@ function Gallery() {
   };
 
   const handleUpdate = async () => {
+    
+    if (!editData.title.trim()) {
+      alert("Title is required");
+      return;
+    }
+  
+    if (!editData.description.trim()) {
+      alert("Description is required");
+      return;
+    }
+
     if (!editData.category) {
       alert("Please select category");
       return;
