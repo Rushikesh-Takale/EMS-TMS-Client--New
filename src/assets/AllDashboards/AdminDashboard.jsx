@@ -402,13 +402,9 @@ function AdminDashboard({ user }) {
         {/* Recent Employee Registry */}
        {(user?.role === "admin" || user?.role === "hr") && (
            <div className="col-12 col-sm-6 col-md-4 g-3">
-<div
-  className="card shadow-sm border-0"
-  style={{
-    borderRadius: "10px",
-    height: "200px",
-  }}
->
+                   <div
+            className="card shadow-sm h-100 border-0 "
+            style={{ borderRadius: "10px" }}>
               <div
                 className="card-header d-flex justify-content-between align-items-center"
                 style={{ backgroundColor: "#fff" }}
@@ -425,17 +421,8 @@ function AdminDashboard({ user }) {
                   View All
                 </button>
               </div>
-             <div
-  className="card-body p-0"
-
->
-               <div
-  className="table-responsive"
-  style={{
-    maxHeight: "200px",
-    overflowY: "auto",
-  }}
->
+              <div className="card-body p-0">
+                <div className="table-responsive">
                   <table className="table table-hover mb-0">
                     <thead style={{ backgroundColor: "#fff" }}>
                       <tr>
