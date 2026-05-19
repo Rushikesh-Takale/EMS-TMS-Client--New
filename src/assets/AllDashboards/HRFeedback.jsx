@@ -698,7 +698,7 @@ const HRFeedback = () => {
               />
             </div>
 
-            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
+            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ">
               <label
                 htmlFor="dateInput"
                 className="fw-bold mb-0"

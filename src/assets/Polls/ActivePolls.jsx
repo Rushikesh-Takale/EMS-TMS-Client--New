@@ -504,8 +504,20 @@ const ActivePolls = ({ user }) => {
 
                         return (
                           <div key={idx} className="mb-2">
-                            <label className="d-flex justify-content-between align-items-center">
-                              <div>
+                     <label
+  className="d-flex justify-content-between align-items-start w-100"
+  style={{
+    gap: "10px",
+  }}
+>
+                             <div
+  style={{
+    flex: 1,
+    minWidth: 0,
+    wordBreak: "break-word",
+    overflowWrap: "break-word",
+  }}
+>
                                 <input
                                   type="radio"
                                   name={`poll-${poll._id}`}
@@ -527,7 +539,14 @@ const ActivePolls = ({ user }) => {
                                   {votesCount} {votesCount === 1 ? 'vote' : 'votes'}
                                 </span>
                               ) : (
-                                <span className="badge bg-secondary">
+                             <span
+  className="badge bg-secondary"
+  style={{
+    flexShrink: 0,
+    whiteSpace: "nowrap",
+    alignSelf: "flex-start",
+  }}
+>
                                   {votesCount} {votesCount === 1 ? 'vote' : 'votes'}
                                 </span>
                               )}
@@ -807,8 +826,20 @@ const ActivePolls = ({ user }) => {
                                 );
 
                                 return (
-                                  <div key={idx} className="d-flex justify-content-between mb-1">
-                                    <label className="d-flex align-items-center">
+                                  <div key={idx} className="d-flex justify-content-between align-items-start mb-2"
+  style={{
+    gap: "10px",
+  }}
+  >
+<label
+  className="d-flex align-items-start"
+  style={{
+    flex: 1,
+    minWidth: 0,
+    wordBreak: "break-word",
+    overflowWrap: "break-word",
+  }}
+>
                                       <input
                                         type="radio"
                                         name={`poll-${poll._id}`}
@@ -828,7 +859,14 @@ const ActivePolls = ({ user }) => {
                                         {opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}
                                       </span>
                                     ) : (
-                                      <span className="badge bg-secondary">
+                                     <span
+  className="badge bg-secondary"
+  style={{
+    flexShrink: 0,
+    whiteSpace: "nowrap",
+    alignSelf: "flex-start",
+  }}
+>
                                         {opt.votes} {opt.votes === 1 ? 'vote' : 'votes'}
                                       </span>
                                     )}

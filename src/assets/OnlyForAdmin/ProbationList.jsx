@@ -461,45 +461,47 @@ useEffect(() => {
 }}
                       >
                         {emp.probationStatus === "approved" ? "Approved" :
-                        emp.probationStatus === "extended" ? "Extended" :
+                        emp.probationStatus === "extended" ? "Extendending..." :
                         new Date(emp.probationEndDate) < new Date() ? "Overdue" :
                         "Pending"}
                       </span>
                     </td>
-                     <td className="d-flex gap-2">
+<td
+  style={{
+    padding: "12px",
+    verticalAlign: "middle",
+    borderBottom: "1px solid #dee2e6",
+    whiteSpace: "nowrap",
+  }}
+>
+  <div className="d-flex gap-2">
+  {emp.probationStatus !== "approved" && (
+    <>
+      <button
+        className="btn btn-sm custom-outline-btn"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleUpdateClick(emp);
+        }}
+      >
+        Update
+      </button>
 
-  <button
-    className="btn btn-sm custom-outline-btn"
+      <button
+        className="btn btn-sm custom-outline-btn"
+        style={{ minWidth: "90px" }}
     onClick={(e) => {
-      e.stopPropagation(); 
-      handleUpdateClick(emp);
-    }}
-    disabled={emp.probationStatus === "approved"}
-  >
-    Update
-  </button>
-
-  {emp.probationStatus === "approved" ? (
-    <button
-      className="btn btn-sm custom-outline-btn"
-      style={{minWidth:"90px"}}
-      disabled
-    >
-      Approved
-    </button>
-  ) : (
-    <button
-      className="btn btn-sm custom-outline-btn"
-      style={{minWidth:"90px"}}
-      onClick={() => handleApprove(emp)}
-      disabled={isSubmitting}
-    >
-      Approve
-    </button>
+  e.stopPropagation();
+  handleApprove(emp);
+}}
+        disabled={isSubmitting}
+      >
+        Approve
+      </button>
+    </>
   )}
-
-</td>
-                    </tr>
+  </div>
+</td>            </tr>
                   ))
                 )}
               </tbody>
@@ -709,7 +711,7 @@ useEffect(() => {
           </div>
         </div>
       )}
-      
+
 
       {/* Update Modal */}
       {showModal && selectedEmp && (
@@ -734,21 +736,21 @@ useEffect(() => {
                 {/* Employee Info */}
    <div className="mb-3">
   <div className="d-flex">
- <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
+ <label className="form-label fw-semibold" style={{ minWidth: "180px" }}>
    Name:
   </label>
     <span>{selectedEmp.name}</span>
   </div>
 
   <div className="d-flex">
-   <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
+   <label className="form-label fw-semibold" style={{ minWidth: "180px" }}>
      Department:
   </label>
     <span>{selectedEmp.department}</span>
   </div>
 
   <div className="d-flex">
-   <label className="form-label fw-semibold">
+   <label className="form-label fw-semibold"style={{ minWidth: "180px" }}>
       Current Probation End:
   </label>
 
