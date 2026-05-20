@@ -930,6 +930,18 @@ setDownloadedFile("");
     whiteSpace: "nowrap",
   }}
 >
+  Late Check-In By
+</th>
+<th
+  style={{
+    fontWeight: "500",
+    fontSize: "14px",
+    color: "#6c757d",
+    borderBottom: "2px solid #dee2e6",
+    padding: "12px",
+    whiteSpace: "nowrap",
+  }}
+>
   Status
 </th>
             </tr>
@@ -983,6 +995,16 @@ currentLateEmployees.map((emp) => (
                   })}
                 </td>
                    <td   
+              style={{
+                padding: "12px",
+                fontSize: "14px",
+                borderBottom: "1px solid #dee2e6",
+                whiteSpace: "nowrap",
+              }}
+            >
+            {new Date(emp.checkInTime).toLocaleDateString()}      
+                </td>
+                <td
   style={{
     padding: "12px",
     fontSize: "14px",
@@ -990,16 +1012,36 @@ currentLateEmployees.map((emp) => (
     whiteSpace: "nowrap",
   }}
 >
-            {new Date(emp.checkInTime).toLocaleDateString()}      
-                </td>
+  {(() => {
+    const checkIn = new Date(emp.checkInTime);
+
+    const officeTime = new Date(checkIn);
+    officeTime.setHours(9, 10, 0, 0);
+
+    const diffMs = checkIn - officeTime;
+
+    const totalMinutes = Math.floor(diffMs / (1000 * 60));
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    if (totalMinutes <= 0) return "-";
+
+    if (hours > 0) {
+      return `${hours} hr ${minutes} min late`;
+    }
+
+    return `${minutes} min late`;
+  })()}
+</td>
 
                 <td   style={{
-    padding: "12px",
-    fontSize: "14px",
-    borderBottom: "1px solid #dee2e6",
-    whiteSpace: "nowrap",
-  }}
->
+                    padding: "12px",
+                    fontSize: "14px",
+                    borderBottom: "1px solid #dee2e6",
+                    whiteSpace: "nowrap",
+                  }}
+                >
                   <span
                     style={{
                      background: "#FFE493" ,

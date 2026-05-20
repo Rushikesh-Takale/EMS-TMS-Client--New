@@ -696,16 +696,39 @@ useEffect(() => {
               </div>
 
               <div className="modal-footer">
-                <button
-                  className="btn btn-sm custom-outline-btn"
-                  style={{ minWidth: "90px" }}
-                  onClick={() =>
-                    setShowViewModal(false)
-                  }
-                >
-                  Close
-                </button>
-              </div>
+
+  {selectedEmp.probationStatus !== "approved" && (
+    <>
+      <button
+        className="btn btn-sm custom-outline-btn"
+        onClick={() => {
+          setShowViewModal(false);
+          handleUpdateClick(selectedEmp);
+        }}
+      >
+        Update
+      </button>
+
+      <button
+        className="btn btn-sm custom-outline-btn"
+        style={{ minWidth: "90px" }}
+        onClick={() => handleApprove(selectedEmp)}
+        disabled={isSubmitting}
+      >
+        Approve
+      </button>
+    </>
+  )}
+
+  <button
+    className="btn btn-sm custom-outline-btn"
+    style={{ minWidth: "90px" }}
+    onClick={() => setShowViewModal(false)}
+  >
+    Close
+  </button>
+
+</div>
 
             </div>
           </div>
