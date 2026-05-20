@@ -14,9 +14,7 @@ const HRFeedback = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const formModalRef = useRef(null);
   const detailsModalRef = useRef(null);
-  ///active tab code Dip 03-02-2026
   const [activeTab, setActiveTab] = useState("received");
-  // Pagination state
   const [currentPageSent, setCurrentPageSent] = useState(1);
   const [currentPageReceived, setCurrentPageReceived] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -94,7 +92,6 @@ const HRFeedback = () => {
         console.log("Missing token or user ID");
         return;
       }
-
       const response = await axios.get(
         `http://localhost:8000/feedback/employee/${currentUser._id}`,
         {
@@ -150,7 +147,6 @@ const HRFeedback = () => {
             originalStatus: fb.status,
           };
         });
-
         setFeedbacks(apiFeedbacks);
       } else {
         setFeedbacks([]);
@@ -305,7 +301,6 @@ const HRFeedback = () => {
     return matchesText && matchesStatus && matchesDate;
   });
 
-  //  show data based on active tab  dip(03-02-2026)
   const currentFeedbacks =
     activeTab === "received"
       ? filteredReceivedFeedbacks
@@ -332,12 +327,6 @@ const HRFeedback = () => {
   };
 
   const renderPagination = () => (
-    // currentPage,
-    // totalPages,
-    // totalItems,
-    // indexOfFirstItem,
-    // indexOfLastItem,
-    // setPage, //  remove commented code dip(03-02-2026)
     <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
       <div className="d-flex align-items-center gap-3">
         <div className="d-flex align-items-center">
@@ -358,7 +347,7 @@ const HRFeedback = () => {
             <option value={25}>25</option>
           </select>
         </div>
-        {/* change total items to currentfeedback.length dip 03-02-2026 */}
+
         <span style={{ fontSize: "14px", marginLeft: "16px" }}>
           {currentFeedbacks.length === 0
             ? "0–0 of 0"
@@ -522,7 +511,6 @@ const HRFeedback = () => {
   };
   console.log("Active Tab:", activeTab);
 
-  /////Disable background scroll
   useEffect(() => {
     if (showForm || selectedFeedback) {
       document.body.style.overflow = "hidden";
@@ -537,7 +525,7 @@ const HRFeedback = () => {
       document.documentElement.style.overflow = "";
     };
   }, [showForm, selectedFeedback]);
-  ///Auto focus modal when it opens
+
   useEffect(() => {
     if (showForm && formModalRef.current) {
       formModalRef.current.focus();
@@ -705,7 +693,6 @@ const HRFeedback = () => {
                 style={{
                   fontSize: "16px",
                   color: "#3A5FBE",
-                  // marginRight: "15px", 
                   minWidth: "40px",
                 }}
               >
@@ -741,10 +728,7 @@ const HRFeedback = () => {
             </div>
           </form>
         </div>
-      </div>
-
-      {/* CONDITIONAL RENDERING BASED ON ACTIVE TAB dipali 03-02-2026 */}
-     
+      </div>     
         
           <div
             className="table-responsive mt-3 "
@@ -782,7 +766,6 @@ const HRFeedback = () => {
                     }}
                   >
                     {activeTab === "received" ? "From" : "To"}{" "}
-                    {/*change dip 03-02-2026 */}
                   </th>
                   <th
                     style={{
@@ -832,8 +815,6 @@ const HRFeedback = () => {
                   >
                     Title
                   </th>
-                  {/* //added by Rushikesh */}
-                  {/* Add activ tab code dip 03-02-2026 */}
                   {activeTab === "received" && (
                     <th
                       style={{
@@ -888,7 +869,6 @@ const HRFeedback = () => {
   ) : (
 
     paginatedFeedbacks.map((fb) => (
-                  //addeed by Rushikesh
                   <tr
                     key={fb.id}
                     style={{
@@ -1003,7 +983,6 @@ const HRFeedback = () => {
                     >
                       {fb.title}
                     </td>
-                    {/* //added by Rushikesh */}
                     {activeTab === "received" && (
                       <td
                         style={{
@@ -1028,7 +1007,6 @@ const HRFeedback = () => {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {/* TAB SWTICHING CHANGES DIP 03-02-2026 */}
                       {activeTab === "received" && "sent" ? (
                         <button
                           className="btn btn-sm custom-outline-btn"
@@ -1084,17 +1062,8 @@ const HRFeedback = () => {
 
           {
             renderPagination()
-            // currentPageReceived,
-            // totalPagesReceived,
-            // filteredReceivedFeedbacks.length,
-            // indexOfFirstItemReceived,
-            // indexOfLastItemReceived,
-            // handlePageChangeReceived, remove all of this dip 03-02-2026
           }
         
-    
-
-      {/* Modal */}
       {showForm && (
         <div
           ref={formModalRef}

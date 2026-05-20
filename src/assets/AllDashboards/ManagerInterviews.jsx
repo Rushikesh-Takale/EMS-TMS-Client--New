@@ -5,7 +5,6 @@ const ManagerInterviews = () => {
   const [managerId, setManagerId] = useState(null);
 
   const location = useLocation();
-
   const [allInterviews, setAllInterviews] = useState([]);
   const [interviews, setInterviews] = useState([]);
   const [showTable, setShowTable] = useState(false);
@@ -117,16 +116,12 @@ const isModalOpen = !!selected || showResumeModal;
   }).toUpperCase();
 };
 
-  // to get table after click on notification
   useEffect(() => {
-    // const query = new URLSearchParams(location.search);
-    // const id = query.get("interviewerId"); // ye notification se aa raha hai
     if (managerId) {
       handleView(); // 🔥 auto open table
     }
   }, [managerId]);
 
-  // 🔥 GET MANAGER ID (SAME AS EMPLOYEE)
   useEffect(() => {
     const raw = localStorage.getItem("activeUser");
 
@@ -144,7 +139,6 @@ const isModalOpen = !!selected || showResumeModal;
     }
   }, []);
 
-  // 🔥 FETCH MANAGER INTERVIEWS
   const handleView = async () => {
     console.log("Manager View clicked, managerId:", managerId);
 
@@ -179,7 +173,6 @@ const isModalOpen = !!selected || showResumeModal;
     }
   };
 
-  //status & comment update
   const handleUpdate = async () => {
     try {
       const token = localStorage.getItem("accessToken");
@@ -205,7 +198,6 @@ const isModalOpen = !!selected || showResumeModal;
         return;
       }
 
-      // ✅ update table + modal
       setAllInterviews((prev) =>
         prev.map((i) => (i._id === data.data._id ? data.data : i)),
       );
@@ -230,9 +222,6 @@ const isModalOpen = !!selected || showResumeModal;
       year: "numeric",
     }).format(new Date(dateString));
 
-  {
-    /*--------status colour-----*/
-  }
   const getStatusClass = (status) => {
     switch (status) {
       case "Completed":
@@ -573,7 +562,6 @@ setDownloadUrl(item.resumeUrl);
                       </td>
 
                  <td style={tdStyle()}>
-                    {/* {item.status !== "On-going" ? ( */}
                       <button
                         className="btn custom-outline-btn btn-sm"
                         style={{ width: 90 }}
@@ -591,9 +579,6 @@ setDownloadUrl(item.resumeUrl);
                       >
                         Update
                       </button>
-                    {/* ) : (
-                      "-"
-                    )} */}
                   </td>
 
                     </tr>
@@ -666,7 +651,6 @@ setDownloadUrl(item.resumeUrl);
         </>
       )}
 
-      {/* ================= MODAL ================= */}
       {selected && (
         <div
           className="modal fade show"
@@ -715,16 +699,6 @@ setDownloadUrl(item.resumeUrl);
                 <div className="row mb-2">
                   <div className="col-4 fw-semibold">Interview Link</div>
                   <div className="col-8">
-                    {/* {selected.status !== "Completed" &&
-                    selected.status !== "Cancelled" &&
-                    selected.status !== "Not-completed" &&
-                    selected.link ? (
-                      <a
-                        href={selected.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                      > */}
                        {selected.link ? (
     <a
       href={selected.link}
@@ -969,7 +943,6 @@ setDownloadUrl(selected.resumeUrl);
     </div>
   </div>
 )}
-      {/* ===== COMMON BUTTON STYLE ===== */}
       <style>{`
         .custom-outline-btn {
           border: 1px solid #3A5FBE;

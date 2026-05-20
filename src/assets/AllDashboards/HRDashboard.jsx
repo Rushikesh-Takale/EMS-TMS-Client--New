@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import HolidaysCards from "../Holidays/HolidaysCards";
-import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 import EventCard from "../Events/EventCard";
 
 function HRDashboard({ user }) {
@@ -13,57 +12,10 @@ function HRDashboard({ user }) {
   const [allRequests, setAllRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentEventIndex, setCurrentEventIndex] = useState(0);
-    const [probationEmployees, setProbationEmployees] = useState([]);
+  const [probationEmployees, setProbationEmployees] = useState([]);
 
   const { role, username, id } = useParams();
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const token = localStorage.getItem("accessToken");
-  //       const authAxios = axios.create({
-  //         baseURL: "http://localhost:8000",
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       });
-
-  //       const [empRes, attRes, leaveRegRes] = await Promise.all([
-  //         authAxios.get("/getAllEmployees"),
-  //         authAxios.get("/attendance/today"),
-  //         authAxios.get("/leaves-and-regularizations"),
-  //       ]);
-
-  //       setEmployees(empRes.data || []);
-  //       setAttendanceData(attRes.data || { employees: [] });
-
-  //       const leavesData = leaveRegRes.data.leaves || [];
-  //       const regsData = leaveRegRes.data.regularizations || [];
-  //       setLeaves(leavesData);
-  //       setRegularizations(regsData);
-
-  //       const mergeAlternate = (leavesArr, regsArr) => {
-  //         const result = [];
-  //         const maxLength = Math.max(leavesArr.length, regsArr.length);
-  //         for (let i = 0; i < maxLength; i++) {
-  //           if (i < leavesArr.length)
-  //             result.push({ ...leavesArr[i], type: "Leave" });
-  //           if (i < regsArr.length)
-  //             result.push({ ...regsArr[i], type: "Regularization" });
-  //         }
-  //         return result;
-  //       };
-  //       setAllRequests(mergeAlternate(leavesData, regsData));
-  //     } catch (err) {
-  //       console.error(err);
-  //       setError("Failed to load HR dashboard data.");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [user]);
 
   const fetchData = async () => {
     try {
@@ -81,15 +33,7 @@ function HRDashboard({ user }) {
          authAxios.get("/admin/probation-ending-soon"), 
       ]);
       // ✅ employees first
-      // const empRes = await authAxios.get("/getAllEmployees");
       setEmployees(empRes.data || []);
-  
-      // ✅ बाकी parallel
-      // const [attRes, leaveRegRes] = await Promise.all([
-      //   authAxios.get("/attendance/today"),
-      //   authAxios.get("/leaves-and-regularizations"),
-      // ]);
-  
       setAttendanceData(attRes.data || { employees: [] });
   
       const leavesData = leaveRegRes.data.leaves || [];
@@ -97,7 +41,7 @@ function HRDashboard({ user }) {
   
       setLeaves(leavesData);
       setRegularizations(regsData);
-setProbationEmployees(probationRes.data || []);
+      setProbationEmployees(probationRes.data || []);
   
       const result = [];
       const maxLength = Math.max(leavesData.length, regsData.length);
@@ -120,22 +64,6 @@ setProbationEmployees(probationRes.data || []);
   useEffect(() => {
     fetchData();
   }, []);
-  // if (loading) return <p>Loading...</p>;
-  // <div
-  //   className="d-flex flex-column justify-content-center align-items-center"
-  //   style={{ minHeight: "100vh" }}
-  // >
-  //   <div
-  //     className="spinner-grow"
-  //     role="status"
-  //     style={{ width: "4rem", height: "4rem", color: "#3A5FBE" }}
-  //   >
-  //     <span className="visually-hidden">Loading...</span>
-  //   </div>
-  //   <p className="mt-3 fw-semibold" style={{ color: "#3A5FBE" }}>
-  //     Loading ...
-  //   </p>
-  // </div>;
 
   if (loading) {
     return (
@@ -276,7 +204,6 @@ setProbationEmployees(probationRes.data || []);
 
             {/* Pending Leaves */}
             <div className="col-md-6 mt-3">
-              {/* onClick={() => navigate(`/dashboard/${role}/${username}/${id}/leavebalance`)} */}
               <div className="card shadow-sm h-100 border-0 "style={{ borderRadius: "10px" }}>
                 <div className="card-body d-flex justify-content-between align-items-center">
                   <div
@@ -600,9 +527,8 @@ setProbationEmployees(probationRes.data || []);
             </div>
           </div>
         </div>
-         </div>
+      </div>
       
-
         {/* Leave & Regularization */}
         <div className="col-12 col-sm-6 col-md-4 order-3 order-sm-3 order-md-0 g-3">
           <div className="card shadow-sm h-100 border-0 "style={{ borderRadius: "10px" }}>
@@ -680,18 +606,6 @@ setProbationEmployees(probationRes.data || []);
                           <td style={{ fontWeight: "400", fontSize: "14px" }}>
                             {formatted}
                           </td>
-                          {/* <td style={{ fontWeight: '400', fontSize: '14px'}}>
-                          <span
-                            className={`badge ${status.toLowerCase() === "approved"
-                                ? "#d1f2dd"
-                                : status.toLowerCase() === "rejected"
-                                  ? "#FFE493"
-                                  : "#FFE493"
-                              }`}
-                          >
-                            {status.charAt(0).toUpperCase()+status.slice(1).toLowerCase()}
-                          </span>
-                        </td> */}
                           <td style={{ fontWeight: "400", fontSize: "14px" }}>
                             <span
                               className="badge text-dark"
@@ -718,78 +632,6 @@ setProbationEmployees(probationRes.data || []);
             </div>
           </div>
         </div>
-
-        {/* Events */}
-      
-          {/* <div className="card shadow-sm h-100">
-            <div className="card-header bg-white d-flex justify-content-between align-items-center">
-              <button
-                className="btn btn-link text-primary p-0"
-                onClick={() =>
-                  setCurrentEventIndex((prev) =>
-                    prev === 0 ? upcomingEvents.length - 1 : prev - 1
-                  )
-                }
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <span className="fw-semibold text-capitalize" style={{color: "#3A5FBE"}}>
-                Upcoming Events
-              </span>
-              <button
-                className="btn btn-link p-0"
-                style={{color: "#3A5FBE"}}
-                onClick={() =>
-                  setCurrentEventIndex((prev) =>
-                    prev === upcomingEvents.length - 1 ? 0 : prev + 1
-                  )
-                }
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
-            <div className="card-body text-center">
-              {upcomingEvents.length > 0 ? (
-                <>
-                {upcomingEvents[currentEventIndex].type === "Birthday" ? (
-                    <i className="bi bi-gift fs-2" style={{color: "#3A5FBE"}}></i>
-                ) : (
-                    <i className="bi bi-building fs-2" style={{color: "#3A5FBE"}}></i>
-                )}
-                  <p className="mb-0 fw-semibold text-capitalize" style={{color: "#3A5FBE"}}>
-                    {upcomingEvents[currentEventIndex].isToday
-                      ? `🎉 Happy ${upcomingEvents[currentEventIndex].type}, ${upcomingEvents[currentEventIndex].name}!`
-                      : `${upcomingEvents[currentEventIndex].name}'s ${upcomingEvents[currentEventIndex].type}`}
-                  </p>
-                  <small className="text-muted">
-                    {upcomingEvents[currentEventIndex].date.toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      weekday: "short",
-                      year: "numeric",
-                    })}
-                  </small>
-                </>
-              ) : (
-                <p>No upcoming events</p>
-              )}
-              <div className="mt-3">
-                <button
-                  className="btn btn-sm btn-outline"
-                  style={{color: "#3A5FBE",borderColor: "#3A5FBE"  }}
-                  onClick={() =>
-                    navigate(`/dashboard/${role}/${username}/${id}/AllEventsandHolidays`, {
-                      state: { employees },
-                    })
-                  }
-                >
-                  View All Events
-                </button>
-              </div>
-            </div>
-          </div> */}
-
-         
       </div>
       </div>
     

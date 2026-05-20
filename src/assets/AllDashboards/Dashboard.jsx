@@ -69,10 +69,7 @@ import ManagerResignation from "./ManagerResignation";
 import SupportEmployeeSetting from "../ITSupport/SupportEmployeeSetting";
 import ITSupportDashboard from "../ITSupport/ITSupportDashboard";
 import AdminFeedback from "./AdminFeedback";
-// import AdminPerformances from "../Performances/AdminPerformances";
 import EmployeePerformances from "../Performances/EmployeePerformances";
-// import CooPerformances from "../Performances/CooPerformances";
-// import CeoPerformances from "../Performances/CeoPerformances";
 import JobCandidates from "../Careers/JobCandidates";//rushikesh
 import TLAllEmployee from "../../assets/TaskManeger/AllDashbords/TLAllEmployee";//rutuja
 import TLTeamMemberAttendance from "../OnlyForAdmin/TLTeamMemberAttendance" //rutuja
@@ -220,7 +217,6 @@ const [notifications, setNotifications] = useState([]);
     }
   }, [user?._id]);
 
-  // 🔥 FIX 3 → dependency safe
   useEffect(() => {
     if (!user?._id) return;
     fetchNotifications();
@@ -295,7 +291,6 @@ const [notifications, setNotifications] = useState([]);
       setIsLoggingOut(false);
     }
   };
-
 
   if (!user)
     return (
@@ -408,7 +403,6 @@ const [notifications, setNotifications] = useState([]);
         </div>
       </div>
 
-      {/* //// */}
       <div className="dashboard-layout">
         {/* Sidebar */}
         <Sidebar handleLogout={handleLogout} />
@@ -430,7 +424,7 @@ const [notifications, setNotifications] = useState([]);
                   user.role === "admin" ||
                     user.role === "ceo" ||
                     user.role === "coo" ||
-                    user.role === "md" ? ( //|| user.role === "hr"
+                    user.role === "md" ? ( 
                     <AdminAddLeaveBalance 
                     user={user} 
                     fetchNotifications={fetchNotifications}
@@ -445,7 +439,7 @@ const [notifications, setNotifications] = useState([]);
               <Route
                 path="/hr-leavebalance"
                 element={
-                  user.role === "hr" ? ( //|| user.role === "hr"
+                  user.role === "hr" ? ( 
                     <HrAdminLeavebalance user={user} />
                   ) : null
                 }
@@ -453,7 +447,7 @@ const [notifications, setNotifications] = useState([]);
               <Route
                 path="/hr-employee-regularization"
                 element={
-                  user.role === "hr" ? ( //|| user.role === "hr"
+                  user.role === "hr" ? ( 
                     <AllEmployeeRegularizationRequestForAdmin user={user} />
                   ) : null
                 }
@@ -485,13 +479,11 @@ const [notifications, setNotifications] = useState([]);
                 element={<TLTeamMemberAttendance user= {user} />}
               />
 
-
-
               {/* manager-core-dashboard */}
               <Route
                 path="/manager-core-dashboard"
                 element={
-                  user.role === "manager" ? ( //|| user.role === "hr"
+                  user.role === "manager" ? (
                     <ManagerDashboard user={user} />
                   ) : null
                 }
@@ -516,7 +508,6 @@ const [notifications, setNotifications] = useState([]);
                   )
                 }
               /> 
-              {/* <Route path="employeeprofile" element={<EmployeeMyProfileForAdmin />} /> */}
               <Route
                 path="employeeprofile/:empId"
                 element={
@@ -558,7 +549,6 @@ const [notifications, setNotifications] = useState([]);
               <Route
                 path="regularization"
                 element={
-                  // snehal add IT_Supportt
                   ["employee", "IT_Support","Team_Leader"].includes(user.role) ? (
                     <ApplyRegularization />
                   ) : (
@@ -605,7 +595,7 @@ const [notifications, setNotifications] = useState([]);
                 path="manager/interviews"
                 element={
                   ["manager"].includes(user.role) ? (
-                    <ManagerInterviews /> // alag component
+                    <ManagerInterviews /> 
                   ) : (
                     <h5 className="text-center mt-4 text-danger">
                       Access Denied
@@ -620,13 +610,13 @@ const [notifications, setNotifications] = useState([]);
                   user.role === "employee" ||
                     user.role === "hr" ||
                     user.role === "manager" ||
-                    user.role === "Team_Leader" || //rutuja
-                    user.role === "IT_Support" ? ( // employee roles
+                    user.role === "Team_Leader" || 
+                    user.role === "IT_Support" ? ( 
                     <MyAttendance employeeId={user._id} />
                   ) : user.role === "ceo" ||
                     user.role === "admin" ||
                     user.role === "coo" ||
-                    user.role === "md" ? ( // admin roles
+                    user.role === "md" ? ( 
                     <TodaysEmployeeDetails />
                   ) : (
                     <p>Access Denied</p>
@@ -649,7 +639,6 @@ const [notifications, setNotifications] = useState([]);
               )}
               {user?.role === "admin" ||
                 user?.role === "hr" ||
-                // user.role === "manager" ||
                 user?.role === "ceo" ||
                 user?.role === "coo" ||
                 user?.role === "md" ? (
@@ -660,7 +649,6 @@ const [notifications, setNotifications] = useState([]);
                   element={<EmployeeCareer user={user} />}
                 />
               )}
-              {/* added by rushikesh */}
               <Route
                 path="job-candidates/:jobId"
                 element={<JobCandidates />}
@@ -673,7 +661,7 @@ const [notifications, setNotifications] = useState([]);
                     user.role === "ceo" ||
                     user.role === "hr" ||
                     user.role === "manager" ||
-                    user.role === "Team_Leader" || //rutuja
+                    user.role === "Team_Leader" || 
                     user.role === "coo" ||
                     user.role === "md" ? (
                     <EmployeeFullAttendance />
@@ -731,14 +719,13 @@ const [notifications, setNotifications] = useState([]);
               <Route
                 path="employee-feedback"
                 element={
-                  ["employee", "manager", "Team_Leader"].includes(user?.role) ? ( //rutuja
+                  ["employee", "manager", "Team_Leader"].includes(user?.role) ? ( 
                     <EmployeeFeedback user={user} />
                   ) : (
                     <h5 className="text-danger text-center">Access Denied</h5>
                   )
                 }
               />
-
               <Route
                 path="add-policy"
                 element={
@@ -749,8 +736,6 @@ const [notifications, setNotifications] = useState([]);
                   )
                 }
               />
-
-
               <Route
                 path="teams"
                 element={
@@ -758,13 +743,10 @@ const [notifications, setNotifications] = useState([]);
                     user.role === "IT_Support" ||
                     user.role === "manager" ? (
                     <EmployeeTeams user={user}/>
-                    //rutuja
                   ) 
-                  // rutuja code
                   : user.role === "Team_Leader" ? (
                     <TLAllEmployee />
                   ) 
-                  //
                   : (
                     <h5 className="text-center mt-4 text-danger">
                       Access Denied
@@ -772,10 +754,6 @@ const [notifications, setNotifications] = useState([]);
                   )
                 }
               />
-
-
-
-              {/* //Added by Rushikesh */}
               <Route
                 path="employee-policy"
                 element={
@@ -846,7 +824,6 @@ const [notifications, setNotifications] = useState([]);
                   )
                 }
               />
-
               <Route
                   path="/tl-dashboard"
                   element={
@@ -859,7 +836,6 @@ const [notifications, setNotifications] = useState([]);
                     )
                   }
               />
-              {/* It support  */}
               <Route
                 path="performance"
                 element={
@@ -896,7 +872,6 @@ const [notifications, setNotifications] = useState([]);
           onClose={() => setShowProbationPopup(false)}
         />
       )}
-      
     </div>
   );
 }

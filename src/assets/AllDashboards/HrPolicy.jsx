@@ -3,18 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 const API_BASE = "http://localhost:8000";
-
 const STORAGE_KEY = "hr_policy";
 const ACK_KEY = "policy_ack_employee";
-
 
 function HrPolicy() {
   const { role, username, id } = useParams();
   const [readEmployees, setReadEmployees] = useState([]);
 
-
   const canEdit = role === "admin" || role === "hr";
-
   const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
   const [newPolicy, setNewPolicy] = useState({
@@ -23,8 +19,7 @@ function HrPolicy() {
   });
 
   const [showFileModal, setShowFileModal] = useState(false);
-const [selectedFile, setSelectedFile] = useState(null); 
-  
+  const [selectedFile, setSelectedFile] = useState(null); 
   const [policies, setPolicies] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [editFile, setEditFile] = useState(null);//added by shivani
@@ -53,9 +48,7 @@ const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     if (!isAnyModalOpen || !modalRef.current) return;
-
     const modal = modalRef.current;
-
     const focusableElements = modal.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
@@ -65,11 +58,9 @@ const [selectedFile, setSelectedFile] = useState(null);
     const firstEl = focusableElements[0];
     const lastEl = focusableElements[focusableElements.length - 1];
 
-    // ⭐ modal open होताच focus
     modal.focus();
 
     const handleKeyDown = (e) => {
-      // ESC key → modal close
       if (e.key === "Escape") {
         e.preventDefault();
         setShowViewModal(false);
@@ -78,8 +69,6 @@ const [selectedFile, setSelectedFile] = useState(null);
         setShowStatusModal(false);
         setStatusPolicy(false);
       }
-
-      // TAB key → focus trap
       if (e.key === "Tab") {
         if (e.shiftKey) {
           if (document.activeElement === firstEl) {
@@ -131,35 +120,15 @@ const [selectedFile, setSelectedFile] = useState(null);
     showFileModal,
   ]);
 
-
-
-
   const handleViewClick = (policy) => {
     console.log("Selected Policy:", policy);
     setSelectedPolicy(policy);
     fetchReadEmployees(policy._id); //Added by harshada 25 Feb 2026
-    // setShowModal(true);
   };
 
   const handleRowClick = (policy) => {
     setViewPolicy(policy);
     setShowViewModal(true);
-  };
-
-  const getReadEmployees = (policyId) => {
-    return Object.values(ackMap).filter((ack) => ack.policyId === policyId);
-  };
-
-  const getPendingEmployees = (policyId) => {
-    const readIds = getReadEmployees(policyId).map((e) => e.employeeId);
-
-    const allEmployees = JSON.parse(localStorage.getItem("employees")) || [];
-
-    return allEmployees.filter((emp) => !readIds.includes(emp.id));
-  };
-
-  const getAckStatus = (policyId, employeeId) => {
-    return ackMap?.[`${policyId}_${employeeId}`] || null;
   };
 
   useEffect(() => {
@@ -177,12 +146,6 @@ const [selectedFile, setSelectedFile] = useState(null);
     title: "",
     description: "",
   });
-
-  // useEffect(() => {
-  //   const storedAck =
-  //     JSON.parse(localStorage.getItem("policy_acknowledgements")) || {};
-  //   setAckMap(storedAck);
-  // }, []);
 
   useEffect(() => {
     fetchPolicies();
@@ -228,7 +191,6 @@ const [selectedFile, setSelectedFile] = useState(null);
     fetchEmployees();
   }, []);
 
-  //Added by harshada 25 Feb 2026
   const fetchReadEmployees = async (policyId) => {
     try {
       const res = await axios.get(
@@ -246,14 +208,13 @@ const [selectedFile, setSelectedFile] = useState(null);
   const handleAddPolicy = async () => {
     if (isSubmitting) return;
 
-setIsSubmitting(true);
+    setIsSubmitting(true);
     if (!newPolicy.title ) {
       alert("Title is required");
       return;
     }
     if(!newPolicy.description){
       alert("Description is required");
-
     }
   
     if (newPolicy.pdf && !newPolicy.pdf.type.includes("pdf") && !newPolicy.pdf.name.endsWith(".pdf")) {
@@ -298,7 +259,6 @@ setIsSubmitting(true);
   }
   };
   
-
   const fetchPolicies = async () => {
     try {
       const res = await axios.get(`${API_BASE}/policy/get`);
@@ -310,11 +270,6 @@ setIsSubmitting(true);
     }
   };
 
-  const persist = (updated) => {
-    setPolicies(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  };
-
   const handleSearch = () => {
     setSearchQuery(searchText);
   };
@@ -322,8 +277,6 @@ setIsSubmitting(true);
     setSearchText("");
     setSearchQuery("");
   };
-
-
 
   const filteredPolicies = policies.filter((p) =>
     `${p.title || ""} ${p.description || ""}`
@@ -362,7 +315,6 @@ setIsSubmitting(true);
     setShowModal(true);
   };
 
-  //update by shivani
   const handleSave = async () => {
     if (!selectedPolicy) return;
   
@@ -423,23 +375,6 @@ setIsSubmitting(true);
     }
   };
 
-  const thStyle = {
-    fontWeight: "500",
-    fontSize: "14px",
-    color: "#6c757d",
-    borderBottom: "2px solid #dee2e6",
-    padding: "12px",
-    whiteSpace: "nowrap",
-  };
-
-  const tdStyle = {
-    padding: "12px",
-    verticalAlign: "middle",
-    fontSize: "14px",
-    borderBottom: "1px solid #dee2e6",
-    whiteSpace: "nowrap",
-  };
-
   const isNewPolicy = (createdAt) => {
     if (!createdAt) return false;
     const created = new Date(createdAt);
@@ -449,12 +384,6 @@ setIsSubmitting(true);
     const diffDays = (now - created) / (1000 * 60 * 60 * 24);
     return diffDays <= 7;
   };
-  // const allEmployees = [
-  //   //Commend by harshada
-  //   // { id: "101", name: "Rahul" },
-  //   // { id: "102", name: "Sneha" },
-  // ];
-
   const isUpdatedPolicy = (policy) => {
     if (!policy.createdAt || !policy.updatedAt) return false;
     return policy.updatedAt !== policy.createdAt;
@@ -484,7 +413,6 @@ setIsSubmitting(true);
     !readEmployees.some(read => read.employeeId === emp._id)
   );
 
-  // Helper function to detect file type from URL or extension
 const getFileType = (url) => {
   if (!url) return "unknown";
   
@@ -614,8 +542,6 @@ const getFileType = (url) => {
                   >
                     Uploaded File
                   </th>
-                {/* //Remove by harshada   */}
-                {/* <th style={thStyle}>Read Date & Time</th> */}
                  <th
                     style={{
                       fontWeight: "500",

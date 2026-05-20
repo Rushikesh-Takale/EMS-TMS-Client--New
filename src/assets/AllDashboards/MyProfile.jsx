@@ -508,7 +508,6 @@ function MyProfile({ user, setUser }) {
               "department",
               "salary",
             ].map((field) => {
-              // ✅ Converts "employeeId" -> "Employee ID", "maritalStatus" -> "Marital Status"
               const formatLabel = (text) =>
                 text
                   .replace(/([A-Z])/g, " $1") // insert space before capital letters
@@ -884,7 +883,6 @@ function MyProfile({ user, setUser }) {
             ].map((field) => (
               <div key={field} className="col-md-6">
                 <label className="form-label text-primary">
-                  {/* {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, " $1")} */}
                   {formatLabel(field)}:
                 </label>
                 {isEditing ? (
@@ -893,7 +891,6 @@ function MyProfile({ user, setUser }) {
                     name={field}
                     value={formData[field] || ""}
                     onChange={handleFileChange}
-                    // className="form-control bg-light border-0"
                     className={`form-control border-0 ${
                       [
                         "casualLeaveBalance",

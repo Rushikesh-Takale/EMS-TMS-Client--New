@@ -31,7 +31,6 @@ const [resumeUrl, setResumeUrl] = useState("");
   const modalRef = useRef(null);
 const isModalOpen = !!selected || showResumeModal;
 
-  // 🔹 Focus Trap Effect
   useEffect(() => {
     if (!isModalOpen || !modalRef.current) return;
 
@@ -46,11 +45,9 @@ const isModalOpen = !!selected || showResumeModal;
     const firstEl = focusableElements[0];
     const lastEl = focusableElements[focusableElements.length - 1];
 
-    // Set focus to modal when opened
     modal.focus();
 
     const handleKeyDown = (e) => {
-      // ESC key → modal close
       if (e.key === "Escape") {
         e.preventDefault();
         setSelected(null);
@@ -58,7 +55,6 @@ const isModalOpen = !!selected || showResumeModal;
         setEditData({ status: "", comment: "" });
       }
 
-      // TAB key → focus trap
       if (e.key === "Tab") {
         if (e.shiftKey) {
           if (document.activeElement === firstEl) {
@@ -101,16 +97,12 @@ const isModalOpen = !!selected || showResumeModal;
 
 
 
-  // to get table after click on notification
   useEffect(() => {
-    // const query = new URLSearchParams(location.search);
-    // const id = query.get("interviewerId"); // 🔔 notification se aayega
     if (employeeId) {
-      handleView(); // 🔥 auto open table
+      handleView(); 
     }
   }, [employeeId]);
 
-  // 🔥 GET EMPLOYEE ID
   useEffect(() => {
     const raw = localStorage.getItem("activeUser");
 
@@ -121,7 +113,6 @@ const isModalOpen = !!selected || showResumeModal;
 
     const user = JSON.parse(raw);
 
-    // ✅ CORRECT
     if (user._id) {
       setEmployeeId(user._id);
     } else {
@@ -208,7 +199,6 @@ const formatTo12Hour = (time24) => {
         alert(data.message || "Update failed");
         return;
       }
-      // ✅ Update frontend state for table & popup
       setAllInterviews((prev) =>
         prev.map((item) => (item._id === data.data._id ? data.data : item)),
       );
@@ -217,10 +207,8 @@ const formatTo12Hour = (time24) => {
       );
       setIsEditing(false);
 
-      // ✅ Show confirmation alert first
       window.alert("Interview updated successfully");
 
-      // ✅ Close modal after OK
       setSelected(null);
     } catch (err) {
       console.error(err);
@@ -228,9 +216,6 @@ const formatTo12Hour = (time24) => {
     }
   };
 
-  {
-    /*--------status colour-----*/
-  }
   const getStatusClass = (status) => {
     switch (status) {
       case "Completed":
@@ -248,7 +233,6 @@ const formatTo12Hour = (time24) => {
     }
   };
 
-  // ===== APPLY FILTERS =====
   const applyFilters = () => {
     
     let filtered = [...allInterviews];
@@ -278,7 +262,6 @@ const formatTo12Hour = (time24) => {
     setCurrentPage(1);
   };
 
-  // ===== RESET =====
   const resetFilters = () => {
     setStatusFilter("All");
     setDateFromFilter("");
@@ -287,7 +270,6 @@ const formatTo12Hour = (time24) => {
     setCurrentPage(1);
   };
 
-  // ===== PAGINATION LOGIC =====
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentInterviews = interviews.slice(indexOfFirstItem, indexOfLastItem);
@@ -301,7 +283,6 @@ const formatTo12Hour = (time24) => {
 
   return (
     <div className="container-fluid px-3 mt-3">
-      {/* mahesh code header change font size */}
       <h2
         style={{
           color: "#3A5FBE",
@@ -313,7 +294,6 @@ const formatTo12Hour = (time24) => {
         My Scheduled Interveiw
       </h2>
 
-      {/* ================= FILTER CARD ================= */}
       {showTable && (
         <div className="card mb-4 mt-3 shadow-sm border-0">
           <div className="card-body">
@@ -423,7 +403,6 @@ const formatTo12Hour = (time24) => {
         </div>
       )}
 
-      {/* ================= TABLE ================= */}
       {showTable && (
         <>
           <div
@@ -472,10 +451,9 @@ const formatTo12Hour = (time24) => {
                     <tr
                       key={item._id || item.interviewId}
                       onClick={() => {
-                        //added jayu
                         if (item.status!=="Cancelled"){
                         setSelected(item);
-                        setIsEditing(false); // reset edit mode
+                        setIsEditing(false); 
                         }
                       }}
                        style={{ 
@@ -519,42 +497,33 @@ setDownloadUrl(item.resumeUrl);
                       <td style={tdStyle()}>{item.interviewType}</td>
                       <td style={tdStyle()}>{item.interviewerName}</td>
                       <td style={tdStyle()}>
-                        {/* {item.status !== "Completed" &&
-                        item.status !== "Cancelled" &&
-                        item.status !== "Not-completed" &&
-                        item.link ? (
+                       
+                                         {item.link ? (
                           <a
                             href={item.link}
                             target="_blank"
                             rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                          > */}
-                                         {item.link ? (
-    <a
-      href={item.link}
-      target="_blank"
-      rel="noreferrer"
-      onClick={(e) => {
-        if (
-          ["Completed", "Cancelled", "Not-completed"].includes(item.status)
-        ) {
-          e.preventDefault(); // ❌ stop navigation
-          return;
-        }
-        e.stopPropagation();
-      }}
-      style={{
-        pointerEvents: ["Completed", "Cancelled", "Not-completed"].includes(item.status)
-          ? "none"
-          : "auto",
-        color: ["Completed", "Cancelled", "Not-completed"].includes(item.status)
-          ? "#999"
-          : "#0d6efd",
-        textDecoration: "underline",
-        cursor: ["Completed", "Cancelled", "Not-completed"].includes(item.status)
-          ? "not-allowed"
-          : "pointer",
-      }}>
+                            onClick={(e) => {
+                              if (
+                                ["Completed", "Cancelled", "Not-completed"].includes(item.status)
+                              ) {
+                                e.preventDefault(); // ❌ stop navigation
+                                return;
+                              }
+                              e.stopPropagation();
+                            }}
+                            style={{
+                              pointerEvents: ["Completed", "Cancelled", "Not-completed"].includes(item.status)
+                                ? "none"
+                                : "auto",
+                              color: ["Completed", "Cancelled", "Not-completed"].includes(item.status)
+                                ? "#999"
+                                : "#0d6efd",
+                              textDecoration: "underline",
+                              cursor: ["Completed", "Cancelled", "Not-completed"].includes(item.status)
+                                ? "not-allowed"
+                                : "pointer",
+                            }}>
                             Join
                           </a>
                         ) : (
@@ -591,18 +560,14 @@ setDownloadUrl(item.resumeUrl);
                       </td>
 
                     <td style={tdStyle()}>
-                    {/* {item.status !== "On-going" ? ( */}
                       <button
                         className="btn custom-outline-btn btn-sm"
                         style={{ width: 90 }}
                         disabled={item.status === "Cancelled" || item.status === "Completed"}
                         onClick={(e) => {
                           e.stopPropagation();
-
                           setSelected(item);
                           setIsEditing(true);
-
-                          // ✅ Always initialize editData fresh
                           setEditData({
                             status: item.status || "",
                             comment: item.comment || "",
@@ -611,10 +576,6 @@ setDownloadUrl(item.resumeUrl);
                       >
                         Update
                       </button>
-
-                    {/* ) : (
-                      "-"
-                    )} */}
                   </td>
                     </tr>
                   ))
@@ -623,7 +584,6 @@ setDownloadUrl(item.resumeUrl);
             </table>
           </div>
 
-          {/* ===== PAGINATION UI ===== */}
           <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
             <div className="d-flex align-items-center gap-3">
               <div className="d-flex align-items-center">
@@ -686,7 +646,6 @@ setDownloadUrl(item.resumeUrl);
         </>
       )}
 
-      {/* ================= MODAL ================= */}
       {selected && (
         <div
           className="modal fade show"
@@ -707,7 +666,6 @@ setDownloadUrl(item.resumeUrl);
                 <button
                   className="btn-close btn-close-white"
                   onClick={() => {
-                    //added jayu
                     setSelected(null);
                     setIsEditing(false); // reset here also
                   }}
@@ -735,16 +693,7 @@ setDownloadUrl(item.resumeUrl);
                 <div className="row mb-2">
                   <div className="col-4 fw-semibold">Interview Link</div>
                   <div className="col-8">
-                    {/* {selected.status !== "Completed" &&
-                    selected.status !== "Cancelled" &&
-                    selected.status !== "Not-completed" &&
-                    selected.link ? (
-                      <a
-                        href={selected.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                      > */}
+                    
                                      {selected.link ? (
     <a
       href={selected.link}
@@ -779,7 +728,6 @@ setDownloadUrl(item.resumeUrl);
                   </div>
                 </div>
 
-                {/* ✅ RESUME SECTION (SEPARATE) */}
                 <div className="row mb-2">
                   <div className="col-4 fw-semibold">Resume</div>
                   <div className="col-8">
@@ -868,7 +816,6 @@ setDownloadUrl(selected.resumeUrl);
 
               <div className="modal-footer border-0 pt-0">
                 {isEditing ? (
-                  // ✏️ EDIT MODE → Update button
                   <>
                   <button
                     className="btn custom-outline-btn btn-sm"
@@ -991,7 +938,6 @@ setDownloadUrl(selected.resumeUrl);
   </div>
 )}
 
-      {/* ===== COMMON BUTTON STYLE ===== */}
       <style>{`
         .custom-outline-btn {
           border: 1px solid #3A5FBE;

@@ -9,8 +9,6 @@ function AddPolicyPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
-  const [hoverSave, setHoverSave] = useState(false);
-  const [hoverCancel, setHoverCancel] = useState(false);
 
   const handleSave = async () => {
     if (!title || !description) {
@@ -26,7 +24,6 @@ function AddPolicyPage() {
       if (file) {
         formData.append("pdf", file); // rutuja 03-04-26
       }
-
       await axios.post("http://localhost:8000/policy/create", formData);
 
       alert("Policy created successfully");

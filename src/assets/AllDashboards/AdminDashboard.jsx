@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import HolidaysCards from "../Holidays/HolidaysCards";
-import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 import EventCard from "../Events/EventCard";
 import ActivePolls from "../Polls/ActivePolls";
 function AdminDashboard({ user }) {
@@ -10,9 +9,6 @@ function AdminDashboard({ user }) {
   const [attendanceData, setAttendanceData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [holidays, setHolidays] = useState([]);
-  const [currentEventIndex, setCurrentEventIndex] = useState(0);
-  const [PendingLeaveRequests, setPendingLeaveRequests] = useState([]);
   const [probationEmployees, setProbationEmployees] = useState([]);
   // ✅ New states
   const [leaves, setLeaves] = useState([]);
@@ -77,7 +73,6 @@ function AdminDashboard({ user }) {
   }, [user?._id]);
   console.log("all request", allRequests);
 
-  // if (loading) return <p>Loading...</p>;
   if (loading) {
     return (
       <div
@@ -174,7 +169,6 @@ function AdminDashboard({ user }) {
               >
                 <div className="card-body d-flex justify-content-between align-items-center">
                   {/* Employee Count */}
-                  {/* <h4 className="text-success mb-0" style={{fontSize:"50px"}}>{employees.length}</h4> */}
                   <div
                     style={{
                       backgroundColor: "#D7F5E4",
@@ -198,7 +192,6 @@ function AdminDashboard({ user }) {
                     </h4>
                   </div>
                   {/* Text */}
-                  {/* <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>Total<br />Employees</p> */}
                   <p
                     className="mb-0 fw-semibold"
                     style={{ fontSize: "20px", color: "#3A5FBE" }}
@@ -616,14 +609,11 @@ function AdminDashboard({ user }) {
               </div>
             </div>
           </div>
-
-
         </div>
 
 
 
         {/*  Poll */}
-      
           <div className="col-12 col-sm-6 col-md-4 order-3 order-sm-3 order-md-0 g-3">
           <div
             className="card shadow-sm h-100 border-0 "
@@ -721,7 +711,7 @@ function AdminDashboard({ user }) {
           </div>
         </div>
        
- <div className="col-12 col-md-4 g-3">
+        <div className="col-12 col-md-4 g-3">
           <ActivePolls user={user} />
         </div>
       </div>

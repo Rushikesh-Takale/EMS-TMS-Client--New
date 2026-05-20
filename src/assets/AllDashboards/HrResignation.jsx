@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef, } from "react";
-
 import axios from "axios";
-
 
 function HrResignation({ user }) {
    
@@ -14,14 +12,11 @@ function HrResignation({ user }) {
   const [searchInput, setSearchInput] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-
-  //------------------------------------------------------------shivani
   const [mySearchInput, setMySearchInput] = useState("");
   const [filteredMyResignations, setFilteredMyResignations] = useState([]);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showMyResignationPopup, setShowMyResignationPopup] = useState(false);
   const [selectedMyResignation, setSelectedMyResignation] = useState(null);
-
   const [myCurrentPage, setMyCurrentPage] = useState(1);
   const [myItemsPerPage, setMyItemsPerPage] = useState(5);
 
@@ -47,11 +42,7 @@ function HrResignation({ user }) {
     setSelectedRow(null);
   };
 
-  //end------------------------------------------------------------------
-  //TANVI
   const modalRef = useRef(null);
-
-  //TANVI
   useEffect(() => {
   const isAnyModalOpen = showModal || showProfileModal || showMyResignationPopup || showApplyModal || selectedRow;
 
@@ -129,7 +120,6 @@ useEffect(() => {
   };
 }, [showModal, showProfileModal, showMyResignationPopup, showApplyModal, selectedRow]);
 
-  // Get token from localStorage
   const getToken = () => {
     return localStorage.getItem("token") || localStorage.getItem("accessToken");
   };
@@ -155,7 +145,6 @@ useEffect(() => {
       console.log("FIRST ITEM 👉", response.data[0]);
   
       const currentUserEmpId = user?.employeeId;
-      // The response is an array directly, not response.data.resignations
       const transformedData = response.data
       .filter(r => r.employeeId !== currentUserEmpId)
       .map((r) => ({
@@ -177,7 +166,6 @@ useEffect(() => {
         noticePeriodDays: r.noticePeriodDays || 0,
         originalData: r,
       }))
-      // Sort by apply date descending
       .sort((a, b) => new Date(b.originalData.applyDate) - new Date(a.originalData.applyDate));
   
       setRequests(transformedData);
@@ -196,20 +184,16 @@ useEffect(() => {
     }
   };
 
-
-
   const handleDeleteResignation = async (resignationId) => {
     if (!window.confirm("Are you sure you want to cancel this resignation?")) {
       return;
     }
-
     try {
       const token = getToken();
       if (!token) {
         alert("Authentication token missing");
         return;
       }
-
       const response = await axios.delete(
         `http://localhost:8000/cancel/resignation/${resignationId}`,
         {
@@ -225,7 +209,6 @@ useEffect(() => {
     }
   };
 
-  // Approve/reject resignation (manager version)
   const handleResignationAction = async (action) => {
     if (action === "approve") {
       if (!editedLwd) {
@@ -271,7 +254,6 @@ useEffect(() => {
       console.error(`Error ${action}ing resignation:`, err);
       if (err.response?.status === 401) {
         alert("Authentication failed. Please log in again.");
-        // Redirect to login or refresh token
       } else if (err.response?.status === 403) {
         alert(
           "Access denied. You don't have permission to perform this action.",
@@ -282,10 +264,8 @@ useEffect(() => {
     }
   };
 
-  //add this ----------------------------------------------------------------shivani
   const handleApplyResignation = async (e) => {
     e.preventDefault();
-
     if (isSubmitting) return;
     setIsSubmitting(true);
 
@@ -297,7 +277,6 @@ useEffect(() => {
 
     try {
       const token = getToken();
-
       const response = await axios.post(
         "http://localhost:8000/resignation/apply",
         {
@@ -311,8 +290,7 @@ useEffect(() => {
         },
       );
 
-      alert(response.data.message); // "Resignation applied successfully"
-
+      alert(response.data.message);
       setApplyForm({ reason: "", comments: "" });
       setShowApplyModal(false);
       fetchResignations(); // refresh list
@@ -346,7 +324,6 @@ useEffect(() => {
     }
   };
 
-  //end-------------------------------------------------------------------------
   const formatDate = (date) => {
     if (!date) return "";
     const d = new Date(date);
@@ -384,7 +361,6 @@ useEffect(() => {
 
 }, [user]);
 
-  // Filter and search logic
   useEffect(() => {
     setFilteredRequests(requests);
     setCurrentPage(1);
@@ -407,9 +383,6 @@ useEffect(() => {
           // r.reportingManager,
           r.applyDate,
           r.lwd,
-          //r.reason,
-          //r.approverComment,
-          // r.comments,
           r.approvedBy?.name,
         ];
 
@@ -491,7 +464,7 @@ useEffect(() => {
     setFilteredRequests(requests);
     setCurrentPage(1);
   };
-  // Calculate counts for status cards
+
   const statusCounts = requests.reduce((acc, request) => {
     acc.total = (acc.total || 0) + 1;
     if (request.status === "Pending") {
@@ -624,38 +597,6 @@ if (!user || role !== "hr") {
 
       {activeTab === "my" && (
         <div className="card-body">
-          {/* <div className="card shadow-sm border-0 mb-4">
-            <div className="table-responsive">
-              <table className="table table-hover align-middle mb-0 bg-white">
-                <thead>
-                  <tr>
-                    <th style={thStyle}>Employee ID</th>
-                    <th style={thStyle}>Name</th>
-                    <th style={thStyle}>Joining Date</th>
-                    <th style={thStyle}>Reporting Manager</th>
-                    <th style={thStyle}>Department</th>
-                    <th style={thStyle}>Designation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setShowProfileModal(true)}
-                  >
-                    <td style={tdStyle}>{user?.employeeId || "N/A"}</td>
-                    <td style={tdStyle}>{user?.name || "N/A"}</td>
-                    <td style={tdStyle}>{formatDate(user?.doj)}</td>
-                    <td style={tdStyle}>
-                      {user?.reportingManager?.name || "N/A"}
-                    </td>
-                    <td style={tdStyle}>{user?.department || "N/A"}</td>
-                    <td style={tdStyle}>{user?.designation || "N/A"}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div> */}
-
       <button
   className="btn btn-sm custom-outline-btn"
   disabled={hasApprovedResignation}
@@ -884,7 +825,6 @@ if (!user || role !== "hr") {
         </div>
       )}
 
-      {/*add this -------------------------------------------- */}
       {activeTab === "team" && (
         <>
           {/* Status Cards */}
@@ -953,7 +893,6 @@ if (!user || role !== "hr") {
                 {/* Search Input */}
                 <div
                   className="col-12 col-md-auto d-flex align-items-center gap-2  mb-1"
-                  //style={{ maxWidth: "400px" }}
                 >
                   <label
                     className="fw-bold mb-0"
@@ -1176,11 +1115,6 @@ if (!user || role !== "hr") {
           >
             <div 
               className="modal-content"
-              // style={{
-              //   maxHeight: "90vh",
-              //   display: "flex",
-              //   flexDirection: "column",
-              // }}
             >
               {/* Header*/}
               <div
@@ -1320,7 +1254,6 @@ if (!user || role !== "hr") {
         </div>
       )}
 
-      {/*add this -------------------------------------------shivani */}
       {showMyResignationPopup && selectedMyResignation && (
         <div
           className="modal fade show"
@@ -1798,18 +1731,8 @@ if (!user || role !== "hr") {
                       <div className="fw-semibold">Reporting Manager</div>
                       <div>{selectedRow.reportingManager || "N/A"}</div>
                     </div>
-                    {/* 
-              {selectedRow.noticePeriodDays &&
-                selectedRow.noticePeriodDays > 0 && (
-                  <div className="col-md-6 mb-2">
-                    <div className="fw-semibold">Notice Period</div>
-                    <div>{selectedRow.noticePeriodDays} days</div>
-                  </div>
-                )}
-              */}
                   </div>
 
-                  {/* ===== Resignation Information ===== */}
                   <div className="row mb-3">
                     <div className="col-12">
                       <h6
@@ -1880,9 +1803,6 @@ if (!user || role !== "hr") {
         </div>
       )}
 
-      {/*end------------------------------------------------------------------ */}
-
-      {/* //Added by Mahesh */}
       <div className="text-end mt-3">
         <button
           className="btn btn-sm custom-outline-btn"

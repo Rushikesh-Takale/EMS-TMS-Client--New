@@ -217,42 +217,6 @@ function Resignation() {
     fetchResignations();
   }, []);
 
-  // Filter and search logic
-  // useEffect(() => {
-  //   let temp = [...requests];
-
-  //   if (searchInput.trim() !== "") {
-  //     const query = searchInput.toLowerCase();
-  //     temp = temp.filter((r) => {
-  //       const searchableFields = [
-  //         r.id,
-  //         r.empId,
-  //         r.name,
-  //         r.designation,
-  //         r.dept,
-  //         r.status,
-  //         r.reportingManager,
-  //         r.applyDate,
-  //         r.lwd,
-  //         r.reason,
-  //         r.approverComment,
-  //         r.comments,
-  //         r.approvedBy?.name,
-  //       ];
-
-  //       const searchString = searchableFields
-  //         .filter((field) => field !== null && field !== undefined)
-  //         .join(" ")
-  //         .toLowerCase();
-
-  //       return searchString.includes(query);
-  //     });
-  //   }
-
-  //   setFilteredRequests(temp);
-  //   setCurrentPage(1);
-  // }, [requests, searchInput]);
-
   const handleSearch = () => {
     if (!searchInput.trim()) {
       setFilteredRequests(requests);

@@ -184,10 +184,6 @@ const AdminFeedback = () => {
     </nav>
   );
 
-  const openFeedbackModal = (feedback) => {
-    setSelectedFeedback(feedback);
-  };
-
   const handleRowClick = (feedback) => {
     setSelectedFeedback(feedback);
   };

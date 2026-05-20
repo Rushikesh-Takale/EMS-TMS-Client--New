@@ -185,13 +185,10 @@ function EmployeeResignation({ user }) {
       alert("Please select reason");
       return;
     }
-    //Added by Rutuja
     if (!form.comments || form.comments.trim() === "") {
       alert("Please provide comments for resignation");
       return;
     }
-
-    // comment limit
     if (form.comments.trim().length > 300) {
       alert("Comments must be 300 characters or less");
       return;
@@ -199,12 +196,6 @@ function EmployeeResignation({ user }) {
 
     setIsSubmitting(true);
     try {
-      // const userData = await fetchUser();
-      // if (!userData) {
-      //   alert("User not found");
-      //   return;
-      // }
-
       const payload = {
         reason: form.reason,
         comments: form.comments,
@@ -251,7 +242,6 @@ function EmployeeResignation({ user }) {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-
       if (response.data.success) {
         alert("Resignation cancel successfully");
         fetchResignations();
@@ -276,32 +266,6 @@ function EmployeeResignation({ user }) {
 
     fetchData();
   }, [token]);
-
-  // Apply filters when search query changes
-  // useEffect(() => {
-  //   const query = searchQuery.toLowerCase().trim();
-  //   if (query === "") {
-  //     setFilteredResignations(resignations);
-  //   } else {
-  //     const filtered = resignations.filter(
-  //       (r) =>
-  //         (r.resignationId || "").toString().toLowerCase().includes(query) ||
-  //         (r.reason || "").toLowerCase().includes(query) ||
-  //         (r.status || "").toLowerCase().includes(query) ||
-  //         (r.approverComment || "").toLowerCase().includes(query) ||
-  //         (r.approverName || "").toLowerCase().includes(query) ||
-  //         formatDate(r.applyDate).toLowerCase().includes(query) ||
-  //         (r.approvedDate
-  //           ? formatDate(r.approvedDate).toLowerCase().includes(query)
-  //           : false) ||
-  //         (r.lastWorkingDay
-  //           ? formatDate(r.lastWorkingDay).toLowerCase().includes(query)
-  //           : false),
-  //     );
-  //     setFilteredResignations(filtered);
-  //   }
-  //   setCurrentPage(1);
-  // }, [searchQuery, resignations]);
 
   useEffect(() => {
     if (applyFilter) {
@@ -391,18 +355,6 @@ function EmployeeResignation({ user }) {
     });
   };
 
-  // Calculate counts for status cards
-  // const statusCounts = {
-  //   total: resignations.length,
-  //   pending: resignations.filter((r) => r.status?.toLowerCase() === "pending")
-  //     .length,
-  //   approved: resignations.filter((r) => r.status?.toLowerCase() === "approved")
-  //     .length,
-  //   rejected: resignations.filter((r) => r.status?.toLowerCase() === "rejected")
-  //     .length,
-  // };
-
-  // Pagination logic
   const totalPages = Math.ceil(filteredResignations.length / itemsPerPage);
   const indexOfLastItem = Math.min(
     currentPage * itemsPerPage,
@@ -419,11 +371,6 @@ function EmployeeResignation({ user }) {
     setCurrentPage(pageNumber);
   };
 
-  const resetFilters = () => {
-    setSearchQuery("");
-    setFilteredResignations(resignations);
-  };
-
   return (
     <div className="container-fluid">
       <h2
@@ -436,96 +383,6 @@ function EmployeeResignation({ user }) {
       >
         My Resignation
       </h2>
-
-      {/* Status Cards */}
-      {/* <div className="row g-3 mb-4">
-        {[
-          {
-            title: "Total Requests",
-            count: statusCounts.total || 0,
-            bg: "#D1ECF1",
-          },
-          {
-            title: "Pending Requests",
-            count: statusCounts.pending || 0,
-            bg: "#FFE493",
-          },
-          {
-            title: "Approved Requests",
-            count: statusCounts.approved || 0,
-            bg: "#D7F5E4",
-          },
-          {
-            title: "Rejected Requests",
-            count: statusCounts.rejected || 0,
-            bg: "#F2C2C2",
-          },
-        ].map((stat, idx) => (
-          <div className="col-12 col-md-4 col-lg-3 mb-3" key={idx}>
-            <div className="card shadow-sm h-100 border-0">
-              <div
-                className="card-body d-flex align-items-center"
-                style={{ gap: "20px" }}
-              >
-                <h4
-                  className="mb-0"
-                  style={{
-                    fontSize: "32px",
-                    backgroundColor: stat.bg,
-                    padding: "15px",
-                    textAlign: "center",
-                    minWidth: "70px",
-                    minHeight: "70px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#3A5FBE",
-                  }}
-                >
-                  {stat.count}
-                </h4>
-                <p
-                  className="mb-0 fw-semibold"
-                  style={{ fontSize: "18px", color: "#3A5FBE" }}
-                >
-                  {stat.title}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div> */}
-
-      {/* Employee Info Table */}
-      {/* <div className="card shadow-sm border-0 mb-4">
-        <div className="table-responsive">
-          <table className="table table-hover align-middle mb-0 bg-white">
-            <thead>
-              <tr>
-                <th style={thStyle}>Employee ID</th>
-                <th style={thStyle}>Name</th>
-                <th style={thStyle}>Joining Date</th>
-                <th style={thStyle}>Reporting Manager</th>
-                <th style={thStyle}>Department</th>
-                <th style={thStyle}>Designation</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                style={{ cursor: "pointer" }}
-                onClick={() => setShowEmployeePopup(true)}
-              >
-                <td style={tdStyle}>{employee.empId || "N/A"}</td>
-                <td style={tdStyle}>{employee.name || "N/A"}</td>
-                <td style={tdStyle}>{formatDate(employee.joiningDate)}</td>
-                <td style={tdStyle}>{employee.manager || "N/A"}</td>
-                <td style={tdStyle}>{employee.department || "N/A"}</td>
-                <td style={tdStyle}>{employee.designation || "N/A"}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div> */}
 
       {/* Filter Section */}
       <div className="card mb-4 shadow-sm border-0">
@@ -563,7 +420,7 @@ function EmployeeResignation({ user }) {
                 style={{ minWidth: 90 }}
                 className="btn btn-sm custom-outline-btn"
                 onClick={() => {
-                  setApplyFilter(true); //rutuja
+                  setApplyFilter(true); 
                 }}
               >
                 Filter
@@ -585,7 +442,7 @@ function EmployeeResignation({ user }) {
         </div>
       </div>
 
-      {/* Apply Resignation Button */}
+      {/* Apply Resignation */}
       <div className="d-flex justify-content-start mb-4">
         <button
           className="btn btn-sm custom-outline-btn"
@@ -763,7 +620,6 @@ function EmployeeResignation({ user }) {
         </div>
       </nav>
 
-      {/* Employee Info Popup - Updated to match AdminTaskTMS style */}
       {showEmployeePopup && (
         <div
           className="modal fade show"
@@ -905,7 +761,6 @@ function EmployeeResignation({ user }) {
         </div>
       )}
 
-      {/* Apply Resignation Popup - Updated to match AdminTaskTMS style */}
       {showApply && (
         <div
           className="modal fade show"
@@ -1053,7 +908,6 @@ function EmployeeResignation({ user }) {
         </div>
       )}
 
-      {/* Resignation Details Modal - Updated to match AdminTaskTMS style */}
       {showResignationDetails && selectedResignation && (
         <div
           className="modal fade show"
@@ -1266,7 +1120,6 @@ function EmployeeResignation({ user }) {
                     onClick={() =>
                       handleDeleteResignation(selectedResignation.resignationId)
                     }
-                    // style={{ marginRight: "auto" }}
                   >
                     Cancel Resignation
                   </button>

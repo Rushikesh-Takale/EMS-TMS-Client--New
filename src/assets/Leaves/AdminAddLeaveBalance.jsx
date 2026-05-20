@@ -22,7 +22,7 @@ function AdminAddLeaveBalance({fetchNotifications}) {
   const [employeeNameFilter, setEmployeeNameFilter] = useState("");
   const [dateFromFilter, setDateFromFilter] = useState("");
   const [dateToFilter, setDateToFilter] = useState("");
-  const [filteredLeaves, setFilteredLeaves] = useState(leaves); // Initial render = all leaves
+  const [filteredLeaves, setFilteredLeaves] = useState(leaves); 
 
   //adesh code
   const [selectedLeave, setSelectedLeave] = useState(null);
@@ -41,18 +41,14 @@ function AdminAddLeaveBalance({fetchNotifications}) {
     const firstEl = focusableElements[0];
     const lastEl = focusableElements[focusableElements.length - 1];
 
-    // ✅ Focus first element when modal opens
      modal.focus();
-    // firstEl.focus();
 
     const handleKeyDown = (e) => {
-      // ESC closes modal
       if (e.key === "Escape") {
         e.preventDefault();
         setSelectedLeave(null);
       }
 
-      // TAB trap
       if (e.key === "Tab") {
         if (e.shiftKey) {
           if (document.activeElement === firstEl) {
@@ -76,40 +72,6 @@ function AdminAddLeaveBalance({fetchNotifications}) {
   }, [selectedLeave]);
   // dipali code
   
-  //NEW CODE
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:8000/leaves")
-  //     .then((res) => {
-  //       const now = new Date();
-
-  //       const filteredByDate = res.data.filter((l) => {
-  //         const appliedDate = new Date(l.appliedAt);
-
-  //         const monthsDiff =
-  //           (now.getFullYear() - appliedDate.getFullYear()) * 12 +
-  //           (now.getMonth() - appliedDate.getMonth());
-
-  //         return monthsDiff < 3;
-  //       });
-
-  //       const sortedLeaves = filteredByDate.sort(
-  //         (a, b) => new Date(b.appliedAt) - new Date(a.appliedAt),
-  //       );
-
-  //       setLeaves(sortedLeaves);
-  //       setFilteredLeaves(sortedLeaves);
-
-  //       setPendingRequests(
-  //         filteredByDate.filter((l) => l.status === "pending").length,
-  //       );
-  //     })
-  //     .catch((err) => console.error("Leaves fetch error:", err))
-  //     .finally(() => setLoadingLeaves(false));
-  // }, []);
-
-  // new code filter
-
   // 🔹 Fetch logged-in admin user
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -183,29 +145,6 @@ function AdminAddLeaveBalance({fetchNotifications}) {
       .catch((err) => console.error("Leaves fetch error:", err))
       .finally(() => setLoadingLeaves(false));
   }, [user]);
-
-  // 🔹 Update leave status
-  // const updateStatus = async (leaveId, status) => {
-  //   if (!user?._id) return;
-
-  //   try {
-  //     await axios.put(`http://localhost:8000/leave/${leaveId}/status`, {
-  //       status,
-  //       userId: user._id,
-  //       role: "admin",
-  //     });
-
-  //     setLeaves((prev) =>
-  //       prev.map((l) => (l._id === leaveId ? { ...l, status } : l))
-  //     );
-
-  //     setPendingRequests((prev) =>
-  //       status === "approved" || status === "rejected" ? prev - 1 : prev
-  //     );
-  //   } catch (err) {
-  //     console.error("Error updating status:", err);
-  //   }
-  // };
 
   const updateStatus = async (leaveId, status) => {
     if (!user?._id) return;
@@ -281,21 +220,6 @@ function AdminAddLeaveBalance({fetchNotifications}) {
       setMessage(errorMessage);
     }
   };
-  // const grantYearly = async () => {
-  //   try {
-  //     const res = await axios.post("http://localhost:8000/leave/grant-yearly", {
-  //       sl,
-  //       cl,
-  //     });
-  //     setMessage(res.data.message + " for " + res.data.count + " employees");
-
-  //     // 🔁 Refresh balance from backend
-  //     await fetchLeaveBalance();
-  //   } catch (err) {
-  //     console.error("Error granting yearly leave:", err);
-  //   }
-  // };
-
   const [data, setData] = useState([]);
   const fetchYearlySettings = async () => {
     try {
@@ -364,12 +288,6 @@ function AdminAddLeaveBalance({fetchNotifications}) {
     try {
       const res = await axios.get("http://localhost:8000/leave/balance");
       console.log("data", res.data);
-      // if (res.data) {
-      //   setSl(res.data.sl);
-      //   setCl(res.data.cl);
-      //   console.log("test sl/cl",res.data )
-
-      // }
     } catch (err) {
       console.error("Error fetching leave balance:", err);
     }
@@ -384,11 +302,6 @@ function AdminAddLeaveBalance({fetchNotifications}) {
   const approvedLeaves = leaves.filter((l) => l.status === "approved").length;
   const rejectedLeaves = leaves.filter((l) => l.status === "rejected").length;
 
-  // // 🔹 Pagination logic
-  // const indexOfLastItem = currentPage * itemsPerPage;
-  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  // const currentLeaves = leaves.slice(indexOfFirstItem, indexOfLastItem);
-  // const totalPages = Math.ceil(leaves.length / itemsPerPage);
 
   // dipali  code
   const totalPages = Math.ceil(filteredLeaves.length / itemsPerPage);
@@ -409,9 +322,10 @@ function AdminAddLeaveBalance({fetchNotifications}) {
       await axios.delete(`http://localhost:8000/leave/${leaveId}`);
 
       // ✅ Remove the deleted leave from state
-      setLeaves((prev) => prev.filter((l) => l._id !== leaveId));
-      //Added by jaicy
-      // setFilteredLeaves((prev) => prev.filter((l) => l._id !== leaveId));
+      const updatedLeaves = leaves.filter((l) => l._id !== leaveId);
+    setLeaves(updatedLeaves);
+    setFilteredLeaves(updatedLeaves);
+      
       
 fetchNotifications();
       alert("🗑️ Leave deleted successfully!");
@@ -420,20 +334,6 @@ fetchNotifications();
       alert("❌ Failed to delete leave. Please try again.");
     }
   };
-
-  //   const resetAllLeaves = async () => {
-  //   if (!window.confirm("⚠️ Are you sure you want to reset ALL employees' leave balances to zero?")) {
-  //     return;
-  //   }
-
-  //   try {
-  //     const res = await axios.post("http://localhost:8000/leave/reset-all");
-  //     setMessage(`${res.data.message} (${res.data.count} employees affected) ✅`);
-  //   } catch (err) {
-  //     console.error("Error resetting leave balances:", err);
-  //     setMessage("❌ Failed to reset leave balances.");
-  //   }
-  // };
 
   console.log("currentLeaves", currentLeaves);
 
@@ -455,7 +355,6 @@ fetchNotifications();
       alert("❌ Failed to reset yearly leave settings. Please try again.");
     }
   };
-  /////leave duration dip
 
   const getLeaveDurationText = (leave) => {
     if (!leave) return "-";
@@ -625,19 +524,6 @@ fetchNotifications();
           </div>
         </div>
 
-        {/* <div className="col-md-3">
-          <div className="card shadow-sm border-0">
-            <div className="card-body d-flex align-items-center" style={{ gap: "20px" }}>
-              <h4 className="mb-0" style={{ fontSize: "40px", backgroundColor: "#E2E3FF", padding: "10px 20px" }}>
-                {leaves.length}
-              </h4>
-              <p className="mb-0 fw-semibold" style={{ fontSize: "20px", color: "#3A5FBE" }}>
-                Total Leaves
-              </p>
-            </div>
-          </div>
-        </div> */}
-
         <div className="col-md-4 mb-3">
           <div className="card shadow-sm border-0">
             <div
@@ -673,11 +559,6 @@ fetchNotifications();
 
       {/* Set Leave Modal */}
       <>
-        {/* <button  className="btn btn-sm btn-outline mt-3"
-          style={{color: "#3A5FBE", borderColor: "#3A5FBE"  }}
-        onClick={() => setShowModal(true)}>
-          Set Leaves
-        </button> */}
 
         <style>{`
   .modal-body .btn:focus {
@@ -718,88 +599,9 @@ fetchNotifications();
     box-shadow: 0 0 0 3px rgba(58, 95, 190, 0.15) !important;
   }
 `}</style>
-        {/* {showModal && (
-          <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}>
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header text-white" style={{ backgroundColor: "#3A5FBE" }}
-                >
-                  <h5 className="modal-title">Set Leaves</h5>
-                  <button
-                    type="button"
-                    className="btn-close btn-close-white"
-                    onClick={() => setShowModal(false)}
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <label className="form-label" style={{ color: "#3A5FBF" }}>Sick Leave</label>
-                  <input
-                    type="number"
-                    value={sl}
-                    onChange={(e) => setSl(Number(e.target.value))}
-                    className="form-control mb-3"
-                  />
-                  <label className="form-label" style={{ color: "#3A5FBF" }}>Casual Leave</label>
-                  <input
-                    type="number"
-                    value={cl}
-                    onChange={(e) => setCl(Number(e.target.value))}
-                    className="form-control"
-                  />
-                </div>
-                <div className="modal-footer">
-                  <button  className="btn btn-sm btn-outline mt-3"
-          style={{color: "#3A5FBE", borderColor: "#3A5FBE"  }} onClick={grantYearly}>
-                    Grant Yearly Leave
-                  </button>
-                 
-                  <button className="btn btn-outline" style={{ borderColor: "#3A5FBE", color: "#3A5FBE" }} onClick={() => setShowModal(false)}>
-                    Cancel
-                  </button>
-
-                 
-                </div>
-              </div>
-            </div>
-          </div>
-        )} */}
+        
       </>
 
-      {/* <div className="card shadow-sm p-3 mt-4">
-      <h5 className="text-center">Yearly Leave Settings</h5>
-      <table className="table table-bordered mt-3 text-center">
-        <thead className="table-light">
-          <tr>
-            <th>Year</th>
-            <th>Sick Leave (SL)</th>
-            <th>Casual Leave (CL)</th>
-            <th>Created On</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item) => (
-            <tr key={item._id}>
-              <td>{item.year}</td>
-              <td>{item.sl}</td>
-              <td>{item.cl}</td>
-              <td>{new Date(item.createdAt).toLocaleDateString()}</td>
-           
-           
-           <td><button
-    className="btn btn-danger"
-    onClick={resetYearlySettings}
-    style={{ backgroundColor: "#dc3545", borderColor: "#dc3545" }}
-  >
-    🔄 Reset Yearly Leave Settings
-  </button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div> */}
-
-      {/* dipali code */}
-      {/* New Filter Code */}
       <div className="card mt-4 shadow-sm border-0">
         <div className="card-body">
           <form
@@ -974,28 +776,7 @@ fetchNotifications();
         </div>
       </div>
 
-      {/* New Filter Code end*/}
-
-      {/* Leave Applications Table */}
       <>
-        {/* {loadingLeaves ? (
-          // <h5>Loading leave applications...</h5>
-          <div
-            className="d-flex flex-column justify-content-center align-items-center"
-            style={{ minHeight: "100vh" }}
-          >
-            <div
-              className="spinner-grow"
-              role="status"
-              style={{ width: "4rem", height: "4rem", color: "#3A5FBE" }}
-            >
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <p className="mt-3 fw-semibold" style={{ color: "#3A5FBE" }}>
-              Loading ...
-            </p>
-          </div>
-        ) : */}
         {
          leaves.length === 0 ? (
           <p>No leave applications found.</p>
@@ -1244,12 +1025,6 @@ fetchNotifications();
                             whiteSpace: "nowrap",
                           }}
                         >
-                          {/* {l.duration === "half"
-                            ? 0.5
-                            : Math.floor(
-                                (new Date(l.dateTo) - new Date(l.dateFrom)) /
-                                  (1000 * 60 * 60 * 24),
-                              ) + 1} */}
                           {l.duration === "half"
                             ? "0.5"
                             : l.totalDays === 0

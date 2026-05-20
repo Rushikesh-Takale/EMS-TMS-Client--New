@@ -44,11 +44,8 @@ function ManagerResignation({ user }) {
     setSelectedRow(null);
   };
 
-  //end------------------------------------------------------------------
-  //TANVI
   const modalRef = useRef(null);
 
-  //TANVI
   useEffect(() => {
   const isAnyModalOpen = showModal || showProfileModal || showMyResignationPopup || showApplyModal || selectedRow;
 
@@ -126,7 +123,6 @@ useEffect(() => {
   };
 }, [showModal, showProfileModal, showMyResignationPopup, showApplyModal, selectedRow]);
 
-  // Get token from localStorage
   const getToken = () => {
     return localStorage.getItem("token") || localStorage.getItem("accessToken");
   };
@@ -139,7 +135,6 @@ useEffect(() => {
         return;
       }
 
-      // Get manager's own resignations first (if needed)
       const managerId = user?._id;
 
       if (!managerId) {
@@ -147,7 +142,6 @@ useEffect(() => {
         return;
       }
 
-      // Use the manager-specific endpoint with authentication
       const response = await axios.get(
         `http://localhost:8000/resignation/manager/${managerId}`,
         {
@@ -187,7 +181,6 @@ useEffect(() => {
       console.error("Error fetching manager resignations:", err);
       if (err.response?.status === 401) {
         alert("Authentication failed. Please log in again.");
-        // You might want to redirect to login here
       } else if (err.response?.status === 403) {
         alert(
           "Access denied. You don't have permission to view these resignations.",
@@ -222,7 +215,6 @@ useEffect(() => {
     }
   };
 
-  // Approve/reject resignation (manager version)
   const handleResignationAction = async (action) => {
     if (action === "approve") {
       if (!editedLwd) {
@@ -268,7 +260,6 @@ useEffect(() => {
       console.error(`Error ${action}ing resignation:`, err);
       if (err.response?.status === 401) {
         alert("Authentication failed. Please log in again.");
-        // Redirect to login or refresh token
       } else if (err.response?.status === 403) {
         alert(
           "Access denied. You don't have permission to perform this action.",
@@ -279,7 +270,6 @@ useEffect(() => {
     }
   };
 
-  //add this ----------------------------------------------------------------shivani
   const handleApplyResignation = async (e) => {
     e.preventDefault();
 
@@ -308,11 +298,11 @@ useEffect(() => {
         },
       );
 
-      alert(response.data.message); // "Resignation applied successfully"
+      alert(response.data.message); 
 
       setApplyForm({ reason: "", comments: "" });
       setShowApplyModal(false);
-      fetchResignations(); // refresh list
+      fetchResignations(); 
     } catch (err) {
       alert(err.response?.data?.message || "Failed to apply resignation");
     } finally {
@@ -343,7 +333,6 @@ useEffect(() => {
     }
   };
 
-  //end-------------------------------------------------------------------------
   const formatDate = (date) => {
     if (!date) return "";
     const d = new Date(date);
@@ -371,7 +360,6 @@ useEffect(() => {
     const token = getToken();
     if (!token) {
       alert("Please log in to access this page.");
-      // You might want to redirect to login here
       return;
     }
 
@@ -401,12 +389,8 @@ useEffect(() => {
           r.designation,
           r.dept,
           r.status,
-          // r.reportingManager,
           r.applyDate,
           r.lwd,
-          //r.reason,
-          //r.approverComment,
-          // r.comments,
           r.approvedBy?.name,
         ];
 
@@ -619,37 +603,6 @@ useEffect(() => {
 
       {activeTab === "my" && (
         <div className="card-body">
-          {/* <div className="card shadow-sm border-0 mb-4">
-            <div className="table-responsive">
-              <table className="table table-hover align-middle mb-0 bg-white">
-                <thead>
-                  <tr>
-                    <th style={thStyle}>Employee ID</th>
-                    <th style={thStyle}>Name</th>
-                    <th style={thStyle}>Joining Date</th>
-                    <th style={thStyle}>Reporting Manager</th>
-                    <th style={thStyle}>Department</th>
-                    <th style={thStyle}>Designation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setShowProfileModal(true)}
-                  >
-                    <td style={tdStyle}>{user?.employeeId || "N/A"}</td>
-                    <td style={tdStyle}>{user?.name || "N/A"}</td>
-                    <td style={tdStyle}>{formatDate(user?.doj)}</td>
-                    <td style={tdStyle}>
-                      {user?.reportingManager?.name || "N/A"}
-                    </td>
-                    <td style={tdStyle}>{user?.department || "N/A"}</td>
-                    <td style={tdStyle}>{user?.designation || "N/A"}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div> */}
 
           <button
             className="btn btn-sm custom-outline-btn"
@@ -668,7 +621,6 @@ useEffect(() => {
               <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div
                   className="col-12 col-md-auto d-flex align-items-center gap-2  mb-1"
-                  //style={{ maxWidth: "400px" }}
                 >
                   <label
                     className="fw-bold mb-0"
@@ -878,7 +830,6 @@ useEffect(() => {
         </div>
       )}
 
-      {/*add this -------------------------------------------- */}
       {activeTab === "team" && (
         <>
           {/* Status Cards */}
@@ -947,7 +898,6 @@ useEffect(() => {
                 {/* Search Input */}
                 <div
                   className="col-12 col-md-auto d-flex align-items-center gap-2  mb-1"
-                  //style={{ maxWidth: "400px" }}
                 >
                   <label
                     className="fw-bold mb-0"
@@ -1170,11 +1120,6 @@ useEffect(() => {
           >
             <div 
               className="modal-content"
-              // style={{
-              //   maxHeight: "90vh",
-              //   display: "flex",
-              //   flexDirection: "column",
-              // }}
             >
               {/* Header*/}
               <div
@@ -1197,7 +1142,6 @@ useEffect(() => {
               >
                 
                 <div className="container-fluid">
-                  {/* Manager Action Section */}
                   {selected.status === "Pending" && (
                     <div className="row mb-3">
                       <div className="col-12">
@@ -1314,7 +1258,6 @@ useEffect(() => {
         </div>
       )}
 
-      {/*add this -------------------------------------------shivani */}
       {showMyResignationPopup && selectedMyResignation && (
         <div
           className="modal fade show"
@@ -1414,7 +1357,7 @@ useEffect(() => {
                         : "N/A"}
                     </div>
                   </div>
-                  {/* Approved / Rejected Date */}
+
                   {selectedMyResignation.status?.toLowerCase() !==
                     "pending" && (
 <div className="row mb-2">
@@ -1790,15 +1733,6 @@ useEffect(() => {
                       <div className="fw-semibold">Reporting Manager</div>
                       <div>{selectedRow.reportingManager || "N/A"}</div>
                     </div>
-                    {/* 
-              {selectedRow.noticePeriodDays &&
-                selectedRow.noticePeriodDays > 0 && (
-                  <div className="col-md-6 mb-2">
-                    <div className="fw-semibold">Notice Period</div>
-                    <div>{selectedRow.noticePeriodDays} days</div>
-                  </div>
-                )}
-              */}
                   </div>
 
                   {/* ===== Resignation Information ===== */}
@@ -1872,9 +1806,6 @@ useEffect(() => {
         </div>
       )}
 
-      {/*end------------------------------------------------------------------ */}
-
-      {/* //Added by Mahesh */}
       <div className="text-end mt-3">
         <button
           className="btn btn-sm custom-outline-btn"

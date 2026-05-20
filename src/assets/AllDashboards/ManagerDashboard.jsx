@@ -10,10 +10,9 @@ function ManagerDashboard({ user }) {
     day: "2-digit",
     month: "short",
     year: "numeric",
-  }); // "31 Dec 2025" [web:9][web:20][web:1]
+  }); 
   const leaveModalRef = useRef(null);
   const regularizationModalRef = useRef(null);
-  // Pagination states
   const [leavePage, setLeavePage] = useState(1);
   const [regPage, setRegPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -93,14 +92,11 @@ function ManagerDashboard({ user }) {
     }
   };
 
-  // ===== Update Leave Status =====
   const updateLeaveStatus = async (leaveId, status) => {
-    //added by rutuja
     if (!confirm(`Are you sure you want to ${status} this leave request?`)) {
       return;
     }
     try {
-      // 🔥 Optimistic UI update
       setLeaves((prev) =>
         prev.map((l) => (l._id === leaveId ? { ...l, status } : l)),
       );
@@ -118,14 +114,12 @@ function ManagerDashboard({ user }) {
         userId: user._id,
         role: "manager",
       });
-      //Added by Rutuja
       alert(`Leave request ${status} successfully!`);
     } catch (err) {
       console.error("Error updating leave status:", err);
     }
   };
 
-  // ===== Update Regularization Status jaicy=====
   const updateRegularizationStatus = async (attendanceId, status) => {
     try {
       const token = localStorage.getItem("accessToken");
@@ -146,7 +140,6 @@ function ManagerDashboard({ user }) {
     }
   };
 
-  // if (loading) return <p>Loading data...</p>;
   <div
     className="d-flex flex-column justify-content-center align-items-center"
     style={{ minHeight: "100vh" }}
@@ -205,7 +198,6 @@ function ManagerDashboard({ user }) {
     indexOfLastReg,
   );
 
-  // ===== Pagination Component =====
   const renderPagination = (
     currentPage,
     totalPages,
@@ -275,9 +267,6 @@ function ManagerDashboard({ user }) {
   console.log(paginatedRegularizations);
   console.log("paginatedLeaves", paginatedLeaves);
 
-  {
-    /* Add helper function at the top of component (below imports) */
-  }
   const formatToIST = (utcDateString) => {
     if (!utcDateString) return "-";
     const date = new Date(utcDateString);
@@ -291,20 +280,15 @@ function ManagerDashboard({ user }) {
       .toUpperCase();
   };
 
-  //filtercode logic
   const applyLeaveFilters = () => {
-
-    
     let temp = [...leaves];
 
-    // Filter by status
     if (leaveStatusFilter !== "All") {
       temp = temp.filter(
         (l) => l.status.toLowerCase() === leaveStatusFilter.toLowerCase(),
       );
     }
 
-    // Filter by employee name
     if (leaveNameFilter.trim()) {
       temp = temp.filter((l) =>
         l.employee?.name
@@ -313,7 +297,6 @@ function ManagerDashboard({ user }) {
       );
     }
 
-    // Filter by date range
     if (leaveDateFromFilter) {
       temp = temp.filter(
         (l) => new Date(l.dateFrom) >= new Date(leaveDateFromFilter),
@@ -401,9 +384,6 @@ function ManagerDashboard({ user }) {
     const firstEl = focusableElements[0];
     const lastEl = focusableElements[focusableElements.length - 1];
 
-    // Auto focus first element
-    // firstEl.focus();
-
     const handleKeyDown = (e) => {
       if (e.key !== "Tab") return;
 
@@ -442,10 +422,9 @@ function ManagerDashboard({ user }) {
       document.documentElement.style.overflow = "";
     };
   }, [selectedLeave, selectedRegularization]);
-  // dip code changes 09-02-2026
+
   return (
     <div className="container-fluid">
-      {/* ==================== Leave Requests ==================== */}
       <h2
         className="mb-4"
         style={{
@@ -463,7 +442,7 @@ function ManagerDashboard({ user }) {
             className="row g-2 align-items-center"
             onSubmit={(e) => {
               e.preventDefault();
-              applyLeaveFilters(); // or applyRegFilters
+              applyLeaveFilters(); 
             }}
             style={{ justifyContent: "space-between" }}
           >
@@ -613,7 +592,6 @@ function ManagerDashboard({ user }) {
       </div>
 
       {/* filter code end*/}
-
       {leaves.length === 0 ? (
         <p>No leaves assigned to you.</p>
       ) : (
@@ -841,7 +819,6 @@ function ManagerDashboard({ user }) {
                       >
                         {df.format(new Date(l.dateTo))}
                       </td>
-                      {/* <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>{l.duration}</td> */}
                       <td
                         style={{
                           padding: "12px",
@@ -857,7 +834,6 @@ function ManagerDashboard({ user }) {
                           ? "Sandwich Leave"
                           : l.totalDays}
                       </td>
-                      {/* <td style={{ padding: '12px', verticalAlign: 'middle', fontSize: '14px', borderBottom: '1px solid #dee2e6', whiteSpace: 'nowrap' }}>{l.reason}</td> */}
 
                       <td
                         style={{
@@ -953,7 +929,7 @@ function ManagerDashboard({ user }) {
                             <button
                               className="btn btn-sm btn-outline-danger"
                               onClick={(e) => {
-                                e.stopPropagation(); // ✅ prevents modal open
+                                e.stopPropagation(); 
                                 updateLeaveStatus(l._id, "rejected");
                               }}
                             >
@@ -1157,11 +1133,10 @@ function ManagerDashboard({ user }) {
             </div>
           )}
 
-          {/* Pagination bar for Leave Table */}
           {renderPagination(
             leavePage,
             totalLeavePages,
-            filteredLeaves.length, // Use filtered, not leaves.length!
+            filteredLeaves.length, 
             indexOfFirstLeave,
             indexOfLastLeave,
             setLeavePage,
@@ -1169,7 +1144,6 @@ function ManagerDashboard({ user }) {
         </>
       )}
 
-      {/* ==================== Regularization Requests ==================== */}
       <h2
         className="mb-4"
         style={{
@@ -1192,7 +1166,7 @@ function ManagerDashboard({ user }) {
                 className="row g-2 align-items-center"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  applyRegFilters(); // The filtering function for regularizations
+                  applyRegFilters(); 
                 }}
                 style={{ justifyContent: "space-between" }}
               >
@@ -1451,8 +1425,6 @@ function ManagerDashboard({ user }) {
                   >
                     Status
                   </th>
-                  {/* <th>Requested At</th>
-                <th>Reviewed By</th> */}
                   <th
                     style={{
                       fontWeight: "500",
@@ -1468,7 +1440,6 @@ function ManagerDashboard({ user }) {
                 </tr>
               </thead>
               <tbody>
-                {/* {paginatedRegularizations.map((r) => ( */}
                 {paginatedRegularizations.length === 0 ? (
                   <tr>
                     <td
@@ -1550,14 +1521,6 @@ function ManagerDashboard({ user }) {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {/* {r.regularizationRequest.checkIn
-                        ? new Date(r.regularizationRequest.checkIn).toLocaleTimeString("en-GB", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: true, // uncomment for 24-hour clock, e.g., 17:05
-                        }).toUpperCase()
-                        : "-"} */}
-
                         {formatToIST(r?.regularizationRequest?.checkIn)}
                       </td>
                       <td
@@ -1569,14 +1532,6 @@ function ManagerDashboard({ user }) {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {/* {r.regularizationRequest.checkOut
-                        ? new Date(r.regularizationRequest.checkOut).toLocaleTimeString("en-GB", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: true, // uncomment for 24-hour clock, e.g., 17:05
-                        }).toUpperCase()
-                        : "-"} */}
-
                         {formatToIST(r?.regularizationRequest?.checkOut)}
                       </td>
 
@@ -1651,14 +1606,6 @@ function ManagerDashboard({ user }) {
                           </span>
                         )}
                       </td>
-                      {/* <td>
-                    {r.regularizationRequest.requestedAt
-                      ? new Date(
-                          r.regularizationRequest.requestedAt
-                        ).toLocaleString()
-                      : "-"}
-                  </td>
-                  <td>{r.regularizationRequest.approvedByName || "-"}</td> */}
                       <td
                         style={{
                           padding: "12px",
@@ -1699,7 +1646,6 @@ function ManagerDashboard({ user }) {
               </tbody>
             </table>
 
-            {/* ========= Regularization Popup ========= */}
             {selectedRegularization && (
               <div
                 className="modal fade show"
@@ -1845,8 +1791,6 @@ function ManagerDashboard({ user }) {
                           </div>
                         </div>
 
-
-                        {/* rutuja 07-04-26 */}
                         {selectedRegularization.regularizationRequest?.status !== "Pending" && (
                           <div className="row mb-2">
                             <div className="col-5 col-sm-3 fw-semibold">
@@ -1915,7 +1859,7 @@ function ManagerDashboard({ user }) {
           {renderPagination(
             regPage,
             totalRegPages,
-            filteredRegularizations.length, // Use filtered, not regularizations.length!
+            filteredRegularizations.length, 
             indexOfFirstReg,
             indexOfLastReg,
             setRegPage,
