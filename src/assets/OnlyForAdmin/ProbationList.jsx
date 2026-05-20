@@ -461,7 +461,7 @@ useEffect(() => {
 }}
                       >
                         {emp.probationStatus === "approved" ? "Approved" :
-                        emp.probationStatus === "extended" ? "Extendending..." :
+                        emp.probationStatus === "extended" ? "Extended" :
                         new Date(emp.probationEndDate) < new Date() ? "Overdue" :
                         "Pending"}
                       </span>
@@ -859,7 +859,7 @@ useEffect(() => {
                   onClick={handleExtend}
                   disabled={isSubmitting}
                 >
-                  Extend Probation
+                  {isSubmitting ? 'Extending....' : 'Extend Probation'}
                 </button>
               </div>
             </div>

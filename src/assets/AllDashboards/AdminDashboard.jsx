@@ -457,7 +457,7 @@ function AdminDashboard({ user }) {
                             <td style={{ fontWeight: "400", fontSize: "14px" }}>
                               <span
                                 className="badge"
-                                style={{ backgroundColor: "#FFE493", color: "#000", fontWeight: "600" }}
+                                style={{ backgroundColor: "#FFE493", color: "#000", fontWeight: "600" ,width: "100px"}}
                               >
                                 {new Date(emp.probationEndDate).toLocaleDateString("en-GB", {
                                   day: "2-digit", month: "short", year: "numeric"
