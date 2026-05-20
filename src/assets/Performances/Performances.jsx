@@ -1709,16 +1709,17 @@ const handleSectionChange = (section) => {
                   )}
 
                 {/* DESCRIPTION */}
-             <div className="row mt-3">
-  <div className="col-4 fw-semibold">
+      <div className="row mt-3">
+  <div className="col-5 col-sm-4 fw-semibold">
     Description
   </div>
 
   <div
-    className="col-8 ps-2"
+    className="col-7 col-sm-8"
     style={{
       whiteSpace: "pre-wrap",
       wordBreak: "break-word",
+      paddingLeft: "10px",
     }}
   >
     {selectedPerformance.description}
