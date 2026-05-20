@@ -878,7 +878,7 @@ if (
               </select>
             </div>
 
-            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
+            <div className="col-12 col-md-auto d-flex align-items-center gap-1 mb-1  ">
               <label
                 htmlFor="searchInput"
                 className="fw-bold mb-0"
@@ -900,7 +900,7 @@ if (
                 onChange={(e) => setSearchText(e.target.value)}
               />
             </div>
-            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
+            <div className="col-12 col-md-auto d-flex align-items-center gap-3 mb-1 ms-1">
               <label
                 htmlFor="dateInput"
                 className="fw-bold mb-0"
