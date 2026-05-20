@@ -17,6 +17,7 @@ function TLTeamMemberAttendance() {
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const [statusFilter, setStatusFilter] = useState("All");
+  const [appliedStatusFilter, setAppliedStatusFilter] = useState("All");
   const [employeeNameFilter, setEmployeeNameFilter] = useState("");
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [showCardList, setShowCardList] = useState(null);
@@ -309,7 +310,7 @@ const fetchLateCheckInHistory = async () => {
   // ✅ Apply Filters (Status + Name)
   const applyFilters = () => {
     let temp = [...(attendanceData?.employees || [])];
-
+setAppliedStatusFilter(statusFilter);
     // Status Filter
     if (statusFilter !== "All") {
       temp = temp.filter((emp) => {
@@ -1212,7 +1213,7 @@ currentLateEmployees.map((emp) => (
                   className="text-center py-4"
                   style={{ color: "#6c757d" }}
                 >
-                  No team members found with status "{statusFilter}"
+               No team members found with status "{appliedStatusFilter}"
                 </td>
               </tr>
             ) : (

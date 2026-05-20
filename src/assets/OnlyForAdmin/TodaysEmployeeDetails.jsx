@@ -17,6 +17,7 @@ function TodaysEmployeeDetails() {
 
   // NEW: Status filter state
   const [statusFilter, setStatusFilter] = useState("All");
+  const [appliedStatusFilter, setAppliedStatusFilter] = useState("All");
   const [employeeNameFilter, setEmployeeNameFilter] = useState("");
   const [filteredEmployees, setFilteredEmployees] = useState([]);
 
@@ -532,6 +533,7 @@ if (error) {
   const applyFilters = () => {
     const employeesList = attendanceData?.employees || [];
     let temp = [...employeesList];
+    setAppliedStatusFilter(statusFilter);
 
     // Status filter
     if (statusFilter !== "All") {
@@ -1376,7 +1378,7 @@ currentLateEmployees.map((emp) => (
                   className="text-center py-4"
                   style={{ color: "#6c757d" }}
                 >
-                  No employees found with status "{statusFilter}"
+               No employees found with status "{appliedStatusFilter}"
                 </td>
               </tr>
             ) : (

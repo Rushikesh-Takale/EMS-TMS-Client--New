@@ -32,6 +32,7 @@ const [showLateModal, setShowLateModal] = useState(false);
 
 const [selectedLateEmployee, setSelectedLateEmployee] =
   useState(null);
+  const [appliedStatusFilter, setAppliedStatusFilter] = useState("All");
 
 const [lateFilteredEmployees, setLateFilteredEmployees] =
   useState([]);
@@ -136,11 +137,14 @@ const [downloadedFile, setDownloadedFile] =
     fetchAttendance();
   }, [id]); // 👈 depends on manager id
 
-  useEffect(() => {
-    if (attendanceData?.employees) {
-      setFilteredEmployees(attendanceData.employees);
-    }
-  }, [attendanceData]);
+useEffect(() => {
+  if (
+    attendanceData?.employees &&
+    filteredEmployees.length === 0
+  ) {
+    setFilteredEmployees(attendanceData.employees);
+  }
+}, [attendanceData]);
   const calculateWorkingHours = (checkIn, checkOut) => {
     if (!checkIn || !checkOut) return 0;
     const diffMs = new Date(checkOut) - new Date(checkIn);
@@ -320,6 +324,7 @@ const fetchLateCheckInHistory =
   // ✅ Apply Filters (Status + Name)
   const applyFilters = () => {
     let temp = [...(attendanceData?.employees || [])];
+     setAppliedStatusFilter(statusFilter);
 
     // Status Filter
     if (statusFilter !== "All") {
@@ -1166,7 +1171,7 @@ currentLateEmployees.map((emp) => (
                   className="text-center py-4"
                   style={{ color: "#6c757d" }}
                 >
-                  No employees found with status "{statusFilter}"
+                 No employees found with status "{appliedStatusFilter}"
                 </td>
               </tr>
             ) : (

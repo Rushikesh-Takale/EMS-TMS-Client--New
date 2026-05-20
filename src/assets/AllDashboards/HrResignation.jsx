@@ -34,6 +34,9 @@ function HrResignation({ user }) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const employeeId = user?.employeeId || localStorage.getItem("employeeId");
+  const hasApprovedResignation = myResignations.some(
+  (r) => r.status?.toLowerCase() === "approved"
+);
 
   const [selectedRow, setSelectedRow] = useState(null);
 
@@ -567,6 +570,9 @@ useEffect(() => {
 const role = user?.role?.toLowerCase().trim();
 
 if (!user || role !== "hr") {
+  const hasApprovedResignation = myResignations.some(
+  (r) => r.status?.toLowerCase() === "approved"
+);
   return (
     <div className="container-fluid">
       <div
@@ -658,6 +664,7 @@ if (!user || role !== "hr") {
 
       <button
   className="btn btn-sm custom-outline-btn"
+  
   disabled={hasApprovedResignation}
   onClick={() => {
     resetApplyForm();
