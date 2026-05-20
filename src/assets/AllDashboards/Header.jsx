@@ -1,4 +1,3 @@
-//not responsive but working
 import React, { use } from "react";
 import { NavLink } from "react-router-dom";
 import Notification from "../../Notification";
@@ -16,131 +15,8 @@ function Header({ user, handleLogout, notifications, fetchNotifications}) {
     location.pathname.includes("/tms-dashboard") ? "TMS" : "EMS",
   );
 
-  const handleEMS = () => {
-    setActiveTab("EMS");
-    navigate(
-      `/dashboard/${user.role}/${user.username || user.name}/${user._id}`,
-    );
-  };
-
-  const handleTMS = () => {
-    setActiveTab("TMS");
-    //jaicy
-    //navigate(`/tms-dashboard/${user.role}/${user.username}/${user.userId}` );
-    navigate(
-      `/tms-dashboard/${user.role}/${user.username || user.name}/${user._id}`,
-    );
-
-    console.log(user);
-  };
-
   return (
     <div>
-      {/* White Bar Above Header */}
-      {/* <div
-  style={{
-    width: "100%",
-    backgroundColor: "#ffffff",
-    padding: "8px 15px",
-    boxShadow: "0px 1px 3px rgba(0,0,0,0.1)",
-    fontWeight: "500",
-    fontSize: "14px",
-    color: "#333",
-    paddingTop: "3px", // fixed
-  }}
->
-  
-  <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-      border: "1px solid #3A5FBE",
-      borderRadius: "6px",
-      overflow: "hidden",
-      marginLeft: "6px",   
-    }}
-  >
-    
-    <div
-      onClick={handleEMS}
-      onMouseEnter={(e) => {
-        if (activeTab !== "EMS") {
-          e.currentTarget.style.backgroundColor = "#f2f2f2";
-        }
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor =
-          activeTab === "EMS" ? "#e3f2fd" : "transparent";
-      }}
-      style={{
-        flex: 1,
-        textAlign: "center",
-        cursor: "pointer",
-        padding: "4px 6px",
-        backgroundColor: activeTab === "EMS" ? "#e3f2fd" : "transparent",
-        transition: "background-color 0.2s ease",
-      }}
-    >
-      <Button
-        variant="text"
-        sx={{
-          minWidth: "50px",
-          fontSize: "0.8rem",
-          padding: "0",
-          pointerEvents: "none",
-          color:"#3A5FBE"
-        }}
-      >
-        EMS
-      </Button>
-    </div>
-
-    
-    <div
-      style={{
-        width: "1px",
-        alignSelf: "stretch",
-        backgroundColor: "#555",
-      }}
-    />
-
-    
-    <div
-      onClick={handleTMS}
-      onMouseEnter={(e) => {
-        if (activeTab !== "TMS") {
-          e.currentTarget.style.backgroundColor = "#f2f2f2";
-        }
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor =
-          activeTab === "TMS" ? "#e3f2fd" : "transparent";
-      }}
-      style={{
-        flex: 1,
-        textAlign: "center",
-        cursor: "pointer",
-        padding: "4px 6px",
-        backgroundColor: activeTab === "TMS" ? "#e3f2fd" : "transparent",
-        transition: "background-color 0.2s ease",
-      }}
-    >
-      <Button
-        variant="text"
-        sx={{
-          minWidth: "50px",
-          fontSize: "0.8rem",
-          padding: "0",
-          pointerEvents: "none",
-           color:"#3A5FBE"
-        }}
-      >
-        TMS
-      </Button>
-    </div>
-  </div>
-</div> */}
-
       <header className="header-wrapper">
         {/* Left Side */}
         <div className="user-info" style={{ textTransform: "capitalize" }}>
@@ -154,18 +30,6 @@ function Header({ user, handleLogout, notifications, fetchNotifications}) {
 
         {/* Right Side */}
         <div className="header-actions-group">
-          {/* Logout Button */}
-          {/* <button className="btn position-relative" onClick={handleLogout}>
-          <i className="bi bi-power fs-5 text-secondary"></i>
-        </button> */}
-
-          {/* Notification Icon */}
-          {/* <button className="btn position-relative">
-          <i className="bi bi-bell fs-5 text-secondary"></i>
-          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-            3
-          </span>
-        </button> */}
           <div className="me-2">
             {activeTab === "EMS" ? (
               <Notification 
@@ -177,28 +41,6 @@ function Header({ user, handleLogout, notifications, fetchNotifications}) {
               <TaskNotification userId={user._id} />
             )}
           </div>
-          {/* Profile Image */}
-          {/* <NavLink
-          to={`/dashboard/${user.role}/${user.username || user.name}/${user._id}/myprofile`}
-          className="nav-link text-white d-flex flex-column align-items-center"
-          id="navlink1"
-        >
-          <img
-            src={
-              user?.image
-                ? ` 
-http://localhost:8000/uploads/${user.image}`
-                : "/myprofile.jpg"
-            }
-            alt="Profile"
-            className="rounded-circle border border-2 border-primary profile-img"
-            width="40"
-            height="40"
-          />
-        </NavLink> */}
-
-          {/* Profile image with drop down option start */}
-
           <div className="dropdown">
             <button
               className="btn p-0 focus-ring"
@@ -207,11 +49,6 @@ http://localhost:8000/uploads/${user.image}`
               aria-expanded="false"
             >
               <img
-                // src={
-                //   user?.image
-                //     ?`http://localhost:8000/image/uploads/${user.image}`
-                //     : "/myprofile.jpg"
-                // }
                 src={
                   user?.image
                     ? user.image.startsWith("http")
@@ -226,8 +63,6 @@ http://localhost:8000/uploads/${user.image}`
                 style={{ cursor: "pointer" }}
               />
             </button>
-            {/* Dropdown Section */}
-            {/* <div className="dropdown-menu profile-dropdown-menu dropdown-menu-end shadow-lg p-0" style={{ minWidth: '250px' }}> */}
             <div
               className="dropdown-menu profile-dropdown-menu dropdown-menu-start shadow-lg p-0"
               style={{ minWidth: "250px", left: 0, right: "auto" }}
@@ -235,12 +70,6 @@ http://localhost:8000/uploads/${user.image}`
               <div className="px-3 py-3 border-bottom bg-light">
                 <div className="d-flex align-items-center mb-2">
                   <img
-                    // src={
-                    //   user?.image
-                    //     ? `http://localhost:8000/image/uploads/${user.image}`
-                    //     : "/myprofile.jpg"
-                    // }
-
                     src={
                       user?.image
                         ? user.image.startsWith("http")
@@ -314,8 +143,7 @@ http://localhost:8000/uploads/${user.image}`
               </button>
             </div>
           </div>
-          {/* Profile image with drop down option end */}
-
+          
           {/* Employee ID */}
           <span
             className="fw-semibold employee-id-text"

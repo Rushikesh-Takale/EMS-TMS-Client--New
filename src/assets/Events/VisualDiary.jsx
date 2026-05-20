@@ -368,7 +368,7 @@ const VisualDiary = () => {
       )}
 
       {/* BACK BUTTON */}
-      <div className="text-end mt-3">
+      <div className="text-end mt-5 pt-4">
         <button
           className="btn btn-sm custom-outline-btn"
           style={{ minWidth: 90 }}

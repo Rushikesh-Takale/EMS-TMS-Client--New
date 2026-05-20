@@ -31,8 +31,6 @@ const HRScheduleInterview = ({user}) => {
   const startTimeRef = useRef(null);
   const endTimeRef = useRef(null);
   const [notifications, setNotifications] = useState([]);
-
-  // ===== TABLE & POPUP STATES =====
   const [allInterviews, setAllInterviews] = useState([]);
   const [interviews, setInterviews] = useState([]);
   const [showTable, setShowTable] = useState(false);
@@ -41,13 +39,9 @@ const HRScheduleInterview = ({user}) => {
 const [resumeUrl, setResumeUrl] = useState("");
 const [downloadUrl, setDownloadUrl] = useState("");
 
-
-  //jaicy
   const formatTo12Hour = (time24) => {
   if (!time24) return "";
-
   const [hours, minutes] = time24.split(":");
-  
   const date = new Date();
   date.setHours(hours);
   date.setMinutes(minutes);
@@ -58,7 +52,6 @@ const [downloadUrl, setDownloadUrl] = useState("");
     hour12: true
   }).toUpperCase();
 };
-
 
   // ===== FILTER STATES =====
   const [statusFilter, setStatusFilter] = useState("All");
@@ -158,8 +151,6 @@ const [downloadUrl, setDownloadUrl] = useState("");
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [showForm, selected,]);  
   
-
-  /* ---------------- FETCH EMPLOYEES ---------------- */
   useEffect(() => {
     axios
       .get("http://localhost:8000/allEmp")
@@ -169,7 +160,6 @@ const [downloadUrl, setDownloadUrl] = useState("");
       .catch((err) => console.error("Error fetching employees:", err));
   }, []);
 
-  /* ---------------- API FUNCTIONS ---------------- */
   const fetchAllInterviews = () => {
     axios
       .get("http://localhost:8000/interviews")
@@ -184,7 +174,6 @@ const [downloadUrl, setDownloadUrl] = useState("");
       .catch((err) => console.error("Error fetching interviews:", err));
   };
 
-  /* ---------------- LOAD INTERVIEWS STATUS UPDATE  ---------------- */
 useEffect(() => {
   fetchAllInterviews();
 
@@ -192,7 +181,6 @@ useEffect(() => {
     const now = new Date();
     const minutes = now.getMinutes();
 
-    // Refresh every 5 minutes boundary
     if (minutes % 5 === 0) {
       fetchAllInterviews();
     }
@@ -210,7 +198,6 @@ useEffect(() => {
   }, [interviews]);
   console.log("AllInterviews",allInterviews)
 
-  /* ---------------- DELETE INTERVIEW ---------------- */
   const handleDeleteInterview = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this interview?",
@@ -250,7 +237,6 @@ useEffect(() => {
       year: "numeric",
     }).format(new Date(dateString));
 
-  /* ---------------- UPDATE INTERVIEW ---------------- */
   const handleUpdateInterview = async (id, formData) => {
     const confirmUpdate = window.confirm(
       "Are you sure you want to update this interview?",
@@ -287,7 +273,6 @@ useEffect(() => {
    }
   };
 
-  /* ---------------- VALIDATIONS ---------------- */
   const validateEmail = (email) =>
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 
@@ -306,7 +291,6 @@ useEffect(() => {
     return null;
   };
 
-  /* ---------------- HANDLERS ---------------- */
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -316,7 +300,7 @@ useEffect(() => {
 
       setFormData((prev) => ({
         ...prev,
-        interviewerId: value, // 👈 employeeId
+        interviewerId: value, 
         interviewerName: interviewerName,
       }));
 
@@ -371,7 +355,6 @@ useEffect(() => {
         }
       }
 
-      // 🔥 TODAY + PAST TIME VALIDATION
       if (formData.date && isToday(formData.date)) {
         const now = new Date();
         const selectedTime = new Date(`${formData.date}T${value}`);
@@ -392,14 +375,13 @@ useEffect(() => {
   // Handle submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (isSubmitting) return; // extra protection
+    if (isSubmitting) return; 
     setIsSubmitting(true);
     const formPayload = new FormData();
     let newErrors = {};
     console.log("manualStatus:", formData.manualStatus);
     console.log("status:", formData.status); 
 
-    // 🔥 TODAY + PAST TIME VALIDATION (ON SUBMIT)
     if (formData.date && isToday(formData.date)) {
       const now = new Date();
 
@@ -466,12 +448,6 @@ if (
     if (!editingId && !formData.resume)
       newErrors.resume = "Resume upload is required";
    
-    // if (editingId) {
-    //       if (!formData.manualStatus) {
-    //         newErrors.status = "Select a status";
-    //   }
-    // }
-
     if (
       ["Scheduled","Not-completed", "Cancelled"].includes(formData.manualStatus) &&
       !formData.comment.trim()
@@ -486,7 +462,6 @@ if (
       return;
     }
 
-
     formPayload.append("candidateName", formData.candidateName);
     formPayload.append("email", formData.email);
     formPayload.append("role", formData.role);
@@ -500,7 +475,6 @@ if (
     formPayload.append("link", formData.link);
     formPayload.append("manualStatus", formData.manualStatus);
     formPayload.append("comment", formData.comment);
-    // 🔥 MOST IMPORTANT
     formPayload.append("resume", formData.resume);
 
     // Update Interveiw code
@@ -556,7 +530,6 @@ if (
     setShowForm((prev) => !prev);
   };
 
-  /* ---------------- FILTER HANDLERS ---------------- */
   const applyFilters = () => {
     let filtered = [...allInterviews];
 
@@ -617,7 +590,6 @@ if (
 
       </div>
 
-      {/* ================= FORM ================= */}
    {showForm && (
          <div
         className="modal fade show"
@@ -825,8 +797,6 @@ if (
     />
   </div>
 
-{/* //snehal code */}
-              {/* Interviewer */}
               <div className="row mb-3">
                 <div className="col-md-6">
                   <label className="form-label">Interviewer<span style={{ color: "red" }}> *</span></label>
@@ -867,7 +837,6 @@ if (
               {/* Resume */}
               <div className="mb-3">
                 <label className="form-label">Upload Resume<span style={{ color: "red" }}> *</span></label>
-                {/* Existing Resume Preview */}
                 {formData.resumeUrl && !formData.resume &&(
                   <div className="mb-2">
                     <a
@@ -888,7 +857,6 @@ if (
                   accept=".pdf,.doc,.docx"
                   onChange={handleChange}
                 />
-                {/* 🔥 THIS LINE — ONLY FOR UPDATE */}
                 {editingId ? (
                   <small className="text-muted">
                     Upload only if you want to replace existing resume
@@ -926,10 +894,7 @@ if (
                 >
                   <option value="">-- Select Status --</option>
 
-                  {/* <option value="Scheduled">Scheduled</option>
-                  <option value="On-going">On-going</option> */}
                   <option value="Cancelled">Cancelled</option>
-                  {/* <option value="Completed">Completed</option> */}
                   <option value="Not-completed">Not-completed</option>
                 </select>
                 <div className="invalid-feedback">{errors.status}</div>
@@ -971,10 +936,8 @@ if (
       </div>
       )}
 
-      {/* ================= MANAGER STYLE TABLE ================= */}
       {showTable && (
         <>
-          {/* FILTER */}
           <div className="card mb-4 mt-3 shadow-sm border-0">
             <div className="card-body">
               <form
@@ -1071,7 +1034,6 @@ if (
             </div>
           </div>
 
-          {/* TABLE */}
           <div
             className="table-responsive mt-3"
             style={{
@@ -1170,11 +1132,6 @@ setShowResumeModal(true);
                       <td style={tdStyle()}>{item.interviewType}</td>
                       <td style={tdStyle()}>{item.interviewerName}</td>
                       <td style={tdStyle()}>
-                        {/* {item.status !== "Completed" &&
-                        item.status !== "Cancelled" &&
-                        item.status !== "Not-completed" &&
-                        item.link ? (
-                          <a href={item.link} target="_blank" rel="noreferrer"onClick={(e) => e.stopPropagation()}> */}
                           {item.link ? (
     <a
       href={item.link}
@@ -1184,7 +1141,7 @@ setShowResumeModal(true);
         if (
           ["Completed", "Cancelled", "Not-completed"].includes(item.status)
         ) {
-          e.preventDefault(); // ❌ stop navigation
+          e.preventDefault(); 
           return;
         }
         e.stopPropagation();
@@ -1209,7 +1166,6 @@ setShowResumeModal(true);
                       </td>
 
                     <td style={tdStyle()}>
-                        {/* //Rushikesh code */}
                         <span
   style={{
     backgroundColor:
@@ -1242,7 +1198,6 @@ setShowResumeModal(true);
                 </td>
                  {user?.role === "hr" && (
                       <td style={tdStyle()}>
-                        {/* {item.status !== "On-going" && ( */}
                           <div className="d-flex gap-2">
                             {/* Update Button */}
                             <button
@@ -1260,7 +1215,7 @@ setShowResumeModal(true);
                                 setSelected(null);
                                 setFormData({
                                   ...item,
-                                  resume: null, // new upload optional
+                                  resume: null, 
                                   resumeUrl:
                                     item.resume || item.resumeUrl || null, // 🔥 FIX
                                 });
@@ -1362,7 +1317,6 @@ setShowResumeModal(true);
         </>
       )}
 
-      {/* ================= MODAL ================= */}
       {selected && (
         <div
           className="modal fade show"
@@ -1416,11 +1370,6 @@ setShowResumeModal(true);
                 <div className="row mb-2">
                   <div className="col-4 fw-semibold">Interview Link</div>
                   <div className="col-8">
-                    {/* {selected.status !== "Completed" &&
-                    selected.status !== "Cancelled" &&
-                    selected.status !== "Not-completed" &&
-                    selected.link ? (
-                      <a href={selected.link} target="_blank" rel="noreferrer"onClick={(e) => e.stopPropagation()}> */}
                       {selected.link ? (
     <a
       href={selected.link}
@@ -1455,7 +1404,6 @@ setShowResumeModal(true);
                   </div>
                 </div>
       
-                {/* ✅ RESUME SECTION (SEPARATE) */}
                 <div className="row mb-2">
                   <div className="col-4 fw-semibold">Resume</div>
                   <div className="col-8">
@@ -1514,7 +1462,6 @@ onClick={(e) => {
                   </div>
                 </div>
 
-                {/* Comment / Remark */}
                 {selected?.comment && (
                   <div className="row mb-2">
                     <div className="col-4 fw-semibold">Comment</div>

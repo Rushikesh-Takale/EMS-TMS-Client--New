@@ -1,7 +1,3 @@
-{
-  /* //Added by Rushikesh */
-}
-
 import React, { useEffect, useState, useRef} from "react";
 import axios from "axios";
 const API_BASE = "http://localhost:8000";
@@ -10,11 +6,8 @@ const ACK_KEY = "policy_ack_employee";
 
 function EmployeePolicy({ user }) {
   const [policies, setPolicies] = useState([]);
-  const [search, setSearch] = useState("");
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  // const employeeId = localStorage.getItem("employeeId");
-  //const user = JSON.parse(localStorage.getItem("user"));
   const employeeId = user?._id;
   const employeeName = user?.fullName || user?.name;
 
@@ -29,7 +22,6 @@ function EmployeePolicy({ user }) {
   const modalRef = useRef(null);
   const isAnyModalOpen = showModal;
 
-  // 🔹 Focus Trap Effect
   useEffect(() => {
     if (!isAnyModalOpen || !modalRef.current) return;
 
@@ -198,31 +190,17 @@ function EmployeePolicy({ user }) {
 
   const currentPolicies = filteredPolicies.slice(startIndex, endIndex);
 
-  // useEffect(() => {
-  //   setCurrentPage(1);
-  // }, [search]);
   useEffect(() => {
     if (currentPage > totalPages) {
       setCurrentPage(totalPages);
     }
   }, [totalPages, currentPage]);
-  const handleCopyPolicy = () => {
-    if (!selectedPolicy) return;
-
-    const textToCopy = `Policy Title: ${selectedPolicy.title}\n\n${selectedPolicy.description}`;
-
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      alert("Policy copied to clipboard");
-    });
-  };
-
 
   const handleDownloadPolicy = async (policy) => {
     if (!policy?.image) {
       alert("No file uploaded");
       return;
     }
-  
     if (
       isDownloading ||
       downloadedPolicies.includes(policy._id)
@@ -230,8 +208,6 @@ function EmployeePolicy({ user }) {
       alert("File already downloaded");
       return;
     }
-  
-  
         setIsDownloading(true);
   
         try {
@@ -261,16 +237,6 @@ function EmployeePolicy({ user }) {
         }
       };
 
-  const uniqueTitles = [...new Set(policies.map((p) => p.title))];
-  const thStyle = {
-    fontWeight: "500",
-    fontSize: "14px",
-    color: "#6c757d",
-    borderBottom: "2px solid #dee2e6",
-    padding: "12px",
-    whiteSpace: "nowrap",
-  };
-
   const tdStyle = {
     padding: "12px",
     verticalAlign: "middle",
@@ -291,41 +257,6 @@ function EmployeePolicy({ user }) {
   const isUpdatedPolicy = (createdAt, updatedAt) => {
     if (!updatedAt) return false;
     return new Date(updatedAt) > new Date(createdAt);
-  };
-
-  const statusStyle = (status) => {
-    switch (status) {
-      case "Read":
-        return {
-          background: "#dcfce7",
-          color: "#166534",
-        };
-      case "Pending":
-        return {
-          background: "#fde68a",
-          color: "#92400e",
-        };
-      default:
-        return {
-          background: "#e5e7eb",
-          color: "#374151",
-        };
-    }
-  };
-
-  // const getAckStatus = (policyId, userId) => {
-  //   const stored = JSON.parse(localStorage.getItem("policy_ack_status")) || {};
-
-  //   if (stored[policyId] && stored[policyId].includes(userId)) {
-  //     return true;
-  //   }
-
-  //   return false;
-  // };
-
-  const formatDateTime = (date) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleString("en-GB");
   };
 
   const formatDateDisplay = (date) => {
@@ -353,7 +284,6 @@ function EmployeePolicy({ user }) {
 
   return (
     <div className="container-fluid ">
-      {/* mahesh code header change font size */}
       <h2
         style={{
           color: "#3A5FBE",
@@ -364,86 +294,6 @@ function EmployeePolicy({ user }) {
       >
         Company Policies
       </h2>
-      {/* 
-            <div
-                style={{
-                    background: "#f9fafb",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "12px",
-                    padding: "14px 18px",
-                    marginBottom: "14px",
-                    display: "flex",
-                    flexDirection: isMobile ? "column" : "row",
-                    alignItems: isMobile ? "flex-start" : "center",
-                    justifyContent: "space-between",
-                    gap: isMobile ? "10px" : "12px",
-                    flexWrap: "wrap",
-
-                    width: "100%",
-                    boxSizing: "border-box",
-                    overflow: "hidden"
-                }}
-
-            >
-                <strong
-                    style={{
-                        color: "#3A5FBE",
-                        whiteSpace: "nowrap"
-                    }}
-                >
-                    Search by any feild
-                </strong>
-                <input
-                    type="text"
-                    placeholder="Search by any feild..."
-                    value={search}
-                    onChange={(e) => {
-                        setSearch(e.target.value);
-                        setCurrentPage(1);
-                    }}
-                    style={{
-                        width: "320px",
-                        height: "36px",
-                        borderRadius: "6px",
-                        border: "1px solid #d1d5db",
-                        padding: "0 10px",
-                        backgroundColor: "#ffffff",
-                        boxSizing: "border-box"
-                    }}
-                />
-
-             
-                <div
-                    style={{
-                        display: "flex",
-                        gap: "10px",
-                        marginLeft: isMobile ? "0" : "auto",
-                        width: isMobile ? "100%" : "auto",
-                        justifyContent: isMobile ? "flex-end" : "flex-start"
-                    }}
-                >
-                    <button
-                        className="btn btn-sm custom-outline-btn"
-                        onClick={() => {
-
-                            setCurrentPage(1);
-                        }}
-                    >
-                        Search
-                    </button>
-
-                    <button
-                        className="btn btn-sm custom-outline-btn"
-                        onClick={() => {
-                            setSearch("");
-                            setCurrentPage(1);
-                        }}
-                    >
-                        Reset
-                    </button>
-                </div>
-            </div>
-*/}
       <div className="card mb-3 shadow-sm border-0">
         <div className="card-body">
           <form
@@ -473,7 +323,6 @@ function EmployeePolicy({ user }) {
               />
             </div>
 
-            {/* Buttons */}
             <div className="col-12 col-md-auto ms-md-auto d-flex gap-2 mb-1 justify-content-end">
               <button
                 type="button"
@@ -504,7 +353,6 @@ function EmployeePolicy({ user }) {
         </div>
       </div>
 
-      {/* 📋 Policy List */}
    {currentPolicies.length === 0 && (
     <tr>
       <td colSpan="8" className="text-center text-muted">
@@ -621,8 +469,6 @@ function EmployeePolicy({ user }) {
                         <span
                           style={{
                             marginLeft: "8px",
-                            //background: "#22c55e",
-                            //color: "#ffffff",
                             background: "#dcfce7",
                             color: "#166534",
                             fontSize: "11px",
@@ -634,13 +480,10 @@ function EmployeePolicy({ user }) {
                         </span>
                       )}
 
-                    {/* ✏️ UPDATED */}
                     {isUpdatedPolicy(policy.createdAt, policy.updatedAt) && (
                       <span
                         style={{
                           marginLeft: "8px",
-                          //background: "#f97316",
-                          //color: "#ffffff",
                           background: "#e0f2fe",
                           color: "#075985",
                           fontSize: "11px",
@@ -661,7 +504,7 @@ function EmployeePolicy({ user }) {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                       }}
-                      title={policy.description} // optional: show full text on hover
+                      title={policy.description} 
                     >
                       {policy.description}
                     </div>
@@ -738,7 +581,6 @@ function EmployeePolicy({ user }) {
       {totalItems > 0 && (
         <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
           <div className="d-flex align-items-center gap-3">
-            {/* Rows per page */}
             <div className="d-flex align-items-center">
               <span
                 style={{
@@ -765,7 +607,6 @@ function EmployeePolicy({ user }) {
               </select>
             </div>
 
-            {/* Range display */}
             <span
               style={{
                 fontSize: "14px",
@@ -776,7 +617,6 @@ function EmployeePolicy({ user }) {
               {startIndex + 1}-{endIndex} of {totalItems}
             </span>
 
-            {/* Arrows */}
             <div
               className="d-flex align-items-center"
               style={{ marginLeft: "16px" }}
@@ -830,7 +670,6 @@ function EmployeePolicy({ user }) {
                 alignItems: "center",
                 zIndex: 1050,
                 overflowX: "auto",
-                // padding: "20px",
               }}
             >
               <div
@@ -909,32 +748,6 @@ function EmployeePolicy({ user }) {
                       </div>
                     </div>
 
-                    {/* 
-          <div
-            className="mt-3 p-3"
-            style={{
-              background: "#f8fafc",
-              border: "1px solid #e5e7eb",
-              borderRadius: "6px",
-              fontSize: "13px",
-            }}
-          >
-            <div>
-              <strong>Version:</strong>{" "}
-              {selectedPolicy.version || "1.0"}
-            </div>
-            <div className="mt-2">
-              <strong>Created Date:</strong>{" "}
-              {formatDateTime(selectedPolicy.createdAt)}
-            </div>
-            <div>
-              <strong>Last Updated:</strong>{" "}
-              {formatDateTime(
-                selectedPolicy.updatedAt || selectedPolicy.createdAt
-              )}
-            </div>
-          </div>
-*/}
                     <hr />
 
                     {/* ACK SECTION */}
@@ -959,14 +772,6 @@ function EmployeePolicy({ user }) {
 
                     {/* ACTION BUTTONS */}
                     <div className="d-flex justify-content-end gap-2 mt-3">
-                      {/* <button
-                        className="btn btn-sm custom-outline-btn"
-                        style={{ minWidth: 90 }}
-                        onClick={handleCopyPolicy}
-                      >
-                        Copy
-                      </button> */}
-
                       <button
                         className="btn btn-sm custom-outline-btn"
                         onClick={() => handleDownloadPolicy(selectedPolicy)}

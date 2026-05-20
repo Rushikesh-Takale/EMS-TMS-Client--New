@@ -4,17 +4,13 @@ import axios from "axios";
 const EmployeeFeedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [searchText, setSearchText] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  // const [hrUsers, setHrUsers] = useState([]);
   const [recipientUsers, setRecipientUsers] = useState([]);
   const [userRole, setUserRole] = useState(null); ///
   const [sending, setSending] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [errors, setErrors] = useState({});
-  ////new state for active tab dip(03-02-2026)
   const [activeTab, setActiveTab] = useState("received");
-  // Form state
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -35,7 +31,6 @@ const EmployeeFeedback = () => {
   const [currentPageSent, setCurrentPageSent] = useState(1);
   const [currentPageReceived, setCurrentPageReceived] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-
   const [selectedFeedback, setSelectedFeedback] = useState(null);
 
   // Get current user from token
@@ -68,31 +63,12 @@ const EmployeeFeedback = () => {
     }
   }, [currentUser]);
 
-  // const fetchHRUsers = async () => {
-  //   try {
-  //     const token = localStorage.getItem("accessToken");
-  //     if (!token) return;
-
-  //     const response = await axios.get("http://localhost:8000/gethr", {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     if (response.data.success) {
-  //       setHrUsers(response.data.hrPersons || []);
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching HR users:", err);
-  //   }
-  // };
   const fetchRecipients = async () => {
     try {
       const token = localStorage.getItem("accessToken");
       if (!token || !currentUser?._id) return;
 
       let recipients = [];
-
       // 1. Fetch HR users
       const hrResponse = await axios.get("http://localhost:8000/gethr", {
         headers: {
@@ -108,7 +84,6 @@ const EmployeeFeedback = () => {
           displayRole: "HR",
         }));
       }
-
       // 2. Fetch current user's details to get manager and role
       try {
         const userResponse = await axios.get(
@@ -143,33 +118,12 @@ if (
     });
   }
 }
-
-        // 3. If user has a reporting manager, add them to recipients
-        // if (userData.reportingManager) {
-        //   const manager = userData.reportingManager;
-        //   const managerExists = recipients.some((r) => r._id === manager._id);
-
-        //   if (!managerExists) {
-        //     recipients.push({
-        //       _id: manager._id,
-        //       name: manager.name,
-        //       email: manager.email || "",
-        //       displayRole: "Manager",
-        //       designation: manager.designation || "",
-        //     });
-        //   }
-        // }
-
-        //rutuja
         if (userData.role && userData.role.toLowerCase() === "employee") {
           recipients = recipients.filter(r => r.displayRole === "HR");
         }
          if (userData.role && userData.role.toLowerCase() === "manager") {
-
-
          }
 
-        ////////////
         // 4. If user is a manager, fetch their assigned employees
         if (userData.role && userData.role.toLowerCase() === "manager") {
           const employeesResponse = await axios.get(
@@ -198,7 +152,6 @@ if (
               }
             });
           }
-//----------------------------------------------------------------------------
               const tlResponse = await axios.get(
                 "http://localhost:8000/teamLead",
                 {
@@ -223,7 +176,6 @@ if (
                   }
                 });
               }
-//shivani code end--------------------------------------------------
         }
 
         // rutuja code 
@@ -259,7 +211,6 @@ if (
         console.log("Recipients:", recipients);
       } catch (err) {
         console.error("Error fetching user relationships:", err);
-        // Still set HR users even if other requests fail
         setRecipientUsers(recipients);
       }
     } catch (err) {
@@ -267,7 +218,6 @@ if (
       setRecipientUsers([]);
     }
   };
-  ///////
 
   const fetchFeedbacks = async () => {
     try {
@@ -522,12 +472,10 @@ if (
     if (pageNumber < 1 || pageNumber > totalPages) return;
     setCurrentPage(pageNumber);
   };
-  ///// Active tabs dip (03-03-2026) end
 
   const renderPagination = (
     currentPage,
     totalPages,
-    totalItems,
     indexOfFirstItem,
     indexOfLastItem,
     setPage,
@@ -560,7 +508,6 @@ if (
                 currentFeedbacks.length,
               )} of ${currentFeedbacks.length}`}
         </span>{" "}
-        {/* ADD CURRENTFEEDBACK.LENGTH INSTED OF TOTALITEMS DIP(03-02-2026)  */}
         <div
           className="d-flex align-items-center"
           style={{ marginLeft: "16px" }}
@@ -721,7 +668,7 @@ if (
       alert("Failed to delete feedback");
     }
   };
-  /////Disable background scroll
+
   useEffect(() => {
     if (showForm || selectedFeedback) {
       document.body.style.overflow = "hidden";
@@ -736,7 +683,6 @@ if (
       document.documentElement.style.overflow = "";
     };
   }, [showForm, selectedFeedback]);
-  ///Auto focus modal when it opens
   useEffect(() => {
     if (showForm && formModalRef.current) {
       formModalRef.current.focus();
@@ -804,7 +750,6 @@ if (
         </button>
       </div>
 
-      {/* TAB BUTTONS For switching tab dip 03-02-2026 */}
       <div className="d-flex gap-2 justify-content-center mt-3 mb-3">
   <button
     onClick={() => {
@@ -840,7 +785,6 @@ if (
     Sent Feedback
   </button>
 </div>
-      {/* TAB BUTTONS For switching tab dip 03-02-2026 end */}
 
       {/* Filter section */}
       <div className="card mb-4 shadow-sm border-0">
@@ -908,7 +852,6 @@ if (
                   fontSize: "16px",
                   color: "#3A5FBE",
                   marginRight: "0px", 
-                  // minWidth: "40px", 
                 }}
               >
                 Date
@@ -943,7 +886,6 @@ if (
         </div>
       </div>
 
-      {/* CONDITIONAL RENDERING BASED ON ACTIVE TAB  DIP 03-02-2026 */}
       {currentFeedbacks.length === 0 ? (
         <div className="text-center py-4">
           <p style={{ color: "#6c757d", fontSize: "16px" }}>
@@ -1036,12 +978,10 @@ if (
                     }}
                   >
                     {activeTab === "received" ? "Action" : "Actions"}{" "}
-                    {/*tAB SWITCHING CHANGE DIP 03-02-2026 */}
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {/* aDD paginatedFeedbacks HERE DIP 03-02-2026 */}
                 {paginatedFeedbacks.map((fb) => (
                   <tr
                     key={fb.id}
@@ -1158,7 +1098,6 @@ if (
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {/* TAB SWTICHING CHANGES DIP 03-02-2026 */}
                       {activeTab === "received" && "sent" ? (
                         <button
                           className="btn btn-sm custom-outline-btn"
@@ -1207,29 +1146,20 @@ if (
                     </td>
                   </tr>
                 ))}{" "}
-                {/* TAB SWTICHING CHANGES DIP 03-02-2026 END */}
               </tbody>
             </table>
           </div>
           {renderPagination(
-            // rutuja code start
             currentPage,
             totalPages,
             currentFeedbacks.length,
             indexOfFirstItem,
             indexOfLastItem,
             handlePageChange,
-            // currentPageReceived,
-            // totalPagesReceived,
-            // filteredReceivedFeedbacks.length,
-            // indexOfFirstItemReceived,
-            // indexOfLastItemReceived,
-            // handlePageChangeReceived, COMMENT THIS CODE DIP 03-02-2026
           )}
         </>
       )}
 
-      {/* Send/Edit Popup */}
       {showForm && (
         <div
           ref={formModalRef}
@@ -1299,37 +1229,6 @@ if (
                   </div>
                 </div>
 
-                {/* <div className="mb-3">
-                  <label className="form-label fw-semibold">Send To</label>
-                  {editId ? (
-                    <div className="form-control bg-light">
-                      {hrUsers.find((hr) => hr._id === formData.receiverId)
-                        ?.name || "HR Person"}
-                    </div>
-                  ) : (
-                    <select
-                      className="form-select"
-                      value={formData.receiverId}
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          receiverId: e.target.value,
-                        });
-                        setErrors({ ...errors, receiverId: "" });
-                      }}
-                    >
-                      <option value="">Select HR Person</option>
-                      {hrUsers.map((hr) => (
-                        <option key={hr._id} value={hr._id}>
-                          {hr.name || hr.email}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                  {errors.receiverId && (
-                    <small className="text-danger">{errors.receiverId}</small>
-                  )}
-                </div> */}
                 <div className="mb-3">
                   <label className="form-label fw-semibold">Send To<span style={{ color: "red" }}>  *</span></label>
                   {editId ? (
@@ -1352,7 +1251,6 @@ if (
                     >
                       <option value="">Select Recipient</option>
 
-                      {/* Group HR users */}
                       {recipientUsers.filter((u) => u.displayRole === "HR")
                         .length > 0 && (
                         <optgroup label="HR Personnel">
@@ -1366,7 +1264,6 @@ if (
                         </optgroup>
                       )}
 
-                      {/* Group Managers */}
                       {recipientUsers.filter((u) => u.displayRole === "Manager")
                         .length > 0 && (
                         <optgroup label="Your Manager">
@@ -1396,7 +1293,6 @@ if (
                         </optgroup>
                       )}
 
-                      {/* Team Members for TL*/}
                       {recipientUsers.filter(
                         (u) => u.displayRole === "Team Member",
                       ).length > 0 && (
@@ -1481,7 +1377,6 @@ if (
         </div>
       )}
 
-      {/* feedback details popup */}
       {selectedFeedback && (
         <div
           ref={detailsModalRef}

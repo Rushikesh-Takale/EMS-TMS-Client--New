@@ -79,12 +79,10 @@ function EmployeeTeams({ user }) {
     ? employees 
     : teamMembers;
 
-  // Set filteredEmployees when displayData changes
   useEffect(() => {
     setFilteredEmployees(displayData);
   }, [displayData]);
 
-  /* ===== Search Functions (exactly like TLAllEmployee) ===== */
   const handleSearch = () => {
     const value = searchText.toLowerCase().trim();
 
@@ -129,12 +127,10 @@ function EmployeeTeams({ user }) {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredEmployees.slice(startIndex, endIndex);
 
-  // Reset to page 1 when itemsPerPage changes
   useEffect(() => {
     setCurrentPage(1);
   }, [itemsPerPage]);
 
-  // Auto-reset page if currentPage > totalPages
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(1);
@@ -208,7 +204,6 @@ function EmployeeTeams({ user }) {
     };
   }, [selectedEmployee]);
 
-  /* ===== LOADING ===== */
   if (loading) {
     return (
       <div
@@ -268,7 +263,6 @@ function EmployeeTeams({ user }) {
         My Team Members
       </h2>
       
-      {/* Filter section - exactly like TLAllEmployee */}
       <div className="card shadow-sm border-0 mb-3">
         <div className="card-body p-3">
           <div className="d-flex align-items-center gap-3 flex-wrap">
@@ -362,7 +356,6 @@ function EmployeeTeams({ user }) {
         </div>
       </div>
 
-      {/* Pagination - exactly like TLAllEmployee */}
       {filteredEmployees.length > 0 && (
         <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
           <div className="d-flex align-items-center gap-3">
@@ -413,7 +406,6 @@ function EmployeeTeams({ user }) {
         </nav>
       )}
 
-      {/* Modal - exactly like TLAllEmployee style */}
       {selectedEmployee && (
         <div
           className="modal fade show d-block"
@@ -564,7 +556,6 @@ function EmployeeTeams({ user }) {
   );
 }
 
-/* ===== Styles ===== */
 const thStyle = {
   fontWeight: "500",
   fontSize: "14px",
