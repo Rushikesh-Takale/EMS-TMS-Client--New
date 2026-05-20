@@ -1,5 +1,5 @@
 // without notification code
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef } from "react";
 import API from "../ITSupport/service/api";
 import "../ITSupport/custom.css";
 
@@ -21,7 +21,8 @@ function ITSupportDashboard() {
   /* ================= PAGINATION ================= */
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
+  const viewModalRef = useRef(null);
+  const editModalRef = useRef(null);
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const paginatedTickets = tickets.slice(indexOfFirstRow, indexOfLastRow);
@@ -307,6 +308,74 @@ function ITSupportDashboard() {
   };
   //snehal code format date
 
+  useEffect(() => {
+    const isModalOpen = selectedTicket || editData;
+  
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    }
+  
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
+  }, [selectedTicket, editData]);
+
+  useEffect(() => {
+    const handleTabKey = (e) => {
+      const modal = selectedTicket && viewOnly
+        ? viewModalRef.current
+        : editModalRef.current;
+  
+      if (!modal) return;
+  
+      const focusableElements = modal.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+  
+      if (!focusableElements.length) return;
+  
+      const firstEl = focusableElements[0];
+      const lastEl = focusableElements[focusableElements.length - 1];
+  
+      if (e.key === "Tab") {
+        if (!modal.contains(document.activeElement)) {
+          e.preventDefault();
+          firstEl.focus();
+          return;
+        }
+      
+        if (e.shiftKey) {
+          if (document.activeElement === firstEl) {
+            e.preventDefault();
+            lastEl.focus();
+          }
+        } else {
+          if (document.activeElement === lastEl) {
+            e.preventDefault();
+            firstEl.focus();
+          }
+        }
+      }
+  
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    };
+  
+    if (selectedTicket || editData) {
+      document.addEventListener("keydown", handleTabKey);
+    }
+  
+    return () => {
+      document.removeEventListener("keydown", handleTabKey);
+    };
+  }, [selectedTicket, editData, viewOnly]);
+
   return (
     <div className="container-fluid">
       <h3 className="mb-4" style={{ color: "#3A5FBE", fontSize: "25px" }}>
@@ -484,6 +553,7 @@ function ITSupportDashboard() {
                 type="date"
                 className="form-control"
                 style={{ minWidth: 140 }}
+                max={toDate}
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
               />
@@ -506,6 +576,7 @@ function ITSupportDashboard() {
                 type="date"
                 className="form-control"
                 style={{ minWidth: 140 }}
+                min={fromDate}
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
               />
@@ -928,6 +999,8 @@ function ITSupportDashboard() {
       {/* 👁 VIEW MODAL */}
       {selectedTicket && viewOnly && (
         <div
+          ref={viewModalRef}
+          tabIndex="-1"
           className="modal fade show"
           style={{
             display: "flex",
@@ -1072,6 +1145,8 @@ function ITSupportDashboard() {
       {/* ✏️ EDIT MODAL */}
       {editData && !viewOnly && (
         <div
+          ref={editModalRef}
+          tabIndex="-1"
           className="modal fade show"
           style={{
             display: "flex",

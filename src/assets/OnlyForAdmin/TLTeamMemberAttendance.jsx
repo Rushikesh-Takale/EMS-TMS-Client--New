@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { useMemo } from "react";
@@ -10,6 +10,7 @@ function TLTeamMemberAttendance() {
   const [error, setError] = useState(null);
   const { role, username, id } = useParams(); // 👈 id = teamLeadId
   const navigate = useNavigate();
+  const modalRef = useRef(null);
 
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,6 +40,63 @@ const [downloadedFile, setDownloadedFile] =
     absent: 0,
     lateCheckIn: 0,
   });
+
+  useEffect(() => {
+    if (!showLateModal) return;
+  
+    const handleTabKey = (e) => {
+      if (e.key !== "Tab") return;
+  
+      const focusableElements = modalRef.current.querySelectorAll(
+        "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+      );
+  
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+  
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+  
+    document.addEventListener("keydown", handleTabKey);
+  
+    setTimeout(() => {
+      modalRef.current?.focus();
+    }, 100);
+  
+    return () => {
+      document.removeEventListener("keydown", handleTabKey);
+    };
+  }, [showLateModal]);
+
+  useEffect(() => {
+
+    if (showLateModal) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow =
+        "hidden";
+    } else {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow =
+        "";
+    }
+  
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow =
+        "";
+    };
+  
+  }, [showLateModal]);
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -273,7 +331,13 @@ const fetchLateCheckInHistory = async () => {
             );
           }
           return false;
-        } else {
+        }
+        if (statusFilter === "Present") {
+          return status === "Present" || status === "Working";
+        }
+
+        
+        else {
           return status === statusFilter;
         }
       });
@@ -548,8 +612,7 @@ const fetchLateCheckInHistory = async () => {
   type="date"
   className="form-control"
   value={lateFromDate}
-  max={new Date().toISOString().split("T")[0]}
-  onChange={(e) =>
+  max={lateToDate || new Date().toISOString().split("T")[0]}  onChange={(e) =>
     setLateFromDate(e.target.value)
   }
 />
@@ -576,6 +639,7 @@ const fetchLateCheckInHistory = async () => {
   type="date"
   className="form-control"
   value={lateToDate}
+  min={lateFromDate} 
   max={new Date().toISOString().split("T")[0]}
   onChange={(e) =>
     setLateToDate(e.target.value)
@@ -851,6 +915,8 @@ currentLateEmployees.map((emp) => (
   {showLateModal && selectedLateEmployee && (
   <div
     className="modal fade show"
+    ref={modalRef}
+    tabIndex={-1}
     style={{
       display: "flex",
       alignItems: "center",
@@ -863,7 +929,7 @@ currentLateEmployees.map((emp) => (
   >
     <div
       className="modal-dialog modal-dialog-centered"
-      style={{ maxWidth: "500px", width: "100%" }}
+      style={{ maxWidth: "650px", width: "95%" }}
     >
       <div className="modal-content">
 

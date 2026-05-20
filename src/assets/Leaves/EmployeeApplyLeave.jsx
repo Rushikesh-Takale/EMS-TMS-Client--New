@@ -12,6 +12,7 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
   const [message, setMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isConfirmSubmitting, setIsConfirmSubmitting] = useState(false);
   const [availableLeaveTypes, setAvailableLeaveTypes] = useState([]);
   const [teamLeaders, setTeamLeaders] = useState([]);
   const [manager, setManager] = useState(null);
@@ -160,18 +161,28 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
   }, [showModal, user]);
 
   const popupRef = useRef(null);
+  const previewPopupRef = useRef(null);
+
   useEffect(() => {
     if (showModal && popupRef.current) {
       popupRef.current.focus();
     }
   }, [showModal]);
 
-  const trapFocus = (e) => {
-    if (!popupRef.current) return;
+  useEffect(() => {
+    if (showPreviewModal && previewPopupRef.current) {
+      previewPopupRef.current.focus();
+    }
+  }, [showPreviewModal]);
 
-    const focusableElements = popupRef.current.querySelectorAll(
+  const trapFocus = (e, modalRef) => {
+    if (!modalRef || !modalRef.current) return;
+
+    const focusableElements = modalRef.current.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
+
+    if (focusableElements.length === 0) return;
 
     const first = focusableElements[0];
     const last = focusableElements[focusableElements.length - 1];
@@ -416,72 +427,78 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
   };
 
     const confirmApplyLeave = async () => {
+      
+      if (isConfirmSubmitting) return;
+      setIsConfirmSubmitting(true);
 
-  try {
+      try {
 
-    const dateFromParsed =
-      parseDate(form.dateFrom);
+        const dateFromParsed =
+          parseDate(form.dateFrom);
 
-    const dateToParsed =
-      parseDate(form.dateTo);
+        const dateToParsed =
+          parseDate(form.dateTo);
 
-    await axios.post(
-      "http://localhost:8000/leave/apply",
-      {
-        employeeId: user._id,
-        leaveType: form.leaveType,
-        dateFrom: dateFromParsed,
-        dateTo: dateToParsed,
-        duration: form.duration,
-        reason: form.reason,
-        reportingManagerId:
-          manager?._id || null,
+        await axios.post(
+          "http://localhost:8000/leave/apply",
+          {
+            employeeId: user._id,
+            leaveType: form.leaveType,
+            dateFrom: dateFromParsed,
+            dateTo: dateToParsed,
+            duration: form.duration,
+            reason: form.reason,
+            reportingManagerId:
+              manager?._id || null,
+          }
+        );
+
+        alert(
+          "Leave applied successfully!"
+        );
+
+        if (
+          typeof onLeaveApplied ===
+          "function"
+        ) {
+          onLeaveApplied();
+        }
+
+        setForm({
+          leaveType: "SL",
+          dateFrom: "",
+          dateTo: "",
+          duration: "full",
+          reason: "",
+        });
+
+        setShowPreviewModal(false);
+
+        setShowModal(false);
+
+        setDaysCount(0);
+
+        setPreviewData(null);
+
+      } catch (err) {
+
+        setMessage(
+          err.response?.data?.error ||
+          "Error applying leave"
+        );
+
+        alert(
+          err.response?.data?.error ||
+          "Error applying leave"
+        );
       }
-    );
-
-    alert(
-      "Leave applied successfully!"
-    );
-
-    if (
-      typeof onLeaveApplied ===
-      "function"
-    ) {
-      onLeaveApplied();
-    }
-
-    setForm({
-      leaveType: "SL",
-      dateFrom: "",
-      dateTo: "",
-      duration: "full",
-      reason: "",
-    });
-
-    setShowPreviewModal(false);
-
-    setShowModal(false);
-
-    setDaysCount(0);
-
-    setPreviewData(null);
-
-  } catch (err) {
-
-    setMessage(
-      err.response?.data?.error ||
-      "Error applying leave"
-    );
-
-    alert(
-      err.response?.data?.error ||
-      "Error applying leave"
-    );
-  }
-};
+      finally {
+        setIsConfirmSubmitting(false);
+      }
+    };
 
 useEffect(() => {
-  if (showModal) {
+  if (showModal || showPreviewModal) {
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
   } else {
@@ -493,7 +510,7 @@ useEffect(() => {
     document.body.style.overflow = "";
     document.documentElement.style.overflow = "";
   };
-}, [showModal]);
+}, [showModal, showPreviewModal]);
   return (
     <>
       <button
@@ -549,7 +566,7 @@ useEffect(() => {
           ref={popupRef}
           tabIndex="-1"
           autoFocus
-          onKeyDown={trapFocus}
+          onKeyDown={(e) => trapFocus(e, popupRef)}
               className="modal fade show d-block"
 style={{
   display: "flex",
@@ -930,10 +947,17 @@ style={{
       {showPreviewModal && (
 
         <div
+          ref={previewPopupRef}
+          tabIndex="-1"
+          onKeyDown={(e) => trapFocus(e, previewPopupRef)}
           className="modal d-block"
           style={{
             backgroundColor:
-              "rgba(0,0,0,0.5)"
+              "rgba(0,0,0,0.5)",
+              overflow: "hidden",
+            position: "fixed",
+            inset: 0,
+            zIndex: 1050
           }}
         >
 
@@ -1058,11 +1082,12 @@ style={{
                 </button>
 
                 <button
-                            className="btn btn-sm custom-outline-btn"
-          style={{ minWidth: 90 }}
+                  className="btn btn-sm custom-outline-btn"
+                  style={{ minWidth: 90 }}
                   onClick={
                     confirmApplyLeave
                   }
+                  disabled={isConfirmSubmitting}
                 >
                   Confirm Apply
                 </button>
