@@ -880,7 +880,7 @@ const getFileType = (url) => {
               <textarea
                 rows="3"
                 className="form-control"
-                maxLength={200}
+                maxLength={500}
                 value={policyForm.description}
                 onChange={(e) =>
                   setPolicyForm({
@@ -898,7 +898,7 @@ const getFileType = (url) => {
                     marginTop: "4px",
                   }}
                 >
-                  {policyForm.description.length}/200
+                  {policyForm.description.length}/500
                 </div>
 
                 {/* added by shivani */}
@@ -1022,7 +1022,7 @@ const getFileType = (url) => {
                       rows="3"
                       className="form-control"
                       placeholder="Enter policy description"
-                      maxLength={200}
+                      maxLength={500}
                       value={newPolicy.description}
                       onChange={(e) =>
                         setNewPolicy({
@@ -1043,7 +1043,7 @@ const getFileType = (url) => {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {newPolicy.description.length}/200
+                      {newPolicy.description.length}/500
                     </div>
                   </div>
 
