@@ -1038,6 +1038,29 @@ const location = useLocation();
                       </div>
                     </>
                   )}
+                  {selectedRequest?.regularizationRequest
+                  ?.actionReason && (
+                  <div className="row mb-2">
+
+                    <div className="col-5 col-sm-3 fw-semibold">
+                      Action Reason
+                    </div>
+
+                    <div
+                      className="col-7 col-sm-9"
+                      style={{
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                      }}
+                    >
+                      {
+                        selectedRequest.regularizationRequest
+                          .actionReason
+                      }
+                    </div>
+
+                  </div>
+                )}
                 </div>
               </div>
 

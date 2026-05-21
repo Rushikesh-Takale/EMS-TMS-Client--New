@@ -16,6 +16,8 @@ function ManagerDashboard({ user }) {
   const [leavePage, setLeavePage] = useState(1);
   const [regPage, setRegPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+ const actionModalRef = useRef(null);
+ 
 
   // Leave filters
   const [leaveStatusFilter, setLeaveStatusFilter] = useState("All");
@@ -31,6 +33,20 @@ function ManagerDashboard({ user }) {
 
   const [filteredLeaves, setFilteredLeaves] = useState([]);
   const [filteredRegularizations, setFilteredRegularizations] = useState([]);
+  const [actionModal, setActionModal] = useState(false);
+const [currentLeaveId, setCurrentLeaveId] = useState(null);
+const [actionType, setActionType] = useState("");
+const [actionReason, setActionReason] = useState("");
+const [reasonError, setReasonError] = useState("");
+const [regularizationActionModal, setRegularizationActionModal,] = useState(false);
+const regularizationActionModalRef =useRef(null);
+const [currentRegularizationId,setCurrentRegularizationId,] = useState(null);
+
+const [regActionType, setRegActionType] = useState("");
+
+const [regActionReason, setRegActionReason] = useState("");
+
+const [regReasonError, setRegReasonError] = useState("");
 
   // aditya code
   const [selectedLeave, setSelectedLeave] = useState(null);
@@ -41,6 +57,116 @@ function ManagerDashboard({ user }) {
     setFilteredLeaves(leaves);
     setFilteredRegularizations(regularizations);
   }, [leaves, regularizations]);
+
+  useEffect(() => {
+
+  if (
+    !regularizationActionModal ||
+    !regularizationActionModalRef.current
+  ) {
+    return;
+  }
+
+  const modal =
+    regularizationActionModalRef.current;
+
+  const focusableElements =
+    modal.querySelectorAll(
+      'button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    );
+
+  if (!focusableElements.length) return;
+
+  const firstEl = focusableElements[0];
+
+  const lastEl =
+    focusableElements[
+      focusableElements.length - 1
+    ];
+
+  firstEl.focus();
+
+  const handleKeyDown = (e) => {
+
+    if (e.key !== "Tab") return;
+
+    if (e.shiftKey) {
+
+      if (
+        document.activeElement === firstEl
+      ) {
+        e.preventDefault();
+        lastEl.focus();
+      }
+
+    } else {
+
+      if (
+        document.activeElement === lastEl
+      ) {
+        e.preventDefault();
+        firstEl.focus();
+      }
+    }
+  };
+
+  document.addEventListener(
+    "keydown",
+    handleKeyDown
+  );
+
+  return () => {
+    document.removeEventListener(
+      "keydown",
+      handleKeyDown
+    );
+  };
+
+}, [regularizationActionModal]);
+useEffect(() => {
+
+  if (!actionModal || !actionModalRef.current) return;
+
+  const modal = actionModalRef.current;
+
+  const focusableElements = modal.querySelectorAll(
+    'button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+  );
+
+  if (!focusableElements.length) return;
+
+  const firstEl = focusableElements[0];
+  const lastEl = focusableElements[focusableElements.length - 1];
+
+  firstEl.focus();
+
+  const handleKeyDown = (e) => {
+
+    if (e.key !== "Tab") return;
+
+    if (e.shiftKey) {
+
+      if (document.activeElement === firstEl) {
+        e.preventDefault();
+        lastEl.focus();
+      }
+
+    } else {
+
+      if (document.activeElement === lastEl) {
+        e.preventDefault();
+        firstEl.focus();
+      }
+    }
+  };
+
+  document.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    document.removeEventListener("keydown", handleKeyDown);
+  };
+
+}, [actionModal]);
 
   useEffect(() => {
     if (!user?._id) return;
@@ -92,53 +218,153 @@ function ManagerDashboard({ user }) {
     }
   };
 
-  const updateLeaveStatus = async (leaveId, status) => {
-    if (!confirm(`Are you sure you want to ${status} this leave request?`)) {
-      return;
+const updateLeaveStatus = async (leaveId, status) => {
+
+  if (!actionReason.trim()) {
+    setReasonError("Reason is required");
+    return;
+  }
+
+  try {
+
+    setLeaves((prev) =>
+      prev.map((l) =>
+        l._id === leaveId
+          ? {
+              ...l,
+              status,
+              actionReason,
+            }
+          : l
+      ),
+    );
+
+    setFilteredLeaves((prev) =>
+      prev.map((l) =>
+        l._id === leaveId
+          ? {
+              ...l,
+              status,
+              actionReason,
+            }
+          : l
+      ),
+    );
+
+    if (selectedLeave?._id === leaveId) {
+      setSelectedLeave((prev) => ({
+        ...prev,
+        status,
+        actionReason,
+      }));
     }
-    try {
-      setLeaves((prev) =>
-        prev.map((l) => (l._id === leaveId ? { ...l, status } : l)),
-      );
 
-      setFilteredLeaves((prev) =>
-        prev.map((l) => (l._id === leaveId ? { ...l, status } : l)),
-      );
-
-      if (selectedLeave?._id === leaveId) {
-        setSelectedLeave((prev) => ({ ...prev, status }));
-      }
-
-      await axios.put(`http://localhost:8000/leave/${leaveId}/status`, {
+    await axios.put(
+      `http://localhost:8000/leave/${leaveId}/status`,
+      {
         status,
         userId: user._id,
         role: "manager",
-      });
-      alert(`Leave request ${status} successfully!`);
-    } catch (err) {
-      console.error("Error updating leave status:", err);
-    }
-  };
+        actionReason: actionReason.trim(),
+      }
+    );
 
-  const updateRegularizationStatus = async (attendanceId, status) => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      await axios.put(
-        `http://localhost:8000/attendance/regularization/${attendanceId}/status`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      fetchData();
-      //jaicy
-    } catch (err) {
-      const errorMessage =
-        err.response?.data?.error ||
-        "Something went wrong while updating status.";
+    alert(`Leave request ${status} successfully!`);
 
-      alert(`❌ ${errorMessage}`);
-      setMessage(errorMessage);
+  } catch (err) {
+    console.error("Error updating leave status:", err);
+  }
+};
+
+const updateRegularizationStatus = async (
+  attendanceId,
+  status
+) => {
+
+  if (!regActionReason.trim()) {
+    setRegReasonError("Reason is required");
+    return;
+  }
+
+  try {
+
+    const token =
+      localStorage.getItem("accessToken");
+
+    await axios.put(
+      `http://localhost:8000/attendance/regularization/${attendanceId}/status`,
+      {
+        status,
+        actionReason:
+          regActionReason.trim(),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    setRegularizations((prev) =>
+      prev.map((r) =>
+        r._id === attendanceId
+          ? {
+              ...r,
+              regularizationRequest: {
+                ...r.regularizationRequest,
+                status,
+                actionReason:
+                  regActionReason,
+              },
+            }
+          : r
+      )
+    );
+
+    setFilteredRegularizations((prev) =>
+      prev.map((r) =>
+        r._id === attendanceId
+          ? {
+              ...r,
+              regularizationRequest: {
+                ...r.regularizationRequest,
+                status,
+                actionReason:
+                  regActionReason,
+              },
+            }
+          : r
+      )
+    );
+
+    if (
+      selectedRegularization?._id ===
+      attendanceId
+    ) {
+      setSelectedRegularization((prev) => ({
+        ...prev,
+        regularizationRequest: {
+          ...prev.regularizationRequest,
+          status,
+          actionReason:
+            regActionReason,
+        },
+      }));
     }
-  };
+
+    alert(
+      `Regularization ${status} successfully`
+    );
+
+  } catch (err) {
+
+    const errorMessage =
+      err.response?.data?.error ||
+      "Something went wrong.";
+
+    alert(`❌ ${errorMessage}`);
+  }
+};
 
   <div
     className="d-flex flex-column justify-content-center align-items-center"
@@ -409,7 +635,7 @@ function ManagerDashboard({ user }) {
 
   //bg scroll stop
   useEffect(() => {
-    if (selectedLeave || selectedRegularization) {
+    if (selectedLeave || selectedRegularization || actionModal||regularizationActionModal) {
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
     } else {
@@ -421,7 +647,7 @@ function ManagerDashboard({ user }) {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
-  }, [selectedLeave, selectedRegularization]);
+  }, [selectedLeave, selectedRegularization,actionModal,regularizationActionModal]);
 
   return (
     <div className="container-fluid">
@@ -921,7 +1147,11 @@ function ManagerDashboard({ user }) {
                               className="btn btn-sm btn-outline-success me-2"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                updateLeaveStatus(l._id, "approved");
+                              setCurrentLeaveId(l._id);
+                              setActionType("approved");
+                              setActionReason("");
+                              setReasonError("");
+                              setActionModal(true);
                               }}
                             >
                               Approve
@@ -930,7 +1160,11 @@ function ManagerDashboard({ user }) {
                               className="btn btn-sm btn-outline-danger"
                               onClick={(e) => {
                                 e.stopPropagation(); 
-                                updateLeaveStatus(l._id, "rejected");
+                               setCurrentLeaveId(l._id);
+                                setActionType("rejected");
+                                setActionReason("");
+                                setReasonError("");
+                                setActionModal(true);
                               }}
                             >
                               Reject
@@ -1088,8 +1322,30 @@ function ManagerDashboard({ user }) {
                           ) : (
                             "-"
                           )}
+
                         </div>
+ 
                       </div>
+                                                                       {selectedLeave?.actionReason && (
+                      <div className="row mb-2">
+
+                        <div className="col-5 col-sm-3 fw-semibold">
+                          Action Reason
+                        </div>
+
+                        <div
+                          className="col-sm-9 col-5"
+                          style={{
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                          }}
+                        >
+                          {selectedLeave.actionReason}
+                        </div>
+
+                      </div>
+                    )}
                     </div>
                   </div>
 
@@ -1101,8 +1357,11 @@ function ManagerDashboard({ user }) {
                           className="btn btn-sm btn-outline-success"
                           style={{  minWidth:"90px" }}
                           onClick={() => {
-                            updateLeaveStatus(selectedLeave._id, "approved");
-                            setSelectedLeave(null);
+                            setCurrentLeaveId(selectedLeave._id);
+                            setActionType("approved");
+                            setActionReason("");
+                            setReasonError("");
+                            setActionModal(true);
                           }}
                         >
                           Approve
@@ -1112,8 +1371,11 @@ function ManagerDashboard({ user }) {
                           className="btn btn-sm btn-outline-danger"
                           style={{  minWidth:"90px" }}
                           onClick={() => {
-                            updateLeaveStatus(selectedLeave._id, "rejected");
-                            setSelectedLeave(null);
+                            setCurrentLeaveId(selectedLeave._id);
+                            setActionType("rejected");
+                            setActionReason("");
+                            setReasonError("");
+                            setActionModal(true);
                           }}
                         >
                           Reject
@@ -1132,7 +1394,106 @@ function ManagerDashboard({ user }) {
               </div>
             </div>
           )}
+      {actionModal && (
+  <div
+    className="modal fade show"
+     
+          tabIndex="-1"
+            
+          
+    style={{
+      
+      display: "block",
+      background: "rgba(0,0,0,0.5)",
+    }}
+  >
+    <div className="modal-dialog modal-dialog-centered"  
+     ref={actionModalRef}
+    style={{ maxWidth: "600px", width: "95%"}}>
+      <div className="modal-content">
 
+        <div
+          className="modal-header text-white"
+          style={{ backgroundColor: "#3A5FBE" }}
+        >
+          <h5 className="modal-title">
+            {actionType === "approved"
+              ? "Approve Leave Request"
+              : "Reject Leave Request"}
+          </h5>
+
+          <button
+            type="button"
+            className="btn-close btn-close-white"
+            onClick={() => setActionModal(false)}
+          />
+        </div>
+
+        <div className="modal-body">
+          <label className="form-label fw-semibold">
+            Reason <span className="text-danger">*</span>
+          </label>
+
+          <textarea
+          
+
+            className="form-control"
+            rows="4"
+            maxLength={200}
+            value={actionReason}
+            onChange={(e) => {
+              setActionReason(e.target.value);
+              setReasonError("");
+            }}
+            placeholder="Enter reason"
+          />
+
+          <div className="d-flex justify-content-between mt-1">
+            <small className="text-danger">
+              {reasonError}
+            </small>
+
+            <small className="text-muted">
+              {actionReason.length}/200
+            </small>
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button
+            className="btn btn-sm custom-outline-btn "
+             style={{minWidth:90}}
+            onClick={() => setActionModal(false)}
+          >
+            Cancel
+          </button>
+
+          <button
+            className={`btn btn-sm me-2 ${
+  actionType === "approved"
+    ? "btn-outline-success focus-ring focus-ring-success"
+    : "btn-outline-danger focus-ring focus-ring-danger"
+}`}
+             style={{minWidth:90}}
+          onClick={async () => {
+
+  await updateLeaveStatus(
+    currentLeaveId,
+    actionType
+  );
+
+  setActionModal(false);
+}}
+          >
+            {actionType === "approved"
+              ? "Approve"
+              : "Reject"}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
           {renderPagination(
             leavePage,
             totalLeavePages,
@@ -1619,19 +1980,39 @@ function ManagerDashboard({ user }) {
                           <>
                             <button
                               className="btn btn-sm btn-outline-success me-2"
-                              onClick={() => {
-                                e.stopPropagation();
-                                updateRegularizationStatus(r._id, "Approved");
-                              }}
+                            onClick={(e) => {
+
+                              e.stopPropagation();
+
+                              setCurrentRegularizationId(r._id);
+
+                              setRegActionType("Approved");
+
+                              setRegActionReason("");
+
+                              setRegReasonError("");
+
+                              setRegularizationActionModal(true);
+                            }}
                             >
                               Approve
                             </button>
                             <button
                               className="btn btn-sm btn-outline-danger"
-                              onClick={() => {
-                                e.stopPropagation();
-                                updateRegularizationStatus(r._id, "Rejected");
-                              }}
+                             onClick={(e) => {
+
+                            e.stopPropagation();
+
+                            setCurrentRegularizationId(r._id);
+
+                            setRegActionType("Rejected");
+
+                            setRegActionReason("");
+
+                            setRegReasonError("");
+
+                            setRegularizationActionModal(true);
+                          }}
                             >
                               Reject
                             </button>
@@ -1803,7 +2184,31 @@ function ManagerDashboard({ user }) {
                             </div>
                           </div>
                         )}
-            
+                                {selectedRegularization?.regularizationRequest
+                      ?.actionReason && (
+                      <div className="row mb-2">
+
+                        <div className="col-5 col-sm-3 fw-semibold">
+                          Action Reason
+                        </div>
+
+                        <div
+                          className="col-sm-9 col-5"
+                          style={{
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                          }}
+                        >
+                          {
+                            selectedRegularization
+                              .regularizationRequest
+                              .actionReason
+                          }
+                        </div>
+
+                      </div>
+                    )}
                       </div>
                     </div>
 
@@ -1816,11 +2221,18 @@ function ManagerDashboard({ user }) {
                             className="btn btn-sm btn-outline-success"
                             style={{  minWidth:"90px" }}
                             onClick={() => {
-                              updateRegularizationStatus(
-                                selectedRegularization?._id,
-                                "Approved",
+
+                              setCurrentRegularizationId(
+                                selectedRegularization._id
                               );
-                              setSelectedRegularization(null);
+
+                              setRegActionType("Approved");
+
+                              setRegActionReason("");
+
+                              setRegReasonError("");
+
+                              setRegularizationActionModal(true);
                             }}
                           >
                             Approve
@@ -1829,13 +2241,20 @@ function ManagerDashboard({ user }) {
                           <button
                             className="btn btn-sm btn-outline-danger"
                             style={{  minWidth:"90px" }}
-                            onClick={() => {
-                              updateRegularizationStatus(
-                                selectedRegularization?._id,
-                                "Rejected",
-                              );
-                              setSelectedRegularization(null);
-                            }}
+                           onClick={() => {
+
+                        setCurrentRegularizationId(
+                          selectedRegularization._id
+                        );
+
+                        setRegActionType("Rejected");
+
+                        setRegActionReason("");
+
+                        setRegReasonError("");
+
+                        setRegularizationActionModal(true);
+                      }}
                           >
                             Reject
                           </button>
@@ -1854,6 +2273,128 @@ function ManagerDashboard({ user }) {
                 </div>
               </div>
             )}
+            {regularizationActionModal && (
+  <div
+    className="modal fade show"
+    tabIndex="-1"
+    style={{
+      display: "block",
+      background: "rgba(0,0,0,0.5)",
+      zIndex: 1060,
+    }}
+  >
+    <div
+      className="modal-dialog modal-dialog-centered"
+        ref={regularizationActionModalRef}
+      style={{
+        maxWidth: "600px",
+        width: "95%",
+      }}
+    >
+      <div className="modal-content">
+
+        <div
+          className="modal-header text-white"
+          style={{
+            backgroundColor: "#3A5FBE",
+          }}
+        >
+          <h5 className="modal-title">
+            {regActionType === "Approved"
+              ? "Approve Regularization"
+              : "Reject Regularization"}
+          </h5>
+
+          <button
+            type="button"
+            className="btn-close btn-close-white"
+            onClick={() =>
+              setRegularizationActionModal(false)
+            }
+          />
+        </div>
+
+        <div className="modal-body">
+
+          <label className="form-label fw-semibold">
+            Reason
+            <span className="text-danger">
+              *
+            </span>
+          </label>
+
+          <textarea
+            autoFocus
+            className="form-control"
+            rows="4"
+            maxLength={200}
+            value={regActionReason}
+            onChange={(e) => {
+              setRegActionReason(
+                e.target.value
+              );
+
+              setRegReasonError("");
+            }}
+            placeholder="Enter reason"
+          />
+
+          <div className="d-flex justify-content-between mt-1">
+
+            <small className="text-danger">
+              {regReasonError}
+            </small>
+
+            <small className="text-muted">
+              {regActionReason.length}/200
+            </small>
+
+          </div>
+        </div>
+
+        <div className="modal-footer">
+
+          <button
+            className="btn btn-sm custom-outline-btn"
+            style={{ minWidth: 90 }}
+            onClick={() =>
+              setRegularizationActionModal(false)
+            }
+          >
+            Cancel
+          </button>
+
+          <button
+            className={`btn btn-sm ${
+              regActionType === "Approved"
+                ? "btn-outline-success"
+                : "btn-outline-danger"
+            }`}
+            style={{ minWidth: 90 }}
+            onClick={async () => {
+
+              await updateRegularizationStatus(
+                currentRegularizationId,
+                regActionType
+              );
+
+              setRegularizationActionModal(false);
+
+              setSelectedRegularization(null);
+
+              setCurrentRegularizationId(null);
+            }}
+          >
+            {regActionType === "Approved"
+              ? "Approve"
+              : "Reject"}
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+)}
           </div>
           {/* Pagination bar for Regularization Table */}
           {renderPagination(
