@@ -23,10 +23,68 @@ function AdminAddLeaveBalance({fetchNotifications}) {
   const [dateFromFilter, setDateFromFilter] = useState("");
   const [dateToFilter, setDateToFilter] = useState("");
   const [filteredLeaves, setFilteredLeaves] = useState(leaves); 
+  const [actionModal, setActionModal] = useState(false);
+const [actionType, setActionType] = useState("");
+const [currentLeaveId, setCurrentLeaveId] = useState(null);
+const [actionReason, setActionReason] = useState("");
+const [reasonError, setReasonError] = useState("");
+const actionModalRef = useRef(null);
+
 
   //adesh code
   const [selectedLeave, setSelectedLeave] = useState(null);
   const modalRef = useRef(null);
+
+  useEffect(() => {
+
+  if (!actionModal || !actionModalRef.current) return;
+
+  const modal = actionModalRef.current;
+
+  const focusableElements = modal.querySelectorAll(
+    'button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+  );
+
+  if (!focusableElements.length) return;
+
+  const firstEl = focusableElements[0];
+  const lastEl = focusableElements[focusableElements.length - 1];
+
+  firstEl.focus();
+
+  const handleKeyDown = (e) => {
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setActionModal(false);
+    }
+
+    if (e.key === "Tab") {
+
+      if (e.shiftKey) {
+
+        if (document.activeElement === firstEl) {
+          e.preventDefault();
+          lastEl.focus();
+        }
+
+      } else {
+
+        if (document.activeElement === lastEl) {
+          e.preventDefault();
+          firstEl.focus();
+        }
+      }
+    }
+  };
+
+  document.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    document.removeEventListener("keydown", handleKeyDown);
+  };
+
+}, [actionModal]);
   useEffect(() => {
     if (!selectedLeave || !modalRef.current) return;
 
@@ -148,7 +206,10 @@ function AdminAddLeaveBalance({fetchNotifications}) {
 
   const updateStatus = async (leaveId, status) => {
     if (!user?._id) return;
-    
+    if (!actionReason.trim()) {
+  setReasonError("Reason is required");
+  return;
+}
     if (!confirm(`Are you sure you want to ${status} this leave request?`)) {
       return;
     }
@@ -158,6 +219,7 @@ function AdminAddLeaveBalance({fetchNotifications}) {
         status,
         userId: user._id,
         role: "admin",
+         actionReason: actionReason.trim(),
       });
   
       const updatedLeaveFromBackend = response.data.leave;
@@ -409,7 +471,7 @@ fetchNotifications();
   };
   //bg scroll stop
   useEffect(() => {
-    if (selectedLeave) {
+    if (selectedLeave ||actionModal ){
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
     } else {
@@ -421,7 +483,7 @@ fetchNotifications();
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
-  }, [selectedLeave]);
+  }, [selectedLeave,actionModal ]);
   // dip code changes 11-02-2026
   if (loadingLeaves) {
     return (
@@ -1117,20 +1179,32 @@ fetchNotifications();
                             <>
                               <button
                                 className="btn btn-sm btn-outline-success me-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateStatus(l._id, "approved");
-                                }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+
+                                setCurrentLeaveId(l._id);
+                                setActionType("approved");
+                                setActionModal(true);
+
+                                setActionReason("");
+                                setReasonError("");
+                              }}
                               >
                                 Approve
                               </button>
 
                               <button
                                 className="btn btn-sm btn-outline-danger me-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateStatus(l._id, "rejected");
-                                }}
+                               onClick={(e) => {
+                                e.stopPropagation();
+
+                                setCurrentLeaveId(l._id);
+                                setActionType("rejected");
+                                setActionModal(true);
+
+                                setActionReason("");
+                                setReasonError("");
+                              }}
                               >
                                 Reject
                               </button>
@@ -1311,6 +1385,26 @@ fetchNotifications();
                       </div>
                     </div>
                   )}
+                  {selectedLeave?.actionReason && (
+                  <div className="row mb-2">
+
+                    <div className="col-5 col-sm-3 fw-semibold">
+                      Action Reason
+                    </div>
+
+                    <div
+                      className="col-sm-9 col-5"
+                      style={{
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
+                      }}
+                    >
+                      {selectedLeave.actionReason}
+                    </div>
+
+                  </div>
+                )}
                 </div>
               </div>
 
@@ -1321,9 +1415,14 @@ fetchNotifications();
                     <button
                       className="btn btn-sm btn-outline-success" // mahesh code approve button
                       style={{ width: 90 }}
-                      onClick={() =>
-                        updateStatus(selectedLeave._id, "approved")
-                      }
+                    onClick={() => {
+                    setCurrentLeaveId(selectedLeave._id);
+                    setActionType("approved");
+                    setActionModal(true);
+
+                    setActionReason("");
+                    setReasonError("");
+                  }}
                     >
                       Approve
                     </button>
@@ -1331,9 +1430,14 @@ fetchNotifications();
                     <button
                       className="btn btn-sm btn-outline-danger" // mahesh code reject button
                       style={{ width: 90 }}
-                      onClick={() =>
-                        updateStatus(selectedLeave._id, "rejected")
-                      }
+                     onClick={() => {
+                    setCurrentLeaveId(selectedLeave._id);
+                    setActionType("rejected");
+                    setActionModal(true);
+
+                    setActionReason("");
+                    setReasonError("");
+                  }}
                     >
                       Reject
                     </button>
@@ -1429,7 +1533,103 @@ fetchNotifications();
           Back
         </button>
       </div>
+      {actionModal && (
+  <div
+    className="modal fade show"
+      ref={actionModalRef}
+          tabIndex="-1"
+    style={{
+      
+      display: "block",
+      background: "rgba(0,0,0,0.5)",
+    }}
+  >
+    <div className="modal-dialog modal-dialog-centered"  
+    ref={actionModalRef}
+    style={{ maxWidth: "600px", width: "95%"}}>
+      <div className="modal-content">
+
+        <div
+          className="modal-header text-white"
+          style={{ backgroundColor: "#3A5FBE" }}
+        >
+          <h5 className="modal-title">
+            {actionType === "approved"
+              ? "Approve Leave Request"
+              : "Reject Leave Request"}
+          </h5>
+
+          <button
+            type="button"
+            className="btn-close btn-close-white"
+            onClick={() => setActionModal(false)}
+          />
+        </div>
+
+        <div className="modal-body">
+          <label className="form-label fw-semibold">
+            Reason <span className="text-danger">*</span>
+          </label>
+
+          <textarea
+            className="form-control"
+            rows="4"
+            maxLength={200}
+            value={actionReason}
+            onChange={(e) => {
+              setActionReason(e.target.value);
+              setReasonError("");
+            }}
+            placeholder="Enter reason"
+          />
+
+          <div className="d-flex justify-content-between mt-1">
+            <small className="text-danger">
+              {reasonError}
+            </small>
+
+            <small className="text-muted">
+              {actionReason.length}/200
+            </small>
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button
+            className="btn btn-sm custom-outline-btn "
+             style={{minWidth:90}}
+            onClick={() => setActionModal(false)}
+          >
+            Cancel
+          </button>
+
+          <button
+            className={`btn btn-sm me-2 ${
+  actionType === "approved"
+    ? "btn-outline-success focus-ring focus-ring-success"
+    : "btn-outline-danger focus-ring focus-ring-danger"
+}`}
+             style={{minWidth:90}}
+            onClick={async () => {
+              await updateStatus(
+                currentLeaveId,
+                actionType
+              );
+
+              setActionModal(false);
+            }}
+          >
+            {actionType === "approved"
+              ? "Approve"
+              : "Reject"}
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
+)}
+    </div>
+    
   );
 }
 

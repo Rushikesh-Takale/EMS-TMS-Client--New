@@ -101,13 +101,13 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
         const res = await axios.get(
           `http://localhost:8000/leave/my/${user._id}`
         );
-  
+    console.log(res.data)
         const today = new Date();
         today.setHours(0, 0, 0, 0);
   
         const threeMonthsAgo = new Date(today);
         threeMonthsAgo.setMonth(today.getMonth() - 3);
-  
+;
         const filteredByDate = res.data.filter((l) => {
           const appliedDate = new Date(l.appliedAt || l.createdAt);
           appliedDate.setHours(0, 0, 0, 0);
@@ -187,6 +187,7 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
   
           return {
             ...leave,
+             actionReason: leave.actionReason,
             reportingManagerName,
             approverName,
             rejectedByName,
@@ -904,28 +905,7 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
                     </div>
                   </div>
 
-                  <div className="row mb-2">
-                    <div className="col-5 col-sm-3 fw-semibold">
-  {selectedLeave.status === "approved"
-    ? "Approved By"
-    : selectedLeave.status === "rejected"
-    ? "Rejected By"
-    : "Reviewed By"}
-</div>
-                    <div
-                      className="col-sm-9 col-7"
-                      style={{
-                        whiteSpace: "normal",
-                        wordBreak: "break-word",
-                        overflowWrap: "break-word",
-                        textTransform: "capitalize",
-                      }}
-                    >
-                      {selectedLeave.approverName || "-"}
-                    </div>
-                  </div>
-
-                  <div className="row mb-2">
+                      <div className="row mb-2">
                     <div className="col-5 col-sm-3 fw-semibold">Reason</div>
                     <div
                       className="col-sm-9 col-7"
@@ -939,7 +919,7 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
                     </div>
                   </div>
 
-                  <div className="row mb-2">
+                   <div className="row mb-2">
                     <div className="col-5 col-sm-3 fw-semibold">Status</div>
                     <div className="col-sm-9 col-7">
                       <span
@@ -956,6 +936,47 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
                       </span>
                     </div>
                   </div>
+
+                  <div className="row mb-2">
+                    <div className="col-5 col-sm-3 fw-semibold">
+                  {selectedLeave.status === "approved"
+                    ? "Approved By"
+                    : selectedLeave.status === "rejected"
+                    ? "Rejected By"
+                    : "Reviewed By"}
+                </div>
+                    <div
+                      className="col-sm-9 col-7"
+                      style={{
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {selectedLeave.approverName || "-"}
+                    </div>
+                  </div>
+                  <div className="row mb-2">
+                    <div className="col-5 col-sm-3 fw-semibold">
+                      Action Reason
+                    </div>
+
+                    <div
+                      className="col-sm-9 col-7"
+                      style={{
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
+                      }}
+                    >
+                      {selectedLeave.actionReason || "-"}
+                    </div>
+                  </div>
+
+                  
+
+                 
                 </div>
               </div>
 

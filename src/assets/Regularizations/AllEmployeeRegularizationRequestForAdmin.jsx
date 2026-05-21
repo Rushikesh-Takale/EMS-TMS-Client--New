@@ -21,6 +21,13 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [loading, setLoading] = useState(true);
   const modalRef = useRef(null);
+  const [actionModal, setActionModal] = useState(false);
+const [actionType, setActionType] = useState("");
+const [currentRegularizationId, setCurrentRegularizationId] = useState(null);
+const [actionReason, setActionReason] = useState("");
+const [reasonError, setReasonError] = useState("");
+
+const actionModalRef = useRef(null);
   useEffect(() => {
     if (!selectedRequest || !modalRef.current) return;
 
@@ -69,7 +76,7 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
   }, []);
 
   useEffect(() => {
-    const isModalOpen = selectedRequest;
+   const isModalOpen = selectedRequest || actionModal;
 
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
@@ -83,7 +90,58 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
-  }, [selectedRequest]);
+  }, [selectedRequest,actionModal]);
+
+  useEffect(() => {
+
+  if (!actionModal || !actionModalRef.current) return;
+
+  const modal = actionModalRef.current;
+
+  const focusableElements = modal.querySelectorAll(
+    'button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+  );
+
+  if (!focusableElements.length) return;
+
+  const firstEl = focusableElements[0];
+  const lastEl = focusableElements[focusableElements.length - 1];
+
+  firstEl.focus();
+
+  const handleKeyDown = (e) => {
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setActionModal(false);
+    }
+
+    if (e.key === "Tab") {
+
+      if (e.shiftKey) {
+
+        if (document.activeElement === firstEl) {
+          e.preventDefault();
+          lastEl.focus();
+        }
+
+      } else {
+
+        if (document.activeElement === lastEl) {
+          e.preventDefault();
+          firstEl.focus();
+        }
+      }
+    }
+  };
+
+  document.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    document.removeEventListener("keydown", handleKeyDown);
+  };
+
+}, [actionModal]);
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -155,76 +213,86 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
     }
   };
 
-  const handleStatusChange = async (id, status) => {
-    const confirmAction = window.confirm(
-      `Are you sure you want to ${status.toLowerCase()} this request?`
-    );
-    if (!confirmAction) return;
+ const handleStatusChange = async (id, status) => {
 
-    try {
-      const token = localStorage.getItem("accessToken");
-  
-      await axios.put(
-        `http://localhost:8000/attendance/regularization/${id}/status`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-  
-      // local state update
-      const updatedRegularizations = regularizations.map((item) =>
-        item._id === id
-          ? {
-              ...item,
-              regularizationRequest: {
-                ...item.regularizationRequest,
-                status,
-              },
-            }
-          : item
-      );
-  
-      setRegularizations(updatedRegularizations);
-      setFilteredRegularizations(updatedRegularizations);
-  
-      // modal data update instantly
-      if (selectedRequest?._id === id) {
-        setSelectedRequest((prev) => ({
-          ...prev,
-          regularizationRequest: {
-            ...prev.regularizationRequest,
-            status,
-          },
-        }));
+  if (!actionReason.trim()) {
+    setReasonError("Reason is required");
+    return;
+  }
+
+  try {
+
+    const token = localStorage.getItem("accessToken");
+
+    await axios.put(
+      `http://localhost:8000/attendance/regularization/${id}/status`,
+      {
+        status,
+        actionReason: actionReason.trim(),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-  
-      // counts update instantly
-      setApprovedCount(
-        updatedRegularizations.filter(
-          (r) => r.regularizationRequest.status === "Approved"
-        ).length
-      );
-  
-      setRejectedCount(
-        updatedRegularizations.filter(
-          (r) => r.regularizationRequest.status === "Rejected"
-        ).length
-      );
-  
-      setPendingCount(
-        updatedRegularizations.filter(
-          (r) => r.regularizationRequest.status === "Pending"
-        ).length
-      );
+    );
 
-      alert(`Regularization request ${status} successfully.`);
-    } catch (err) {
-      const errorMessage =
-        err.response?.data?.error ||
-        "Something went wrong while applying regularization.";
-  
-      alert(`❌ ${errorMessage}`);
+    const updatedRegularizations = regularizations.map((item) =>
+      item._id === id
+        ? {
+            ...item,
+            regularizationRequest: {
+              ...item.regularizationRequest,
+              status,
+              actionReason,
+            },
+          }
+        : item
+    );
+
+    setRegularizations(updatedRegularizations);
+    setFilteredRegularizations(updatedRegularizations);
+
+    if (selectedRequest?._id === id) {
+      setSelectedRequest((prev) => ({
+        ...prev,
+        regularizationRequest: {
+          ...prev.regularizationRequest,
+          status,
+          actionReason,
+        },
+      }));
     }
-  };
+
+    setApprovedCount(
+      updatedRegularizations.filter(
+        (r) => r.regularizationRequest.status === "Approved"
+      ).length
+    );
+
+    setRejectedCount(
+      updatedRegularizations.filter(
+        (r) => r.regularizationRequest.status === "Rejected"
+      ).length
+    );
+
+    setPendingCount(
+      updatedRegularizations.filter(
+        (r) => r.regularizationRequest.status === "Pending"
+      ).length
+    );
+
+    alert(`Regularization request ${status} successfully.`);
+
+  } catch (err) {
+
+    const errorMessage =
+      err.response?.data?.error ||
+      "Something went wrong while applying regularization.";
+
+    alert(`❌ ${errorMessage}`);
+  }
+};
   
   // const formatTime = (dateString) =>
   //   dateString ? new Date(dateString).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "-";
@@ -961,19 +1029,31 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
                               <>
                                 <button
                                   className="btn btn-sm btn-outline-success me-2"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleStatusChange(rec._id, "Approved");
-                                  }}
+                                 onClick={(e) => {
+                                  e.stopPropagation();
+
+                                  setCurrentRegularizationId(rec._id);
+                                  setActionType("Approved");
+                                  setActionModal(true);
+
+                                  setActionReason("");
+                                  setReasonError("");
+                                }}
                                 >
                                   Approve
                                 </button>
                                 <button
                                   className="btn btn-sm btn-outline-danger"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleStatusChange(rec._id, "Rejected");
-                                  }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+
+                                  setCurrentRegularizationId(rec._id);
+                                  setActionType("Rejected");
+                                  setActionModal(true);
+
+                                  setActionReason("");
+                                  setReasonError("");
+                                }}
                                 >
                                   Reject
                                 </button>
@@ -1161,6 +1241,31 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
                           </div>
                         </>
                       )}
+               {selectedRequest?.regularizationRequest
+                  ?.actionReason && (
+                  <div className="row mb-2">
+
+                    <div className="col-5 col-sm-3 fw-semibold">
+                      Action Reason
+                    </div>
+
+                    <div
+                      className="col-sm-9 col-5"
+                      style={{
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
+                      }}
+                    >
+                      {
+                        selectedRequest
+                          .regularizationRequest
+                          .actionReason
+                      }
+                    </div>
+
+                  </div>
+                )}
                     </div>
                   </div>
 
@@ -1192,19 +1297,29 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
                           <button
                             className="btn btn-sm btn-outline-success"
                             style={{ width: 90 }}
-                            onClick={() => {
-                              handleStatusChange(selectedRequest._id, "Approved");
-                            }}
-                          >
+                          onClick={() => {
+                          setCurrentRegularizationId(selectedRequest._id);
+                          setActionType("Approved");
+                          setActionModal(true);
+
+                          setActionReason("");
+                          setReasonError("");
+                        }}
+                                                  >
                             Approve
                           </button>
 
                           <button
                             className="btn btn-sm btn-outline-danger"
                             style={{ width: 90 }}
-                            onClick={() => {
-                              handleStatusChange(selectedRequest._id, "Rejected");
-                            }}
+                           onClick={() => {
+                            setCurrentRegularizationId(selectedRequest._id);
+                            setActionType("Rejected");
+                            setActionModal(true);
+
+                            setActionReason("");
+                            setReasonError("");
+                          }}
                           >
                             Reject
                           </button>
@@ -1237,7 +1352,108 @@ function AllEmployeeRegularizationRequestForAdmin({ showBackButton = true }) {
               </div>
             </div>
           )}
+{actionModal && (
+  <div
+    className="modal fade show"
+    tabIndex="-1"
+    style={{
+      display: "block",
+      background: "rgba(0,0,0,0.5)",
+    }}
+  >
+    <div
+      className="modal-dialog modal-dialog-centered"
+      ref={actionModalRef}
+      style={{ maxWidth: "600px", width: "95%" }}
+    >
+      <div className="modal-content">
 
+        <div
+          className="modal-header text-white"
+          style={{ backgroundColor: "#3A5FBE" }}
+        >
+          <h5 className="modal-title">
+            {actionType === "Approved"
+              ? "Approve Regularization"
+              : "Reject Regularization"}
+          </h5>
+
+          <button
+            type="button"
+            className="btn-close btn-close-white"
+            onClick={() => setActionModal(false)}
+          />
+        </div>
+
+        <div className="modal-body">
+
+          <label className="form-label fw-semibold">
+            Reason <span className="text-danger">*</span>
+          </label>
+
+          <textarea
+            autoFocus
+            className="form-control"
+            rows="4"
+            maxLength={200}
+            value={actionReason}
+            onChange={(e) => {
+              setActionReason(e.target.value);
+              setReasonError("");
+            }}
+            placeholder="Enter reason"
+          />
+
+          <div className="d-flex justify-content-between mt-1">
+
+            <small className="text-danger">
+              {reasonError}
+            </small>
+
+            <small className="text-muted">
+              {actionReason.length}/200
+            </small>
+
+          </div>
+        </div>
+
+        <div className="modal-footer">
+
+          <button
+            className="btn btn-sm custom-outline-btn"
+            style={{ minWidth: 90 }}
+            onClick={() => setActionModal(false)}
+          >
+            Cancel
+          </button>
+
+          <button
+            className={`btn btn-sm me-2 ${
+              actionType === "Approved"
+                ? "btn-outline-success focus-ring focus-ring-success"
+                : "btn-outline-danger focus-ring focus-ring-danger"
+            }`}
+            style={{ minWidth: 90 }}
+            onClick={async () => {
+
+              await handleStatusChange(
+                currentRegularizationId,
+                actionType
+              );
+
+              setActionModal(false);
+            }}
+          >
+            {actionType === "Approved"
+              ? "Approve"
+              : "Reject"}
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+)}
           {/* Pagination Controls */}
           <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
             <div className="d-flex align-items-center gap-3">
