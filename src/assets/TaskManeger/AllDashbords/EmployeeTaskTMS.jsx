@@ -68,7 +68,7 @@ const EmployeeTaskTMS = ({ user }) => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentText, setEditingCommentText] = useState("");
   const currentUserId = currentUser?._id || user?._id;
-  // Mock data - replace with API call
+
   useEffect(() => {
     if (!user?._id) return;
 
@@ -88,7 +88,6 @@ const EmployeeTaskTMS = ({ user }) => {
             statusId: task.status?._id,
             status: task.status?.name || "Unknown",
             description: task.taskDescription,
-            // comments: Array.isArray(task.comments) ? task.comments : [],
             documents: task.documents || null,
             originalFileName: task.originalFileName || cleanCloudinaryFilename(task.documents),
             comments: Array.isArray(task.comments)
@@ -102,21 +101,14 @@ const EmployeeTaskTMS = ({ user }) => {
                 }))
               : [],
             timeTracking: task.timeTracking || null,
+            completedAt: task.completedAt || null,
+          delayedBy: task.delayedBy || 0,
+          isDelayed: task.isDelayed || false,
           }));
 
         setAllTasks(apiTasks);
         setFilteredTasks(apiTasks);
         calculateStats(apiTasks);
-        // const activeTask = apiTasks.find(
-        //   (task) => task.timeTracking && task.timeTracking.isRunning,
-        // );
-        // if (activeTask) {
-        //   setActiveTimer({
-        //     taskId: activeTask._id,
-        //     startTime: new Date(activeTask.timeTracking.startTime),
-        //     totalSeconds: activeTask.timeTracking.totalSeconds || 0,
-        //   });
-        // }
         const activeTask = apiTasks.find(
   (task) => task.timeTracking?.isRunning
 );
@@ -124,14 +116,12 @@ const EmployeeTaskTMS = ({ user }) => {
 if (activeTask) {
   setActiveTimer({
     taskId: activeTask._id,
-    startTime: new Date(activeTask.timeTracking.startTime), //  use backend time
-    totalSeconds: activeTask.timeTracking.totalSeconds || 0, //  keep old time
+    startTime: new Date(activeTask.timeTracking.startTime), 
+    totalSeconds: activeTask.timeTracking.totalSeconds || 0,
   });
 
-  //  instant display
   setTimerSeconds(activeTask.timeTracking.totalSeconds || 0);
 }
- //snehal code timer end
       })
       .catch((err) => {
         console.error("Task fetch error:", err.response?.data || err.message);
@@ -174,7 +164,6 @@ if (activeTask) {
     delayedTasks: 0,
   });
 
-  // Get unique task types for dropdown
   const uniqueTaskTypes = [
     "All",
     ...new Set(allTasks.map((task) => task.taskType)),
@@ -264,14 +253,6 @@ if (activeTask) {
     calculateStats(allTasks);
   }, [allTasks]);
 
-  // const calculateStats = (taskList) => {
-  //   const stats = {
-  //     totalTasks: taskList.length,
-  //     ongoingTasks: taskList.filter((t) => t.status === "In Progress").length,
-  //     delayedTasks: taskList.filter((t) => t.status === "Delayed").length,
-  //   };
-  //   setTaskStats(stats);
-  // };
 
   const handleStatusUpdate = async () => {
     if (!selectedTask?._id) {
@@ -280,7 +261,6 @@ if (activeTask) {
     }
 
     try {
-      //  STOP TIMER IF TASK IS RUNNING (DIP CODE)
       if (
         activeTimer &&
         activeTimer.taskId === selectedTask._id &&
@@ -332,8 +312,7 @@ if (activeTask) {
     if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
       temp = temp.filter((task) => {
-        // Convert entire task object to searchable string
-        const effectiveStatus = getEffectiveStatus(task);////komal code
+        const effectiveStatus = getEffectiveStatus(task);
         const searchableFields = [
           task.id,
           task.taskName,
@@ -605,6 +584,8 @@ if (activeTask) {
     });
   };
 
+
+
   //  Build status count from BACKEND statuses
   const taskStatusStats = statusList.reduce((acc, statusObj) => {
     acc[statusObj.name] = 0; // initialize with 0
@@ -618,16 +599,13 @@ if (activeTask) {
     }
   });
 
-  // this function is to find status ID by name(dipali)
   const getStatusIdByName = (statusName) => {
     const status = statusList.find((s) => s.name === statusName);
     return status ? status.id : null;
   };
 
-  //start complete button code(dipali)
 
   const handleStartTimer = async (taskId) => {
-    //dip code...............
 
     if (activeTimer && activeTimer.taskId !== taskId) {
       alert("Another task timer is already running.");
@@ -639,12 +617,6 @@ if (activeTask) {
         `http://localhost:8000/task/${taskId}/start`,
       );
       if (response.data.success) {
-        // setActiveTimer({
-        //   taskId: taskId,
-        //   startTime: new Date(),
-        //   totalSeconds: 0,
-        // });
-        //snehal code timer start
         const existingTask = allTasks.find((t) => t._id === taskId);
 const previousSeconds = existingTask?.timeTracking?.totalSeconds || 0;
 
@@ -654,8 +626,7 @@ setActiveTimer({
   totalSeconds: previousSeconds,
 });
 
-setTimerSeconds(previousSeconds); //  prevents 000 flash
- //snehal code timer end
+setTimerSeconds(previousSeconds); 
         alert("Task timer started successfully!");
       }
     } catch (error) {
@@ -664,23 +635,6 @@ setTimerSeconds(previousSeconds); //  prevents 000 flash
     }
   };
 
-  // const handleStopTimer = async (taskId) => {
-  //   try {
-  //     const response = await axios.post(
-  //       `http://localhost:8000/task/${taskId}/stop`,
-  //     );
-  //     if (response.data.success) {
-  //       setActiveTimer(null);
-  //       alert(
-  //         `Task timer stopped! Session: ${response.data.currentSession.formatted}\nTotal: ${response.data.totalTime.formatted}`,
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error("Stop timer error:", error);
-  //     alert(error.response?.data?.message || "Failed to stop timer");
-  //   }
-  // };
-//Snehal COde
   const handleStopTimer = async (taskId) => {
   try {
     const response = await axios.post(
@@ -688,7 +642,7 @@ setTimerSeconds(previousSeconds); //  prevents 000 flash
     );
 
     if (response.data.success) {
-      const newTotalSeconds = response.data.totalTime.totalSeconds; // 👈 MUST come from backend
+      const newTotalSeconds = response.data.totalTime.totalSeconds; 
 
       // ✅ Update task list immediately
       const updatedTasks = allTasks.map((task) =>
@@ -856,43 +810,6 @@ setTimerSeconds(previousSeconds); //  prevents 000 flash
     }
   };
 
-  ////dipali code end
-
-  const cardBgColors = {
-    "Total Tasks": "#D1ECF1",
-    Completed: "#D7F5E4",
-    Assigned: "#E8F0FE",
-    "In Progress": "#D1E7FF",
-    "Assignment Pending": "#E2E3E5",
-    Testing: "#FFE493",
-    Hold: "#FFF1CC",
-    Review: "#E7DDF7",
-    Cancelled: "#F8D7DA",
-    Delayed: "#FFB3B3",
-  };
-
-  // const getStatusColor = (status) => ({
-  //   backgroundColor: cardBgColors[status] || "#E9ECEF",
-  //   padding: "8px 16px",
-  //   borderRadius: "4px",
-  //   fontSize: "13px",
-  //   fontWeight: "500",
-  //   display: "inline-block",
-  //   width: "120px",
-  //   textAlign: "center",
-  //   color: "#3A5FBE",
-  // });
-  //stat card header count
-  // const stats = {
-  //   totalTasks: allTasks.length,
-  //   completedTasks: allTasks.filter((t) => t.status === "Completed").length,
-  //   assignedTasks: allTasks.filter((t) => t.status === "Assigned").length,
-  //   ongoingTasks: allTasks.filter((t) => t.status === "In Progress").length,
-  //   holdTasks: allTasks.filter((t) => t.status === "On Hold").length,
-  //   cancelledTasks: allTasks.filter((t) => t.status === "Cancelled").length,
-  //   delayedTasks: allTasks.filter((t) => t.status === "Delayed").length,
-  // };
-
   const isAnyPopupOpen = !!commentModalTask || !!selectedTask;
   useEffect(() => {
     if (isAnyPopupOpen) {
@@ -955,6 +872,8 @@ const getEffectiveStatus = (task) => {
   return task.status; // Assigned, On Hold, Cancelled
 };
 
+
+
 const calculateStats = (taskList) => {
   const stats = {
     totalTasks: taskList.length,
@@ -971,33 +890,6 @@ const calculateStats = (taskList) => {
   setTaskStats(stats);
 };
 
-///komal code
-  // const onTrackTasks = allTasks.filter(
-  //   (t) => getEffectiveStatus(t) === "On Track",
-  // ).length;
-
-  // const delayedTasks = allTasks.filter(
-  //   (t) => getEffectiveStatus(t) === "Delayed",
-  // ).length;
-
-  // const stats = {
-  //   totalTasks: allTasks.length,
-
-  //   completedTasks: allTasks.filter((t) => t.status === "Completed").length,
-
-  //   assignedTasks: allTasks.filter((t) => t.status === "Assigned").length,
-
-  //   onTrackTasks,
-  //   delayedTasks,
-
-  //   holdTasks: allTasks.filter((t) => t.status === "On Hold").length,
-
-  //   cancelledTasks: allTasks.filter((t) => t.status === "Cancelled").length,
-
-  //   // ✅ In Progress = On Track + Delayed
-  //   inProgressTasks: onTrackTasks + delayedTasks,
-  // };
-  /////rutuja 30-01-2026 document upload code
 const getFileType = (file) => {
     if (!file) return null;
   
@@ -1108,105 +1000,13 @@ const stats = {
   holdTasks: allTasks.filter((t) => t.status === "Hold").length,
   cancelledTasks: allTasks.filter((t) => t.status === "Cancelled").length,
 
-  // In Progress = On Track + Delayed (In Progress)
   inProgressTasks: onTrackTasks + delayedTasks,
 };
-/////
-  /////rutuja 30-01-2026 document upload code
   return (
     <div className="container-fluid">
       <h2 className="mb-3" style={{ color: "#3A5FBE", fontSize: "25px" }}>
         My Tasks
       </h2>
-
-      {/* Stat Cards */}
-      {/* Task Status Cards */}
-      {/* <div className="row g-3 mb-4">
-        
-        <div className="col-6 col-md-4 col-lg-3">
-          <div
-            className="p-3 rounded"
-            style={{
-              backgroundColor: "#fff",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.06)",
-              border: "1px solid #f0f0f0",
-            }}
-          >
-            <div className="d-flex align-items-center" style={{ gap: "16px" }}>
-              
-              <h4
-                className="mb-0"
-                style={{
-                  fontSize: "32px",
-                  backgroundColor: "#D1ECF1",
-                  minWidth: "70px",
-                  minHeight: "70px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#3A5FBE",
-                  fontWeight: "bold",
-                }}
-              >
-                {allTasks.length}
-              </h4>
-
-              
-              <p
-                className="mb-0 fw-semibold"
-                style={{ fontSize: "18px", color: "#3A5FBE" }}
-              >
-                Total Tasks
-              </p>
-            </div>
-          </div>
-        </div>
-
-       
-        {Object.entries(taskStatusStats)
-          .filter(([status]) => status !== "Assignment Pending")
-          .map(([status, count]) => (
-            <div key={status} className="col-6 col-md-4 col-lg-3">
-              <div
-                className="p-3 rounded"
-                style={{
-                  backgroundColor: "#fff",
-                  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.06)",
-                  border: "1px solid #f0f0f0",
-                }}
-              >
-                <div
-                  className="d-flex align-items-center"
-                  style={{ gap: "16px" }}
-                >
-                  <h4
-                    className="mb-0"
-                    style={{
-                      fontSize: "32px",
-                      backgroundColor: cardBgColors[status],
-                      minWidth: "70px",
-                      minHeight: "70px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-
-                      color: "#3A5FBE",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {count}
-                  </h4>
-                  <p
-                    className="mb-0 fw-semibold"
-                    style={{ fontSize: "18px", color: "#3A5FBE" }}
-                  >
-                    {status}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-      </div> */}
 
       {/* New stat card design */}
       <div className="row g-3 mb-4">
@@ -1521,18 +1321,6 @@ const stats = {
           <table className="table table-hover mb-0">
             <thead style={{ backgroundColor: "#ffffffff" }}>
               <tr>
-                {/* <th
-                  style={{
-                    fontWeight: "500",
-                    fontSize: "14px",
-                    color: "#6c757d",
-                    borderBottom: "2px solid #dee2e6",
-                    padding: "12px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Task ID
-                </th> */}
                 <th
                   style={{
                     fontWeight: "500",
@@ -1639,6 +1427,18 @@ const stats = {
                     whiteSpace: "nowrap",
                   }}
                 >
+                  Delayed By
+                </th>
+                <th
+                  style={{
+                    fontWeight: "500",
+                    fontSize: "14px",
+                    color: "#6c757d",
+                    borderBottom: "2px solid #dee2e6",
+                    padding: "12px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
                   Add Comment
                 </th>
               </tr>
@@ -1661,19 +1461,6 @@ const stats = {
                     onClick={() => handleRowClick(task)}
                     style={{ cursor: "pointer" }}
                   >
-                    {/* <td
-                      style={{
-                        padding: "12px",
-                        verticalAlign: "middle",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap",
-                        color: "#212529",
-                        textTransform: "capitalize",
-                      }}
-                    >
-                      <h6 className="mb-0 fw-normal">{task.id}</h6>
-                    </td> */}
                     <td
                       style={{
                         padding: "12px",
@@ -1884,11 +1671,33 @@ const stats = {
                                 : "Complete task"
                           }
                         >
-                          Complete
+                          Submitted 
                         </button>
                       </div>
                     </td>
                     {/* action buttons end */}
+                    <td 
+                      style={{
+                        padding: "12px",
+                        verticalAlign: "middle",
+                        fontSize: "14px",
+                        borderBottom: "1px solid #dee2e6",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                    {task.status === "Hold" || task.status === "Cancelled" ? (
+                      <span>-</span>
+                    ) : task.status === "Assigned" && !task.isDelayed ? (
+                      <span>-</span>
+                    ) : task.isDelayed && task.delayedBy > 0 ? (
+                      <span>
+                        {task.delayedBy} day{task.delayedBy > 1 ? 's' : ''}
+                      </span>
+                    ) : (
+                      <span>On Time</span>
+                    )}
+                  </td>
+
                     <td
                       style={{
                         padding: "12px",
@@ -2017,21 +1826,6 @@ const stats = {
 
               <div className="modal-body">
                 <div className="container-fluid">
-                  {/* <div className="row mb-2">
-                    <div
-                      className="col-5 col-sm-3 fw-semibold"
-                      style={{ color: "#212529" }}
-                    >
-                      Task ID
-                    </div>
-                    <div
-                      className="col-7 col-sm-9"
-                      style={{ color: "#212529" }}
-                    >
-                      {selectedTask.id}
-                    </div>
-                  </div> */}
-
                   <div className="row mb-2">
                     <div
                       className="col-5 col-sm-3 fw-semibold"
@@ -2153,6 +1947,25 @@ const stats = {
                     </div>
                   </div>
 
+                  <div className="row mb-2">
+                  <div className="col-5 col-sm-3 fw-semibold" style={{ color: "#212529" }}>
+                    Delayed By
+                  </div>
+                  <div className="col-7 col-sm-9" style={{ color: "#212529" }}>
+                    {selectedTask.status === "Hold" || selectedTask.status === "Cancelled" ? (
+                      <span>-</span>
+                    ) : selectedTask.status === "Assigned" && !selectedTask.isDelayed ? (
+                      <span>-</span>
+                    ) : selectedTask.isDelayed && selectedTask.delayedBy > 0 ? (
+                      <span >
+                        {selectedTask.delayedBy} day{selectedTask.delayedBy > 1 ? 's' : ''}
+                      </span>
+                    ) : (
+                      <span >On Time</span>
+                    )}
+                  </div>
+                </div>
+
                   {/* Dipali code of status start*/}
                   <div className="row mb-2">
                     <div
@@ -2223,7 +2036,6 @@ const stats = {
                       )}
                     </div>
                   </div>
-                  {/* Dipali code of status end*/}
 
                        {/* document upload code rutuja 30-01-2026 */}
                       {selectedTask.documents && (
@@ -2459,8 +2271,6 @@ const stats = {
         </div>
       )}
 
-      {/* Comment Modal */}
-      {/* Comment Modal */}
       {commentModalTask && (
         <div
           ref={commentPopupRef}
