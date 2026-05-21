@@ -381,7 +381,7 @@ useEffect(() => {
                 end
               >
                 <FileEarmarkTextFill size={20} className="sidebar-icon" />
-                <h6 className="mt-1 sidebar-text">HR Policy</h6>
+                <h6 className="mt-1 sidebar-text">Company Policy</h6>
               </NavLink>
             </li>
           )}

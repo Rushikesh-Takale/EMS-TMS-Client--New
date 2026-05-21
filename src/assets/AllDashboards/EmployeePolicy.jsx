@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 const API_BASE = "http://localhost:8000";
 const STORAGE_KEY = "hr_policy";
@@ -18,60 +18,77 @@ function EmployeePolicy({ user }) {
   const [searchText, setSearchText] = useState("");
   const [ackData, setAckData] = useState([]);
   const [downloadedPolicies, setDownloadedPolicies] = useState([]);
-
+const [showLegalPopup, setShowLegalPopup] = useState(false);
+const [isChecked, setIsChecked] = useState(false);
   const modalRef = useRef(null);
   const isAnyModalOpen = showModal;
 
-  useEffect(() => {
-    if (!isAnyModalOpen || !modalRef.current) return;
+useEffect(() => {
+  if (!isAnyModalOpen || !modalRef.current || showLegalPopup)
+    return;
 
-    const modal = modalRef.current;
+  const modal = modalRef.current;
 
-    const focusableElements = modal.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-    );
+  const focusableElements = modal.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
 
-    if (!focusableElements.length) return;
+  if (!focusableElements.length) return;
 
-    const firstEl = focusableElements[0];
-    const lastEl = focusableElements[focusableElements.length - 1];
+  const firstEl = focusableElements[0];
+  const lastEl = focusableElements[focusableElements.length - 1];
 
-    // Set focus to modal when opened
-    modal.focus();
+  // Focus modal when opened
+  setTimeout(() => {
+    firstEl.focus();
+  }, 100);
 
-    const handleKeyDown = (e) => {
-      // ESC key → modal close
-      if (e.key === "Escape") {
-        e.preventDefault();
+  const handleKeyDown = (e) => {
+
+    // ESC close
+    if (e.key === "Escape") {
+      e.preventDefault();
+
+      if (showLegalPopup) {
+        setShowLegalPopup(false);
+        setIsChecked(false);
+      } else {
         setShowModal(false);
       }
+    }
 
-      // TAB key → focus trap
-      if (e.key === "Tab") {
-        if (e.shiftKey) {
-          if (document.activeElement === firstEl) {
-            e.preventDefault();
-            lastEl.focus();
-          }
-        } else {
-          if (document.activeElement === lastEl) {
-            e.preventDefault();
-            firstEl.focus();
-          }
+    // TAB focus trap
+    if (e.key === "Tab") {
+
+      // Shift + Tab
+      if (e.shiftKey) {
+        if (document.activeElement === firstEl) {
+          e.preventDefault();
+          lastEl.focus();
         }
       }
-    };
 
-    modal.addEventListener("keydown", handleKeyDown);
+      // Normal Tab
+      else {
+        if (document.activeElement === lastEl) {
+          e.preventDefault();
+          firstEl.focus();
+        }
+      }
+    }
+  };
 
-    return () => {
-      modal.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isAnyModalOpen]);
+  modal.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    modal.removeEventListener("keydown", handleKeyDown);
+  };
+
+}, [isAnyModalOpen, showLegalPopup]);
 
   useEffect(() => {
     const isModalOpen = !!showModal;
-  
+
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
@@ -79,7 +96,7 @@ function EmployeePolicy({ user }) {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     }
-  
+
     return () => {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
@@ -208,34 +225,34 @@ function EmployeePolicy({ user }) {
       alert("File already downloaded");
       return;
     }
-        setIsDownloading(true);
-  
-        try {
-          const response = await fetch(policy.image);
-          const blob = await response.blob();
-  
-          const url = window.URL.createObjectURL(blob);
-  
-          const link = document.createElement("a");
-          link.href = url;
-  
-          const fileName =
-            policy.image.split("/").pop().split("?")[0] || "file";
-  
-          link.download = fileName;
-  
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-  
-          window.URL.revokeObjectURL(url);
-            setDownloadedPolicies((prev) => [...prev, policy._id]);
-        } catch (error) {
-          console.log(error);
-        } finally {
-          setIsDownloading(false);
-        }
-      };
+    setIsDownloading(true);
+
+    try {
+      const response = await fetch(policy.image);
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+
+      const fileName =
+        policy.image.split("/").pop().split("?")[0] || "file";
+
+      link.download = fileName;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(url);
+      setDownloadedPolicies((prev) => [...prev, policy._id]);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   const tdStyle = {
     padding: "12px",
@@ -353,97 +370,97 @@ function EmployeePolicy({ user }) {
         </div>
       </div>
 
-   {currentPolicies.length === 0 && (
-    <tr>
-      <td colSpan="8" className="text-center text-muted">
-        No policies available
-      </td>
-    </tr>
-  )}
+      {currentPolicies.length === 0 && (
+        <tr>
+          <td colSpan="8" className="text-center text-muted">
+            No policies available
+          </td>
+        </tr>
+      )}
       <div className="card shadow-sm border-0">
         <div className="table-responsive bg-white">
           <table className="table table-hover mb-0">
-<thead style={{ backgroundColor: "#f8f9fa" }}>
+            <thead style={{ backgroundColor: "#f8f9fa" }}>
               <tr >
                 <th
-                    style={{
-                      fontWeight: "500",
-                      fontSize: "14px",
-                      color: "#6c757d",
-                      borderBottom: "2px solid #dee2e6",
-                      padding: "10px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Policy Title
-                  </th>
-                 <th
-                    style={{
-                      fontWeight: "500",
-                      fontSize: "14px",
-                      color: "#6c757d",
-                      borderBottom: "2px solid #dee2e6",
-                      padding: "10px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Description
-                  </th>
-                 <th
-                    style={{
-                      fontWeight: "500",
-                      fontSize: "14px",
-                      color: "#6c757d",
-                      borderBottom: "2px solid #dee2e6",
-                      padding: "10px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Created Date
-                  </th>
-                 <th
-                    style={{
-                      fontWeight: "500",
-                      fontSize: "14px",
-                      color: "#6c757d",
-                      borderBottom: "2px solid #dee2e6",
-                      padding: "10px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Updated Date
-                  </th>
-                 <th
-                    style={{
-                      fontWeight: "500",
-                      fontSize: "14px",
-                      color: "#6c757d",
-                      borderBottom: "2px solid #dee2e6",
-                      padding: "10px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Uploaded File
-                  </th>
-                 <th
-                    style={{
-                      fontWeight: "500",
-                      fontSize: "14px",
-                      color: "#6c757d",
-                      borderBottom: "2px solid #dee2e6",
-                      padding: "10px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Status
-                  </th>
+                  style={{
+                    fontWeight: "500",
+                    fontSize: "14px",
+                    color: "#6c757d",
+                    borderBottom: "2px solid #dee2e6",
+                    padding: "10px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Policy Title
+                </th>
+                <th
+                  style={{
+                    fontWeight: "500",
+                    fontSize: "14px",
+                    color: "#6c757d",
+                    borderBottom: "2px solid #dee2e6",
+                    padding: "10px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Description
+                </th>
+                <th
+                  style={{
+                    fontWeight: "500",
+                    fontSize: "14px",
+                    color: "#6c757d",
+                    borderBottom: "2px solid #dee2e6",
+                    padding: "10px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Created Date
+                </th>
+                <th
+                  style={{
+                    fontWeight: "500",
+                    fontSize: "14px",
+                    color: "#6c757d",
+                    borderBottom: "2px solid #dee2e6",
+                    padding: "10px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Updated Date
+                </th>
+                <th
+                  style={{
+                    fontWeight: "500",
+                    fontSize: "14px",
+                    color: "#6c757d",
+                    borderBottom: "2px solid #dee2e6",
+                    padding: "10px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Uploaded File
+                </th>
+                <th
+                  style={{
+                    fontWeight: "500",
+                    fontSize: "14px",
+                    color: "#6c757d",
+                    borderBottom: "2px solid #dee2e6",
+                    padding: "10px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Status
+                </th>
               </tr>
             </thead>
 
             <tbody>
               {currentPolicies.length === 0 && (
                 <tr>
-                  <td colSpan="8" className="text-center text-muted" style={{                         padding: "20px" }}>
+                  <td colSpan="8" className="text-center text-muted" style={{ padding: "20px" }}>
                     No policies available
                   </td>
                 </tr>
@@ -456,13 +473,14 @@ function EmployeePolicy({ user }) {
                     setSelectedPolicy(policy);
                     setShowModal(true);
                   }}
-                >       <td 
-                      style={{     
-                         padding: "10px",
-                        verticalAlign: "middle",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap", }}>
+                >       <td
+                  style={{
+                    padding: "10px",
+                    verticalAlign: "middle",
+                    fontSize: "14px",
+                    borderBottom: "1px solid #dee2e6",
+                    whiteSpace: "nowrap",
+                  }}>
                     {policy.title}
                     {isNewPolicy(policy.createdAt) &&
                       !isUpdatedPolicy(policy.createdAt, policy.updatedAt) && (
@@ -504,7 +522,7 @@ function EmployeePolicy({ user }) {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                       }}
-                      title={policy.description} 
+                      title={policy.description}
                     >
                       {policy.description}
                     </div>
@@ -517,7 +535,7 @@ function EmployeePolicy({ user }) {
                     {policy.image ? (
                       <span
                         onClick={(e) => {
-                          e.stopPropagation();       
+                          e.stopPropagation();
                           handleDownloadPolicy(policy);
                         }}
                         style={{
@@ -532,45 +550,45 @@ function EmployeePolicy({ user }) {
                       <span style={{ color: "#9ca3af" }}>-</span>
                     )}
                   </td>
-                            
-                
-                  <td style={tdStyle}>
-                  {(() => {
-                    const ack = getAckStatus(policy._id);
 
-                    return ack ? (
-                      <span
-                        style={{
-                          backgroundColor: "#d1f2dd",
-                          padding: "6px 12px",
-                          borderRadius: "4px",
-                          fontSize: "13px",
-                          fontWeight: "500",
-                          display: "inline-block",
-                          width: "100px",
-                          textAlign: "center",
-                        }}
-                      >
-                        Read
-                      </span>
-                    ) : (
-                      <span
-                        style={{
-                          backgroundColor: "#fff3cd",
-                          padding: "6px 12px",
-                          borderRadius: "4px",
-                          fontSize: "13px",
-                          fontWeight: "500",
-                          display: "inline-block",
-                          width: "100px",
-                          textAlign: "center",
-                        }}
-                      >
-                        Pending
-                      </span>
-                    );
-                  })()}
-                </td>
+
+                  <td style={tdStyle}>
+                    {(() => {
+                      const ack = getAckStatus(policy._id);
+
+                      return ack ? (
+                        <span
+                          style={{
+                            backgroundColor: "#d1f2dd",
+                            padding: "6px 12px",
+                            borderRadius: "4px",
+                            fontSize: "13px",
+                            fontWeight: "500",
+                            display: "inline-block",
+                            width: "100px",
+                            textAlign: "center",
+                          }}
+                        >
+                          Read
+                        </span>
+                      ) : (
+                        <span
+                          style={{
+                            backgroundColor: "#fff3cd",
+                            padding: "6px 12px",
+                            borderRadius: "4px",
+                            fontSize: "13px",
+                            fontWeight: "500",
+                            display: "inline-block",
+                            width: "100px",
+                            textAlign: "center",
+                          }}
+                        >
+                          Pending
+                        </span>
+                      );
+                    })()}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -754,13 +772,7 @@ function EmployeePolicy({ user }) {
                     {!ack ? (
                       <button
                         className="btn btn-sm custom-outline-btn"
-                        onClick={() =>
-                          handleAcknowledge(
-                            selectedPolicy._id,
-                            employeeId,
-                            employeeName,
-                          )
-                        }
+                        onClick={() => setShowLegalPopup(true)}
                       >
                         Read & Acknowledge
                       </button>
@@ -784,8 +796,8 @@ function EmployeePolicy({ user }) {
                         {downloadedPolicies.includes(selectedPolicy._id)
                           ? "Already Downloaded"
                           : isDownloading
-                          ? "Downloading..."
-                          : "Download"}
+                            ? "Downloading..."
+                            : "Download"}
                       </button>
 
                       <button
@@ -802,6 +814,112 @@ function EmployeePolicy({ user }) {
             </div>
           );
         })()}
+
+        {showLegalPopup && (
+  <div
+    className="modal fade show"
+     ref={modalRef}
+              tabIndex="-1"
+    style={{
+      display: "flex",
+      backgroundColor: "rgba(0,0,0,0.5)",
+      position: "fixed",
+      inset: 0,
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 2000,
+    }}
+  >
+    <div className="modal-dialog modal-dialog-centered">
+      <div className="modal-content">
+
+        {/* Header */}
+        <div
+          className="modal-header text-white"
+          style={{ backgroundColor: "#3A5FBE" }}
+        >
+          <h5 className="modal-title">Legal Advisory</h5>
+
+          <button
+            type="button"
+            className="btn-close btn-close-white"
+            onClick={() => setShowLegalPopup(false)}
+          ></button>
+        </div>
+
+        {/* Body */}
+{/* Body */}
+<div className="modal-body">
+  <p>
+    By checking this box, I confirm that I have read,
+    understood, and accepted the company policy.
+  </p>
+
+  <p>
+    I acknowledge that it is my responsibility to comply
+    with all terms, conditions, rules, and guidelines
+    mentioned in the policy.
+  </p>
+
+  <p>
+    Any violation of the policy may result in disciplinary
+    action as per company rules and regulations.
+  </p>
+
+  {/* Checkbox */}
+  <div className="form-check mt-3">
+    <input
+      className="form-check-input"
+      type="checkbox"
+      id="policyCheck"
+      checked={isChecked}
+      onChange={(e) => setIsChecked(e.target.checked)}
+    />
+
+    <label
+      className="form-check-label fw-semibold"
+      htmlFor="policyCheck"
+    >
+      I have read and accept the policy
+    </label>
+  </div>
+</div>
+
+        {/* Footer */}
+        <div className="modal-footer">
+      <button
+                        className="btn btn-sm custom-outline-btn"
+                        style={{ minWidth: "90px" }}
+  onClick={() => {
+    setShowLegalPopup(false);
+    setIsChecked(false);
+  }}
+>
+  Cancel
+</button>
+
+<button
+                        className="btn btn-sm custom-outline-btn"
+                        style={{ minWidth: "90px" }}
+  disabled={!isChecked}
+  onClick={async () => {
+    await handleAcknowledge(
+      selectedPolicy._id,
+      employeeId,
+      employeeName
+    );
+
+    setShowLegalPopup(false);
+    setIsChecked(false);
+  }}
+>
+  OK
+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
       <div className="text-end mt-3">
         <button
