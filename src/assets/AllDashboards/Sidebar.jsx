@@ -13,6 +13,7 @@ import {
   BriefcaseFill,
   ClipboardCheckFill,
   Images,
+  GeoAltFill,
 } from "react-bootstrap-icons";
 import "./Sidebar.css";
 
@@ -577,7 +578,19 @@ useEffect(() => {
             <h6 className="mt-1">Settings</h6>
           </NavLink>
         </li>
-      
+        {role === "admin" && (
+            <li className="nav-item ">
+              <NavLink
+                to={`/dashboard/${role}/${username}/${id}/LoginHistory`}
+                className="nav-link text-white d-flex flex-column align-items-center"
+                onClick={handleLinkClick}
+                end
+              >
+                <GeoAltFill size={20} />
+                <h6 className="mt-1">Login History</h6>
+              </NavLink>
+            </li>
+          )}
   
       </div>
     </>
