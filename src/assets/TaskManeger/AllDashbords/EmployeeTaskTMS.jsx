@@ -2,6 +2,29 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+import { Bar } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+   ChartDataLabels,
+);
+
 const cleanCloudinaryFilename = (url) => {
   if (!url) return null;
   
@@ -974,33 +997,164 @@ const completedTasks = allTasks.filter((t) =>
   getEffectiveStatus(t).startsWith("Completed")
 ).length;
 
-const completedDelayedTasks = allTasks.filter((t) =>
-  getEffectiveStatus(t).startsWith("Completed (Delayed")
+const delayedInProgressTasks = allTasks.filter(
+  (t) =>
+    getEffectiveStatus(t) ===
+    "Delayed (In Progress)"
 ).length;
 
-const onTrackTasks = allTasks.filter((t) =>
-  getEffectiveStatus(t).startsWith("On Track")
-).length;
-
-const delayedTasks = allTasks.filter((t) =>
-  getEffectiveStatus(t).startsWith("Delayed")
+const onTrackInProgressTasks = allTasks.filter(
+  (t) =>
+    getEffectiveStatus(t) ===
+    "On Track (In Progress)"
 ).length;
 
 const stats = {
-  totalTasks: allTasks.length,
-
   completedTasks,
-  completedDelayedTasks, // ⭐ NEW
 
-  assignedTasks: allTasks.filter((t) => t.status === "Assigned").length,
+  assignedTasks: allTasks.filter(
+    (t) => t.status === "Assigned"
+  ).length,
 
-  onTrackTasks,
-  delayedTasks,
+  holdTasks: allTasks.filter(
+    (t) =>
+      t.status === "Hold" ||
+      t.status === "On Hold"
+  ).length,
 
-  holdTasks: allTasks.filter((t) => t.status === "Hold").length,
-  cancelledTasks: allTasks.filter((t) => t.status === "Cancelled").length,
+  cancelledTasks: allTasks.filter(
+    (t) => t.status === "Cancelled"
+  ).length,
 
-  inProgressTasks: onTrackTasks + delayedTasks,
+  delayedInProgressTasks,
+
+  onTrackInProgressTasks,
+
+  totalTasks:
+    completedTasks +
+
+    allTasks.filter(
+      (t) => t.status === "Assigned"
+    ).length +
+
+    allTasks.filter(
+      (t) =>
+        t.status === "Hold" ||
+        t.status === "On Hold"
+    ).length +
+
+    allTasks.filter(
+      (t) => t.status === "Cancelled"
+    ).length +
+
+    delayedInProgressTasks +
+
+    onTrackInProgressTasks,
+};
+
+const chartData = {
+labels: [
+  "Completed",
+  "Assigned",
+  "On Hold",
+  "Cancelled",
+  "Delayed-In Progress",
+  "On-track-In progress",
+],
+
+  datasets: [
+    {
+      label: "Tasks",
+
+      data: [
+        stats.completedTasks,
+        stats.assignedTasks,
+        stats.holdTasks,
+        stats.cancelledTasks,
+        stats.delayedInProgressTasks,
+        stats.onTrackInProgressTasks,
+      ],
+
+      backgroundColor: [
+        "#22c55e",
+        "#3b82f6",
+        "#f59e0b",
+        "#6b7280",
+        "#ef4444",
+        "#8b5cf6",
+      ],
+
+      borderRadius: 10,
+
+      barThickness: 60,
+    },
+  ],
+};
+
+const chartOptions = {
+  responsive: true,
+
+  maintainAspectRatio: false,
+
+  plugins: {
+    legend: {
+      display: false,
+    },
+
+    datalabels: {
+      anchor: "end",
+
+      align: "top",
+
+      color: "#3A5FBE",
+
+      font: {
+        weight: "bold",
+        size: 14,
+      },
+
+      formatter: (value) => value,
+    },
+  },
+
+  scales: {
+    x: {
+      ticks: {
+        maxRotation: 0,
+        minRotation: 0,
+
+        color: "#3A5FBE",
+
+        font: {
+          size: 13,
+          weight: "bold",
+        },
+      },
+
+      grid: {
+        color: "rgba(58,95,190,0.08)",
+      },
+    },
+
+    y: {
+      beginAtZero: true,
+
+      ticks: {
+        stepSize: 10,
+
+        color: "#3A5FBE",
+
+        font: {
+          size: 12,
+          weight: "600",
+        },
+      },
+
+      grid: {
+        color: "rgba(58,95,190,0.08)",
+      },
+    },
+  },
 };
   return (
     <div className="container-fluid">
@@ -1009,262 +1163,208 @@ const stats = {
       </h2>
 
       {/* New stat card design */}
-      <div className="row g-3 mb-4">
-        {/* TOTAL TASKS */}
-        <div className="col-12 col-md-4 col-lg-3">
-          <div className="card shadow-sm h-100 border-0">
-            <div
-              className="card-body d-flex align-items-center"
-              style={{ gap: "16px" }}
+   <div
+        className="card border-0 mb-3"
+        style={{
+          borderRadius: "24px",
+    
+          background:
+            "linear-gradient(135deg, #ffffff 0%, #f4f8ff 100%)",
+    
+          boxShadow:
+            "0 10px 40px rgba(58, 95, 190, 0.12)",
+    
+          overflow: "hidden",
+        }}
+      >
+    
+        <div
+          className="card-body"
+          style={{
+            minHeight: "420px",
+            padding: "clamp(16px, 3vw, 28px)",
+          }}
+        >
+    
+    <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+         <div>
+            <h4
+              style={{
+                color: "#3A5FBE",
+                fontWeight: "700",
+                fontSize: "clamp(22px, 3vw, 34px)",
+              }}
             >
-              <h4
-                className="mb-0"
+               Task Analytics
+            </h4>
+    
+          <p
+            style={{
+              margin: 0,
+              color: "#64748b",
+              fontSize: "14px",
+              fontWeight: "500",
+            }}
+          >
+            Employee task performance overview
+          </p>
+           </div>
+            <div
+              style={{
+            color: "#3A5FBE",
+            fontWeight: "700",
+            fontSize: "clamp(20px, 3vw, 30px)",
+            marginRight:"25px"
+          }}
+            >
+              Total Tasks : {stats.totalTasks}
+            </div>
+    
+          </div>
+    
+          <div className="row">
+    
+            {/* CHART */}
+            <div className="col-12 col-md-8 col-lg-9">
+    
+              <div
                 style={{
-                  fontSize: "32px",
-                  backgroundColor: "#D1ECF1",
-                  minWidth: "70px",
-                  minHeight: "70px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#3A5FBE",
+                  height: "clamp(260px, 40vw, 400px)",
+                  width: "100%",
+                  position: "relative",
+    
+                  background:
+                    "rgba(255,255,255,0.75)",
+    
+                  backdropFilter: "blur(10px)",
+    
+                  borderRadius: "22px",
+    
+                  padding: "18px",
+    
+                  border:
+                    "1px solid rgba(58,95,190,0.08)",
+    
+                  boxShadow:
+                    "0 8px 24px rgba(58,95,190,0.08)",
                 }}
               >
-                {stats.totalTasks}
-              </h4>
-              <p
-                className="mb-0 fw-semibold"
-                style={{ fontSize: "18px", color: "#3A5FBE" }}
-              >
-                Total Tasks
-              </p>
+                <Bar
+                  data={chartData}
+                  options={chartOptions}
+                />
+              </div>
+    
             </div>
-          </div>
-        </div>
-
-        {/* COMPLETED */}
-        <div className="col-12 col-md-4 col-lg-3">
-          <div className="card shadow-sm h-100 border-0">
-            <div
-              className="card-body d-flex align-items-center"
-              style={{ gap: "16px" }}
-            >
-              <h4
-                className="mb-0"
+    
+            {/* SUMMARY */}
+         <div className="col-12 col-md-4 col-lg-3 mt-4 mt-md-0 d-flex">
+    
+              <div
                 style={{
-                  fontSize: "32px",
-                  backgroundColor: "#D7F5E4",
-                  minWidth: "70px",
-                  minHeight: "70px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#3A5FBE",
+                  background:
+                    "rgba(255,255,255,0.65)",
+    
+                  borderRadius: "20px",
+    
+                  padding: "clamp(14px,2vw,20px)",
+    
+                 minHeight: "100%",
+                 width: "100%",
+    
+                  boxShadow:
+                    "0 4px 16px rgba(58,95,190,0.08)",
                 }}
               >
-                {stats.completedTasks}
-              </h4>
-              <p
-                className="mb-0 fw-semibold"
-                style={{ fontSize: "18px", color: "#3A5FBE" }}
-              >
-                Completed Tasks
-              </p>
+    
+                {[
+                  {
+                    name: "Completed",
+                    color: "#22c55e",
+                    value: stats.completedTasks,
+                  },
+                  {
+                    name: "Assigned",
+                    color: "#3b82f6",
+                    value: stats.assignedTasks,
+                  },
+                  {
+                    name: "On Hold",
+                    color: "#f59e0b",
+                    value: stats.holdTasks,
+                  },
+                  {
+                    name: "Cancelled",
+                    color: "#6b7280",
+                    value: stats.cancelledTasks,
+                  },
+                  {
+                    name: "Delayed-In Progress",
+                    color: "#ef4444",
+                    value: stats.delayedInProgressTasks,
+                  },
+                  {
+                    name: "On-track-In progress",
+                    color: "#8b5cf6",
+                    value: stats.onTrackInProgressTasks,
+                  },
+                ].map((item, index) => (
+    
+                  <div
+                    key={index}
+                    className="d-flex justify-content-between align-items-center mb-3 px-3 py-2"
+                    style={{
+                      borderRadius: "12px",
+                      background:
+                        "rgba(58,95,190,0.04)",
+                    }}
+                  >
+    
+                    <div className="d-flex align-items-center gap-2">
+    
+                      <div
+                        style={{
+                          width: "14px",
+                          height: "14px",
+                          backgroundColor: item.color,
+                          borderRadius: "4px",
+                        }}
+                      ></div>
+    
+                      <span
+                        style={{
+                          fontSize:
+                            "clamp(13px,1.2vw,16px)",
+                          fontWeight: "500",
+                        }}
+                      >
+                        {item.name}
+                      </span>
+    
+                    </div>
+    
+                    <strong
+                      style={{
+                        fontSize:
+                          "clamp(14px,1.5vw,18px)",
+                        color: "#3A5FBE",
+                      }}
+                    >
+                      {item.value}
+                    </strong>
+    
+                  </div>
+    
+                ))}
+    
+              </div>
+    
             </div>
+    
           </div>
+    
         </div>
-
-        {/* ASSIGNED */}
-        <div className="col-12 col-md-4 col-lg-3">
-          <div className="card shadow-sm h-100 border-0">
-            <div
-              className="card-body d-flex align-items-center"
-              style={{ gap: "16px" }}
-            >
-              <h4
-                className="mb-0"
-                style={{
-                  fontSize: "32px",
-                  backgroundColor: "#FFE493",
-                  minWidth: "70px",
-                  minHeight: "70px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#3A5FBE",
-                }}
-              >
-                {stats.assignedTasks}
-              </h4>
-              <p
-                className="mb-0 fw-semibold"
-                style={{ fontSize: "18px", color: "#3A5FBE" }}
-              >
-                Assigned Tasks
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* IN PROGRESS */}
-        <div className="col-12 col-md-4 col-lg-3">
-          <div className="card shadow-sm h-100 border-0">
-            <div
-              className="card-body d-flex align-items-center"
-              style={{ gap: "16px" }}
-            >
-              <h4
-                className="mb-0"
-                style={{
-                  fontSize: "32px",
-                  backgroundColor: "#daffd1",
-                  minWidth: "70px",
-                  minHeight: "70px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#3A5FBE",
-                }}
-              >
-                {stats.onTrackTasks}
-              </h4>
-              <p
-                className="mb-0 fw-semibold"
-                style={{ fontSize: "18px", color: "#3A5FBE" }}
-              >
-                On Track
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* ON HOLD */}
-        <div className="col-12 col-md-4 col-lg-3">
-          <div className="card shadow-sm h-100 border-0">
-            <div
-              className="card-body d-flex align-items-center"
-              style={{ gap: "16px" }}
-            >
-              <h4
-                className="mb-0"
-                style={{
-                  fontSize: "32px",
-                  backgroundColor: "#FFF1CC",
-                  minWidth: "70px",
-                  minHeight: "70px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#3A5FBE",
-                }}
-              >
-                {stats.holdTasks}
-              </h4>
-              <p
-                className="mb-0 fw-semibold"
-                style={{ fontSize: "18px", color: "#3A5FBE" }}
-              >
-                Tasks On Hold
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* CANCELLED */}
-        <div className="col-12 col-md-4 col-lg-3">
-          <div className="card shadow-sm h-100 border-0">
-            <div
-              className="card-body d-flex align-items-center"
-              style={{ gap: "16px" }}
-            >
-              <h4
-                className="mb-0"
-                style={{
-                  fontSize: "32px",
-                  backgroundColor: "#F2C2C2",
-                  minWidth: "70px",
-                  minHeight: "70px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#3A5FBE",
-                }}
-              >
-                {stats.cancelledTasks}
-              </h4>
-              <p
-                className="mb-0 fw-semibold"
-                style={{ fontSize: "18px", color: "#3A5FBE" }}
-              >
-                Cancelled Tasks
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* DELAYED */}
-        <div className="col-12 col-md-4 col-lg-3">
-          <div className="card shadow-sm h-100 border-0">
-            <div
-              className="card-body d-flex align-items-center"
-              style={{ gap: "16px" }}
-            >
-              <h4
-                className="mb-0"
-                style={{
-                  fontSize: "32px",
-                  backgroundColor: "#FFB3B3",
-                  minWidth: "70px",
-                  minHeight: "70px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#3A5FBE",
-                }}
-              >
-                {stats.delayedTasks}
-              </h4>
-              <p
-                className="mb-0 fw-semibold"
-                style={{ fontSize: "18px", color: "#3A5FBE" }}
-              >
-                Delayed Tasks
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* inProgressTasks */}
-        <div className="col-12 col-md-4 col-lg-3">
-          <div className="card shadow-sm h-100 border-0">
-            <div
-              className="card-body d-flex align-items-center"
-              style={{ gap: "16px" }}
-            >
-              <h4
-                className="mb-0"
-                style={{
-                  fontSize: "32px",
-                  backgroundColor: "#D1E7FF",
-                  minWidth: "70px",
-                  minHeight: "70px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#3A5FBE",
-                }}
-              >
-                {stats.inProgressTasks}
-              </h4>
-              <p
-                className="mb-0 fw-semibold"
-                style={{ fontSize: "18px", color: "#3A5FBE" }}
-              >
-                In Progress Tasks
-              </p>
-            </div>
-          </div>
-        </div>
+    
       </div>
       {/* ............. */}
 

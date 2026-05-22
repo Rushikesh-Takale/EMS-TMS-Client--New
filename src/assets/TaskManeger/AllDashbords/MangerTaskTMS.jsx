@@ -2,6 +2,28 @@ import React, { useState, useEffect, useRef } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import axios from "axios";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+    ChartDataLabels,
+);
+
+import { Bar } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 const cleanCloudinaryFilename = (url) => {
   if (!url) return null;
   
@@ -703,7 +725,163 @@ const MangerTaskTMS = ({ role }) => {
 
     return statusName || "-";
   };
+const calculateTaskStatus = () => {
 
+  const completedTasks = allTasks.filter(
+    (task) =>
+      getDerivedStatus(task).startsWith("Completed")
+  ).length;
+
+  const assignedTasks = allTasks.filter(
+    (task) =>
+      getDerivedStatus(task) === "Assigned"
+  ).length;
+
+  const holdTasks = allTasks.filter(
+    (task) =>
+      getDerivedStatus(task) === "Hold" ||
+      getDerivedStatus(task) === "On Hold"
+  ).length;
+
+  const cancelledTasks = allTasks.filter(
+    (task) =>
+      getDerivedStatus(task) === "Cancelled"
+  ).length;
+
+  const delayedInProgressTasks = allTasks.filter(
+    (task) =>
+      getDerivedStatus(task) === "Delayed (In Progress)"
+  ).length;
+
+  const onTrackInProgressTasks = allTasks.filter(
+    (task) =>
+      getDerivedStatus(task) === "In Progress"
+  ).length;
+
+  const totalTasks =
+    completedTasks +
+    assignedTasks +
+    holdTasks +
+    cancelledTasks +
+    delayedInProgressTasks +
+    onTrackInProgressTasks;
+
+  return {
+    totalTasks,
+    completedTasks,
+    assignedTasks,
+    holdTasks,
+    cancelledTasks,
+    delayedInProgressTasks,
+    onTrackInProgressTasks,
+  };
+};
+
+const stats = calculateTaskStatus();
+
+const chartData = {
+  labels: [
+    "Completed",
+    "Assigned",
+    "Hold",
+    "Cancelled",
+    "Delayed",
+    "On-track",
+  ],
+
+  datasets: [
+    {
+      label: "Tasks",
+
+      data: [
+        stats.completedTasks,
+        stats.assignedTasks,
+        stats.holdTasks,
+        stats.cancelledTasks,
+        stats.delayedInProgressTasks,
+        stats.onTrackInProgressTasks,
+      ],
+
+      backgroundColor: [
+        "#22c55e",
+        "#3b82f6",
+        "#f59e0b",
+        "#6b7280",
+        "#ef4444",
+        "#8b5cf6",
+      ],
+
+      borderRadius: 10,
+
+      barThickness: 60,
+    },
+  ],
+};
+const chartOptions = {
+  responsive: true,
+
+  maintainAspectRatio: false,
+
+  plugins: {
+    legend: {
+      display: false,
+    },
+
+    datalabels: {
+      anchor: "end",
+
+      align: "top",
+
+      color: "#3A5FBE",
+
+      font: {
+        weight: "bold",
+        size: 14,
+      },
+
+      formatter: (value) => value,
+    },
+  },
+
+  scales: {
+    x: {
+      ticks: {
+        maxRotation: 0,
+        minRotation: 0,
+
+        color: "#3A5FBE",
+
+        font: {
+          size: 13,
+          weight: "bold",
+        },
+      },
+
+      grid: {
+        color: "rgba(58,95,190,0.08)",
+      },
+    },
+
+    y: {
+      beginAtZero: true,
+
+      ticks: {
+        stepSize: 10,
+
+        color: "#3A5FBE",
+
+        font: {
+          size: 12,
+          weight: "600",
+        },
+      },
+
+      grid: {
+        color: "rgba(58,95,190,0.08)",
+      },
+    },
+  },
+};
   return (
     <div className="container-fluid">
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -720,45 +898,202 @@ const MangerTaskTMS = ({ role }) => {
       </div>
 
       {/* Stat Cards */}
-      <div className="row mb-4">
-        {[
-          { title: "Total Tasks", count: allTasks.length ?? 0, bg: "#D1ECF1" },
-          { title: "Completed Tasks", count: statusCounts.Completed ?? 0, bg: "#D7F5E4" },
-          { title: "Assigned Tasks", count: statusCounts.Assigned ?? 0, bg: "#FFE493" },
-          { title: "Unassigned Tasks", count: statusCounts["Assignment Pending"] ?? 0, bg: "#F1F3F5" },
-          { title: "In Progress", count: statusCounts["In Progress"] ?? 0, bg: "#D1E7FF" },
-          { title: "Tasks On Hold", count: statusCounts.Hold ?? 0, bg: "#FFF1CC" },
-          { title: "Cancelled Tasks", count: statusCounts.Cancelled ?? 0, bg: "#F2C2C2" },
-          { title: "Delayed Tasks", count: statusCounts.Delayed ?? 0, bg: "#FFB3B3" },
-        ].map((task, idx) => (
-          <div className="col-12 col-md-4 col-lg-3 mb-3" key={idx}>
-            <div className="card shadow-sm h-100 border-0">
-              <div className="card-body d-flex align-items-center" style={{ gap: "20px" }}>
-                <h4
-                  className="mb-0"
+     <div className="mb-3">
+
+  <div
+    className="card border-0 mb-3"
+    style={{
+      borderRadius: "24px",
+
+      background:
+        "linear-gradient(135deg, #ffffff 0%, #f4f8ff 100%)",
+
+      boxShadow:
+        "0 10px 40px rgba(58, 95, 190, 0.12)",
+
+      overflow: "hidden",
+    }}
+  >
+
+    <div
+      className="card-body"
+      style={{
+        minHeight: "420px",
+        padding: "clamp(16px, 3vw, 28px)",
+      }}
+    >
+
+      <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+
+        <h4
+          style={{
+            color: "#3A5FBE",
+            fontWeight: "700",
+            fontSize: "clamp(22px, 3vw, 34px)",
+          }}
+        >
+           Task Analytics
+        </h4>
+
+        <div
+           style={{
+            color: "#3A5FBE",
+            fontWeight: "700",
+            fontSize: "clamp(20px, 3vw, 30px)",
+            marginRight:"25px"
+          }}
+        >
+          Total Tasks : {stats.totalTasks}
+        </div>
+
+      </div>
+
+      <div className="row">
+
+        {/* CHART */}
+        <div className="col-12 col-md-8 col-lg-9">
+
+          <div
+            style={{
+              height: "clamp(260px, 40vw, 400px)",
+              width: "100%",
+              position: "relative",
+
+              background:
+                "rgba(255,255,255,0.75)",
+
+              backdropFilter: "blur(10px)",
+
+              borderRadius: "22px",
+
+              padding: "18px",
+
+              border:
+                "1px solid rgba(58,95,190,0.08)",
+
+              boxShadow:
+                "0 8px 24px rgba(58,95,190,0.08)",
+            }}
+          >
+            <Bar
+              data={chartData}
+              options={chartOptions}
+            />
+          </div>
+
+        </div>
+
+        {/* SUMMARY */}
+     <div className="col-12 col-md-4 col-lg-3 mt-4 mt-md-0 d-flex">
+
+          <div
+            style={{
+              background:
+                "rgba(255,255,255,0.65)",
+
+              borderRadius: "20px",
+
+              padding: "clamp(14px,2vw,20px)",
+
+             minHeight: "100%",
+             width: "100%",
+
+              boxShadow:
+                "0 4px 16px rgba(58,95,190,0.08)",
+            }}
+          >
+
+            {[
+              {
+                name: "Completed",
+                color: "#22c55e",
+                value: stats.completedTasks,
+              },
+              {
+                name: "Assigned",
+                color: "#3b82f6",
+                value: stats.assignedTasks,
+              },
+              {
+                name: "On Hold",
+                color: "#f59e0b",
+                value: stats.holdTasks,
+              },
+              {
+                name: "Cancelled",
+                color: "#6b7280",
+                value: stats.cancelledTasks,
+              },
+              {
+                name: "Delayed-In Progress",
+                color: "#ef4444",
+                value: stats.delayedInProgressTasks,
+              },
+              {
+                name: "On-track-In progress",
+                color: "#8b5cf6",
+                value: stats.onTrackInProgressTasks,
+              },
+            ].map((item, index) => (
+
+              <div
+                key={index}
+                className="d-flex justify-content-between align-items-center mb-3 px-3 py-2"
+                style={{
+                  borderRadius: "12px",
+                  background:
+                    "rgba(58,95,190,0.04)",
+                }}
+              >
+
+                <div className="d-flex align-items-center gap-2">
+
+                  <div
+                    style={{
+                      width: "14px",
+                      height: "14px",
+                      backgroundColor: item.color,
+                      borderRadius: "4px",
+                    }}
+                  ></div>
+
+                  <span
+                    style={{
+                      fontSize:
+                        "clamp(13px,1.2vw,16px)",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {item.name}
+                  </span>
+
+                </div>
+
+                <strong
                   style={{
-                    fontSize: "32px",
-                    backgroundColor: task.bg,
-                    padding: "15px",
-                    textAlign: "center",
-                    minWidth: "70px",
-                    minHeight: "70px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    fontSize:
+                      "clamp(14px,1.5vw,18px)",
                     color: "#3A5FBE",
                   }}
                 >
-                  {task.count}
-                </h4>
-                <p className="mb-0 fw-semibold" style={{ fontSize: "18px", color: "#3A5FBE" }}>
-                  {task.title}
-                </p>
+                  {item.value}
+                </strong>
+
               </div>
-            </div>
+
+            ))}
+
           </div>
-        ))}
+
+        </div>
+
       </div>
+
+    </div>
+
+  </div>
+
+</div>
 
       {/* Filter section */}
       <div className="card mb-4 shadow-sm border-0">
