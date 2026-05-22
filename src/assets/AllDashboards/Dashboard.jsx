@@ -75,6 +75,7 @@ import TLAllEmployee from "../../assets/TaskManeger/AllDashbords/TLAllEmployee";
 import TLTeamMemberAttendance from "../OnlyForAdmin/TLTeamMemberAttendance" //rutuja
 import TLDashboard from "./TLDashboard"
 import TeamLeaderPerformances from "../Performances/TeamLeaderPerformances";
+import LoginHistory from "../OnlyForAdmin/LoginHistory";
 
 
 function Dashboard() {
@@ -835,6 +836,18 @@ const [notifications, setNotifications] = useState([]);
                       </h5>
                     )
                   }
+              />
+                <Route
+                path="LoginHistory"
+                element={
+                  user?.role === "admin" ? (
+                    <LoginHistory user={user} />
+                  ) : (
+                    <h5 className="text-danger text-center mt-4">
+                      Access Denied
+                    </h5>
+                  )
+                }
               />
               <Route
                 path="performance"
