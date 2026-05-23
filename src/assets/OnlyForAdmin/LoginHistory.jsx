@@ -3,8 +3,8 @@ import axios from "axios";
 import * as XLSX from "xlsx";
 
 function LoginHistory() {
-  const [loginHistory, setLoginHistory] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+const [loginHistory, setLoginHistory] = useState([]);
+const [searchQuery, setSearchQuery] = useState("");
 const [filteredData, setFilteredData] = useState([]);
 const [applyFilter, setApplyFilter] = useState(false);
 const [currentPage, setCurrentPage] = useState(1);
@@ -205,11 +205,19 @@ const handlePageChange = (pageNumber) => {
             }}
             style={{ justifyContent: "space-between" }}
           >
-            <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1">
+            {/* <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1"> */}
+            <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
               <label
                 htmlFor="searchQuery"
-                className="fw-bold mb-0"
-                style={{ fontSize: "16px", color: "#3A5FBE", width: "60px" }}
+                // className="fw-bold mb-0"
+                 className="fw-bold mb-0 text-start text-md-end"
+                style={{
+                  fontSize: "16px",
+                  color: "#3A5FBE",
+                  width: "50px",
+                  minWidth: "60px",
+                  marginRight: "8px",
+                }}
               >
                 Search
               </label>
@@ -232,7 +240,7 @@ const handlePageChange = (pageNumber) => {
                   fontSize: "16px",
                   color: "#3A5FBE",
                   width: "50px",
-                  minWidth: "50px",
+                  minWidth: "60px",
                   marginRight: "8px",
                 }}
               >
@@ -256,7 +264,7 @@ const handlePageChange = (pageNumber) => {
                   width: "50px",
                   fontSize: "16px",
                   color: "#3A5FBE",
-                  minWidth: "50px",
+                  minWidth: "60px",
                   marginRight: "8px",
                 }}
               >
