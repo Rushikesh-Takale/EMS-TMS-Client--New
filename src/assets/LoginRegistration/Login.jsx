@@ -12,7 +12,8 @@ function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
-
+const [loading, setLoading] = useState(false);
+const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
   // ✅ Load saved credentials when page loads
@@ -106,120 +107,14 @@ const getCurrentLocation = () => {
     );
   });
 };
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
 
-  //   // // ❌ BLOCK multiple login in same browser
-  //   // const activeUser = sessionStorage.getItem("activeUser");
-  //   // if (activeUser) {
-  //   //   setErrorMessage("You are already logged in on another tab in this browser.");
-  //   //   return;
-  //   // }
-
-  //   if (!validate()) return;
-
-  //   try {
-  //     const response = await axios.post("http://localhost:8000/login", {
-  //       email,
-  //       password,
-  //     });
-
-  //     if (response.data.success) {
-  //       // Save tokens
-  //       localStorage.setItem("accessToken", response.data.accessToken);
-  //       localStorage.setItem("refreshToken", response.data.refreshToken);
-  //       localStorage.setItem("role", response.data.role);
-
-  //       localStorage.setItem(
-  //         "activeUser",
-  //         JSON.stringify({
-  //           _id: response.data.userId,
-  //           name: response.data.username,
-  //           role: response.data.role,
-  //           employeeId: response.data.employeeId,
-  //           image: response.data.image,
-  //           email: response.data.email,
-  //         }),
-  //       );
-
-  //       // // ✅ Save active user session → prevents multiple login
-  //       // sessionStorage.setItem("activeUser", JSON.stringify({
-  //       //   userId: response.data.userId,
-  //       //   role: response.data.role,
-  //       // }));
-
-  //       // // ✅ Notify other tabs
-  //       // const bc = new BroadcastChannel("auth");
-  //       // bc.postMessage({ type: "LOGIN" });
-
-  //       // ✅ Save or clear credentials based on Remember Me
-  //       if (rememberMe) {
-  //         localStorage.setItem("rememberedEmail", email);
-  //         localStorage.setItem("rememberedPassword", password);
-  //         localStorage.setItem("rememberMe", "true");
-  //       } else {
-  //         localStorage.removeItem("rememberedEmail");
-  //         localStorage.removeItem("rememberedPassword");
-  //         localStorage.removeItem("rememberMe");
-  //       }
-
-  //       navigate(
-  //         `/dashboard/${response.data.role}/${response.data.username}/${response.data.userId}`,
-  //       );
-  //       //window.location.reload();
-  //     }
-  //     // } catch (err) {
-  //     //   //setErrorMessage(err.response?.data?.error || "Server error");
-  //     // console.error("❌ Login error:", err);
-
-  //     // if (!err.response) {
-  //     //   // ✅ Network / Connection Error
-  //     //   alert("Check your network connection");
-  //     // } else {
-  //     //   // ✅ Backend error (wrong credentials, etc.)
-  //     //   setErrorMessage(err.response?.data?.error || "Server error");
-  //     // }
-  //     // }
-  //   } catch (err) {
-  //     console.error("❌ Login error:", err);
-
-  //     // No connection or server unreachable
-  //     if (err.code === "ERR_NETWORK" || !navigator.onLine) {
-  //       setErrorMessage(
-  //         "⚠️ Network connection lost. Attempting to reconnect...",
-  //       );
-  //       return;
-  //     }
-
-  //     // Server responded with an error
-  //     if (err.response) {
-  //       const status = err.response.status;
-  //       const serverMsg =
-  //         err.response.data?.message || err.response.data?.error;
-
-  //       if (status === 500) {
-  //         setErrorMessage(
-  //           `Server Error (500): ${
-  //             serverMsg || "Internal Server Error. Please try again later."
-  //           }`,
-  //         );
-  //       } else if (status === 400 || status === 401) {
-  //         setErrorMessage(
-  //           serverMsg || "Invalid credentials. Please try again.",
-  //         );
-  //       } else {
-  //         setErrorMessage(serverMsg || `Unexpected error: ${status}`);
-  //       }
-  //     } else {
-  //       // Unknown client-side issue
-  //       setErrorMessage(`Unexpected error: ${err.message}`);
-  //     }
-  //   }
-  // };
   const handleSubmit = async (e) => {
   e.preventDefault();
 
   if (!validate()) return;
+  setLoading(true);
+  setErrorMessage("");
+  setSuccessMessage("");
 
   try {
     // ✅ First get location permission
@@ -232,7 +127,9 @@ const getCurrentLocation = () => {
     });
 
     if (response.data.success) {
-
+   // ✅ Success Message
+      setSuccessMessage("Login Successfully... Redirecting");
+      alert("Login Successfully and Redirect.......");
       // ✅ Save tokens
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
@@ -275,9 +172,19 @@ const getCurrentLocation = () => {
         localStorage.removeItem("rememberMe");
       }
 
-      navigate(
-        `/dashboard/${response.data.role}/${response.data.username}/${response.data.userId}`
-      );
+      // navigate(
+      //   `/dashboard/${response.data.role}/${response.data.username}/${response.data.userId}`
+      // );
+       // ✅ Delay for success message
+    //   setTimeout(() => {
+    //     navigate(
+    //       `/dashboard/${response.data.role}/${response.data.username}/${response.data.userId}`
+    //     );
+    //   }, 100);
+    // }
+    navigate(
+  `/dashboard/${response.data.role}/${response.data.username}/${response.data.userId}`
+);
     }
 
   } catch (err) {
@@ -368,6 +275,16 @@ const getCurrentLocation = () => {
               {errorMessage && (
                 <p className="text-danger mb-0">{errorMessage}</p>
               )}
+              {successMessage && (
+  <p className="text-success mb-0">{successMessage}</p>
+)}
+
+{loading && (
+  <div className="loader-container">
+    <div className="loader"></div>
+    <p>Please wait...</p>
+  </div>
+)}
             </div>
 
             {/* Remember Me + Forgot Password */}
@@ -387,9 +304,12 @@ const getCurrentLocation = () => {
               </div>
             </div>
 
-            <button type="submit" className="btn-login">
+            {/* <button type="submit" className="btn-login">
               Sign In
-            </button>
+            </button> */}
+            <button type="submit" className="btn-login" disabled={loading}>
+  {loading ? "Signing In..." : "Sign In"}
+</button>
           </form>
         </div>
       </div>
