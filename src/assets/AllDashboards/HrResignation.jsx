@@ -1365,8 +1365,7 @@ if (!user || role !== "hr") {
                     "pending" && (
                   <div className="row mb-2">
   <div
-    className="col-5 col-sm-3 fw-semibold"
-    style={{ color: "#212529" }}
+    className="col-5 col-sm-4 fw-semibold"
   >
     {selectedMyResignation.status?.toLowerCase() ===
     "approved"
@@ -1378,7 +1377,7 @@ if (!user || role !== "hr") {
   </div>
 
   <div
-    className="col-7 col-sm-9"
+    className="col-7 col-sm-8"
     style={{ color: "#212529" }}
   >
     {selectedMyResignation.approvedDate
