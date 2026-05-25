@@ -1391,7 +1391,6 @@ if (!user || role !== "hr") {
                   <div className="row mb-3">
   <div
     className="col-5 col-sm-4 fw-semibold"
-    style={{ color: "#212529" }}
   >
     {selectedMyResignation.status?.toLowerCase() ===
     "approved"
