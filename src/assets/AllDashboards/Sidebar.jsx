@@ -578,7 +578,7 @@ useEffect(() => {
             <h6 className="mt-1">Settings</h6>
           </NavLink>
         </li>
-        {role === "admin" && (
+        {/* {role === "admin" && (
             <li className="nav-item ">
               <NavLink
                 to={`/dashboard/${role}/${username}/${id}/LoginHistory`}
@@ -590,7 +590,7 @@ useEffect(() => {
                 <h6 className="mt-1">Login History</h6>
               </NavLink>
             </li>
-          )}
+          )} */}
   
       </div>
     </>
