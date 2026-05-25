@@ -667,7 +667,15 @@ onClick={(e) => {
                   >
                     {/* //snehal code */}
                     <div className="card-body">
-                      <h6 className="card-title">{announcement.name}</h6>
+                    <h6
+                      className="card-title"
+                      style={{
+                        paddingRight: "10px",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      Announcement
+                    </h6>
                       <hr className="card-divider" />
                       <img
                         src={announcement.image}

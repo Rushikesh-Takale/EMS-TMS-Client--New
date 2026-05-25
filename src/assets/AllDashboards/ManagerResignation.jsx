@@ -1196,30 +1196,55 @@ useEffect(() => {
                           Processed Details
                         </h6>
                       </div>
-                      <div className="col-md-6 mb-2">
-                        <div className="fw-semibold">Approver Comment</div>
-                        <div>{selected.approverComment}</div>
-                      </div>
-                      <div className="col-md-6 mb-2">
-                        <div className="fw-semibold">Approved/Rejected By</div>
-                        <div>
-                          {selected.approvedBy ? (
-                            <div>{selected.approvedBy.name}</div>
-                          ) : (
-                            "N/A"
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-md-6 mb-2">
-                        <div className="fw-semibold">
-                          Approved/Rejected Date
-                        </div>
-                        <div>{selected.approvedDate || "N/A"}</div>
-                      </div>
-                      <div className="col-md-6 mb-2">
-                        <div className="fw-semibold">Last Working Day</div>
-                        <div>{selected.lwd}</div>
-                      </div>
+                   <div className="row mb-2">
+  <div className="col-5 col-sm-4 fw-semibold">
+    Approver Comment
+  </div>
+
+  <div className="col-7 col-sm-8">
+    {selected.approverComment || "-"}
+  </div>
+</div>
+
+<div className="row mb-2">
+  <div className="col-5 col-sm-4 fw-semibold">
+    {selected.status === "Approved"
+      ? "Approved By"
+      : selected.status === "Rejected"
+      ? "Rejected By"
+      : "Processed By"}
+  </div>
+
+  <div className="col-7 col-sm-8">
+    {selected.approvedBy
+      ? selected.approvedBy.name
+      : "N/A"}
+  </div>
+</div>
+
+<div className="row mb-2">
+  <div className="col-5 col-sm-4 fw-semibold">
+    {selected.status === "Approved"
+      ? "Approved Date"
+      : selected.status === "Rejected"
+      ? "Rejected Date"
+      : "Processed Date"}
+  </div>
+
+  <div className="col-7 col-sm-8">
+    {selected.approvedDate || "N/A"}
+  </div>
+</div>
+
+<div className="row mb-2">
+  <div className="col-5 col-sm-4 fw-semibold">
+    Last Working Day
+  </div>
+
+  <div className="col-7 col-sm-8">
+    {selected.lwd}
+  </div>
+</div>
                     </div>
                   )}
                 </div>
@@ -1362,7 +1387,7 @@ useEffect(() => {
                     "pending" && (
 <div className="row mb-2">
   <div
-    className="col-5 col-sm-3 fw-semibold"
+    className="col-5 col-sm-4 fw-semibold"
     style={{ color: "#212529" }}
   >
     {selectedMyResignation.status?.toLowerCase() ===
@@ -1375,7 +1400,7 @@ useEffect(() => {
   </div>
 
   <div
-    className="col-7 col-sm-9"
+    className="col-7 col-sm-8"
     style={{ color: "#212529" }}
   >
     {selectedMyResignation.approvedDate
@@ -1694,100 +1719,137 @@ useEffect(() => {
               <div className="modal-body">
                 <div className="container-fluid">
                   {/* ===== Employee Information ===== */}
-                  <div className="row mb-4">
-                    <div className="col-12">
-                      <h6
-                        className="fw-semibold mb-3"
-                        style={{ color: "#3A5FBE" }}
-                      >
-                        Employee Information
-                      </h6>
-                    </div>
-
-                    <div className="col-md-6 mb-2">
-                      <div className="fw-semibold">Employee ID</div>
-                      <div>{selectedRow.empId}</div>
-                    </div>
-
-                    <div className="col-md-6 mb-2">
-                      <div className="fw-semibold">Name</div>
-                      <div>{selectedRow.name}</div>
-                    </div>
-
-                    <div className="col-md-6 mb-2">
-                      <div className="fw-semibold">Designation</div>
-                      <div>{selectedRow.designation}</div>
-                    </div>
-
-                    <div className="col-md-6 mb-2">
-                      <div className="fw-semibold">Department</div>
-                      <div>{selectedRow.dept}</div>
-                    </div>
-
-                    <div className="col-md-6 mb-2">
-                      <div className="fw-semibold">Joining Date</div>
-                      <div>{selectedRow.joiningDate || "N/A"}</div>
-                    </div>
-
-                    <div className="col-md-6 mb-2">
-                      <div className="fw-semibold">Reporting Manager</div>
-                      <div>{selectedRow.reportingManager || "N/A"}</div>
-                    </div>
-                  </div>
-
-                  {/* ===== Resignation Information ===== */}
-                  <div className="row mb-3">
-                    <div className="col-12">
-                      <h6
-                        className="fw-semibold mb-3"
-                        style={{ color: "#3A5FBE" }}
-                      >
-                        Resignation Information
-                      </h6>
-                    </div>
-
-                    <div className="col-md-6 mb-2">
-                      <div className="fw-semibold">Apply Date</div>
-                      <div>{selectedRow.applyDate}</div>
-                    </div>
-
-                    <div className="col-md-6 mb-2">
-                      <div className="fw-semibold">Status</div>
-                      <div>
-                        <span
-                          style={{
-                            padding: "4px 12px",
-                            borderRadius: "999px",
-                            fontSize: "12px",
-                            backgroundColor: getStatusColor(selectedRow.status)
-                              .bg,
-                            color: getStatusColor(selectedRow.status).color,
-                          }}
-                        >
-                          {selectedRow.status}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="col-12 mb-2">
-                      <div className="fw-semibold">Reason</div>
-                      <div>{selectedRow.reason || "-"}</div>
-                    </div>
-
-                  <div className="col-12 mb-2">
-  <div className="fw-semibold">Employee Comment</div>
-
-  <div
-    style={{
-      wordBreak: "break-word",
-      overflowWrap: "anywhere",
-      whiteSpace: "pre-wrap"
-    }}
+                 <div className="mb-4">
+  <h6
+    className="fw-semibold mb-3"
+    style={{ color: "#3A5FBE" }}
   >
-    {selectedRow.comments || "-"}
+    Employee Information
+  </h6>
+
+  <div className="row mb-2">
+    <div className="col-5 col-sm-4 fw-semibold">
+      Employee ID
+    </div>
+    <div className="col-7 col-sm-8">
+      {selectedRow.empId}
+    </div>
+  </div>
+
+  <div className="row mb-2">
+    <div className="col-5 col-sm-4 fw-semibold">
+      Name
+    </div>
+    <div className="col-7 col-sm-8">
+      {selectedRow.name}
+    </div>
+  </div>
+
+  <div className="row mb-2">
+    <div className="col-5 col-sm-4 fw-semibold">
+      Designation
+    </div>
+    <div className="col-7 col-sm-8">
+      {selectedRow.designation}
+    </div>
+  </div>
+
+  <div className="row mb-2">
+    <div className="col-5 col-sm-4 fw-semibold">
+      Department
+    </div>
+    <div className="col-7 col-sm-8">
+      {selectedRow.dept}
+    </div>
+  </div>
+
+  <div className="row mb-2">
+    <div className="col-5 col-sm-4 fw-semibold">
+      Joining Date
+    </div>
+    <div className="col-7 col-sm-8">
+      {selectedRow.joiningDate || "N/A"}
+    </div>
+  </div>
+
+  <div className="row mb-2">
+    <div className="col-5 col-sm-4 fw-semibold">
+      Reporting Manager
+    </div>
+    <div className="col-7 col-sm-8">
+      {selectedRow.reportingManager || "N/A"}
+    </div>
   </div>
 </div>
-                  </div>
+
+                  {/* ===== Resignation Information ===== */}
+                 <div className="mb-3">
+  <h6
+    className="fw-semibold mb-3"
+    style={{ color: "#3A5FBE" }}
+  >
+    Resignation Information
+  </h6>
+
+  <div className="row mb-2">
+    <div className="col-5 col-sm-4 fw-semibold">
+      Apply Date
+    </div>
+
+    <div className="col-7 col-sm-8">
+      {selectedRow.applyDate}
+    </div>
+  </div>
+
+  <div className="row mb-2">
+    <div className="col-5 col-sm-4 fw-semibold">
+      Status
+    </div>
+
+    <div className="col-7 col-sm-8">
+      <span
+        style={{
+          padding: "4px 12px",
+          borderRadius: "999px",
+          fontSize: "12px",
+          backgroundColor:
+            getStatusColor(selectedRow.status).bg,
+          color:
+            getStatusColor(selectedRow.status).color,
+        }}
+      >
+        {selectedRow.status}
+      </span>
+    </div>
+  </div>
+
+  <div className="row mb-2">
+    <div className="col-5 col-sm-4 fw-semibold">
+      Reason
+    </div>
+
+    <div className="col-7 col-sm-8">
+      {selectedRow.reason || "-"}
+    </div>
+  </div>
+
+  <div className="row mb-2">
+    <div className="col-5 col-sm-4 fw-semibold">
+      Employee Comment
+    </div>
+
+    <div
+      className="col-7 col-sm-8"
+      style={{
+        wordBreak: "break-word",
+        overflowWrap: "anywhere",
+        whiteSpace: "pre-wrap",
+      }}
+    >
+      {selectedRow.comments || "-"}
+    </div>
+  </div>
+</div>
                 </div>
               </div>
 

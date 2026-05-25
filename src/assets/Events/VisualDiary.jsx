@@ -134,7 +134,9 @@ const VisualDiary = () => {
               {/* SCROLLABLE SECTION */}
               <div className="section-card" style={{ marginTop: "15px" }}>
                 {items.length === 0 && !loading && (
-                  <p className="no-data">No data available</p>
+                    <div className="alert alert-info no-data-alert">
+              No data available
+            </div>
                 )}
 
                 {items.map((item) => {

@@ -439,7 +439,9 @@ function AdminDashboard({ user }) {
                           </td>
                         </tr>
                       ) : (
-                        probationEmployees.map((emp) => (
+                       probationEmployees
+                        .slice(0, 4)
+                        .map((emp) => (
                           <tr key={emp._id}>
                             <td className="text-capitalize" style={{ fontWeight: "400", fontSize: "14px" }}>
                               {emp.name}
@@ -534,7 +536,7 @@ function AdminDashboard({ user }) {
                         }
                         return false;
                       })
-                      .slice(0, 3)
+                      .slice(0, 4)
                       .map((req, index) => {
                         const type = req.type;
                         const status =
@@ -672,7 +674,7 @@ function AdminDashboard({ user }) {
                   <tbody>
                     {mergedEmployees
                       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                      .slice(0, 3).map((emp) => {
+                      .slice(0, 4).map((emp) => {
                         const formatDate = (date) => {
                           if (!date) return "N/A";
                           const d = new Date(date);
