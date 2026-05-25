@@ -461,13 +461,29 @@ useEffect(() => {
           <AddEmployee />
 
           {/* Show Old Employees Button */}
-          <button
-            className="btn btn-sm custom-outline-btn"
-            style={{ minWidth: 90 }}
-            onClick={toggleOldEmployees}
-          >
-            {showOldEmployees ? "Show Active Employees" : "Show Old Employees"}
-          </button>
+     <div className="d-flex gap-2">
+  <button
+    className="btn btn-sm custom-outline-btn"
+    style={{ minWidth: 90 }}
+    onClick={toggleOldEmployees}
+  >
+    {showOldEmployees
+      ? "Show Active Employees"
+      : "Show Old Employees"}
+  </button>
+
+  <button
+    className="btn btn-sm custom-outline-btn"
+    style={{ minWidth: 90 }}
+    onClick={() =>
+      navigate(
+        `/dashboard/${role}/${username}/${id}/probation`
+      )
+    }
+  >
+    Probation
+  </button>
+</div>
         </div>
       )}
 

@@ -886,13 +886,7 @@ if (
         </div>
       </div>
 
-      {currentFeedbacks.length === 0 ? (
-        <div className="text-center py-4">
-          <p style={{ color: "#6c757d", fontSize: "16px" }}>
-            No {activeTab} feedback yet.
-          </p>
-        </div>
-      ) : (
+    
         <>
           <div
             className="table-responsive mt-3"
@@ -982,7 +976,22 @@ if (
                 </tr>
               </thead>
               <tbody>
-                {paginatedFeedbacks.map((fb) => (
+                {paginatedFeedbacks.length === 0 ? (
+  <tr>
+    <td
+      colSpan="6"
+      className="text-center"
+      style={{
+        padding: "20px",
+        fontSize: "14px",
+        color: "#6c757d",
+      }}
+    >
+      No feedback records found
+    </td>
+  </tr>
+) : (
+                paginatedFeedbacks.map((fb) => (
                   <tr
                     key={fb.id}
                     style={{
@@ -1145,7 +1154,8 @@ if (
                       )}
                     </td>
                   </tr>
-                ))}{" "}
+            ))
+)}
               </tbody>
             </table>
           </div>
@@ -1158,7 +1168,7 @@ if (
             handlePageChange,
           )}
         </>
-      )}
+      
 
       {showForm && (
         <div

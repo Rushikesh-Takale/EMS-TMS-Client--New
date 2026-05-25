@@ -422,24 +422,29 @@ const chartOptions = {
       },
     },
 
-    y: {
-      beginAtZero: true,
+y: {
+  beginAtZero: true,
 
-      ticks: {
-        stepSize: 10,
+  ticks: {
+    stepSize:
+      stats.totalTasks > 1000
+        ? 100
+        : stats.totalTasks > 500
+        ? 50
+        : 10,
 
-        color: "#3A5FBE",
+    color: "#3A5FBE",
 
-        font: {
-          size: 12,
-          weight: "600",
-        },
-      },
-
-      grid: {
-        color: "rgba(58,95,190,0.08)",
-      },
+    font: {
+      size: 12,
+      weight: "600",
     },
+  },
+
+  grid: {
+    color: "rgba(58,95,190,0.08)",
+  },
+},
   },
 };
   //  Updated applyFilters function
@@ -634,7 +639,7 @@ const chartOptions = {
       borderRadius: "24px",
 
       background:
-        "linear-gradient(135deg, #ffffff 0%, #f4f8ff 100%)",
+       "#fffff",
 
       boxShadow:
         "0 10px 40px rgba(58, 95, 190, 0.12)",

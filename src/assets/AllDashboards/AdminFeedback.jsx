@@ -117,11 +117,10 @@ const AdminFeedback = () => {
     filteredFeedbacks.length,
   );
   const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
-  const currentFeedbacks = filteredFeedbacks.slice(
-    indexOfFirstItem,
-    indexOfLastItem,
-  );
-
+ const paginatedFeedbacks = filteredFeedbacks.slice(
+  indexOfFirstItem,
+  indexOfLastItem
+);
   const handlePageChange = (pageNumber) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
     setCurrentPage(pageNumber);
@@ -322,13 +321,7 @@ const AdminFeedback = () => {
         All Feedback Records
       </h2>
 
-      {filteredFeedbacks.length === 0 ? (
-        <div className="text-center py-4">
-          <p style={{ color: "#6c757d", fontSize: "16px" }}>
-            No feedback records found.
-          </p>
-        </div>
-      ) : (
+    
         <>
           <div
             className="table-responsive mt-3"
@@ -430,7 +423,23 @@ const AdminFeedback = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentFeedbacks.map((fb) => (
+                         {paginatedFeedbacks.length === 0 ? (
+  <tr>
+    <td
+      colSpan="6"
+      className="text-center"
+      style={{
+        padding: "20px",
+        fontSize: "14px",
+        color: "#6c757d",
+      }}
+    >
+      No feedback records found
+    </td>
+  </tr>
+) : (
+               
+               paginatedFeedbacks.map((fb) => (
                   <tr
                     key={fb.id}
                     style={{
@@ -562,14 +571,15 @@ const AdminFeedback = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
+                  ))
+                    )}
               </tbody>
             </table>
           </div>
 
           {renderPagination()}
         </>
-      )}
+    
 
       {/* View Details Modal */}
       {selectedFeedback && (

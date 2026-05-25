@@ -410,7 +410,9 @@ function HRDashboard({ user }) {
                       </td>
                     </tr>
                   ) : (
-                    probationEmployees.map((emp) => (
+                   probationEmployees
+                        .slice(0, 4)
+                        .map((emp) => (
                       <tr key={emp._id}>
                         <td className="text-capitalize" style={{ fontWeight: "400", fontSize: "14px" }}>
                           {emp.name}
@@ -501,7 +503,7 @@ function HRDashboard({ user }) {
                           emp.department &&
                           emp.doj,
                       )
-                      .slice(0, 3)
+                      .slice(0, 4)
                       .map((emp) => (
                         <tr key={emp._id}>
                           <td
@@ -576,7 +578,7 @@ function HRDashboard({ user }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {allRequests.slice(0, 3).map((req, i) => {
+                    {allRequests.slice(0, 4).map((req, i) => {
                       const type = req.type;
                       const status =
                         type === "Leave"

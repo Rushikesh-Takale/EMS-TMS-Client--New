@@ -30,21 +30,24 @@ const [lateItemsPerPage, setLateItemsPerPage] = useState(5);
 
 const [showLateModal, setShowLateModal] = useState(false);
 
-const [selectedLateEmployee, setSelectedLateEmployee] =
+const [selectedLateEmployee, setSelectedLateEmployee] =useState(null);
+const [appliedStatusFilter, setAppliedStatusFilter] = useState("All");
+const [lateFilteredEmployees, setLateFilteredEmployees] = useState([]);
+const [isLateFilterApplied, setIsLateFilterApplied] = useState(false);
+const [downloadedFile, setDownloadedFile] = useState("");
+const [leaveEmployees, setLeaveEmployees] = useState([]);
+const [leaveCurrentPage, setLeaveCurrentPage] = useState(1);
+const [leaveItemsPerPage, setLeaveItemsPerPage] =  useState(5);
+const [showLeaveModal, setShowLeaveModal] = useState(false);
+const [selectedLeaveEmployee, setSelectedLeaveEmployee] =
   useState(null);
-  const [appliedStatusFilter, setAppliedStatusFilter] = useState("All");
-
-const [lateFilteredEmployees, setLateFilteredEmployees] =
-  useState([]);
-
-const [isLateFilterApplied, setIsLateFilterApplied] =
-  useState(false);
-const [downloadedFile, setDownloadedFile] =
+const [leaveDate, setLeaveDate] =
   useState("");
   const [summary, setSummary] = useState({
     present: 0,
     absent: 0,
     lateCheckIn: 0,
+      onLeave: 0,
   });
 
   useEffect(() => {
@@ -84,8 +87,7 @@ const [downloadedFile, setDownloadedFile] =
     };
   }, [showLateModal]);
 
-  useEffect(() => {
-    const fetchAttendance = async () => {
+const fetchAttendance = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem("accessToken");
@@ -103,7 +105,33 @@ const [downloadedFile, setDownloadedFile] =
         let present = 0;
         let absent = 0;
         let lateCheckIn = 0;
+           let onLeave = 0;
 
+          
+
+const leaveRes = await authAxios.get(
+  "/attendance/on-leave-employees",
+  {
+   params: {
+  date: leaveDate || undefined,
+ 
+}
+  }
+);
+
+const leaveEmployeesData =
+  Array.isArray(leaveRes.data)
+    ? leaveRes.data
+    : leaveRes.data?.employees || [];
+
+onLeave = leaveEmployeesData.length;
+setLeaveEmployees(leaveEmployeesData);
+console.log("Selected Leave Date:", leaveDate);
+
+console.log(
+  "Leave API Response:",
+  leaveEmployeesData
+);
         employees.forEach((emp) => {
           const checkIn = emp.checkInTime ? new Date(emp.checkInTime) : null;
           const checkOut = emp.checkOutTime ? new Date(emp.checkOutTime) : null;
@@ -124,7 +152,7 @@ const [downloadedFile, setDownloadedFile] =
           }
         });
 
-        setSummary({ present, absent, lateCheckIn });
+        setSummary({ present, absent, lateCheckIn , onLeave,});
         setAttendanceData(res.data); // { employees: [...] }
       } catch (err) {
         console.error(err);
@@ -134,8 +162,9 @@ const [downloadedFile, setDownloadedFile] =
       }
     };
 
-    fetchAttendance();
-  }, [id]); // 👈 depends on manager id
+  useEffect(() => {
+  fetchAttendance();
+}, [id, ]); // 👈 depends on manager id
 
 useEffect(() => {
   if (
@@ -206,6 +235,21 @@ const currentLateEmployees =
     lateIndexOfFirstItem,
     lateIndexOfLastItem
   );
+  const leaveTotalPages = Math.ceil(
+  leaveEmployees.length / leaveItemsPerPage
+);
+
+const leaveIndexOfLastItem =
+  leaveCurrentPage * leaveItemsPerPage;
+
+const leaveIndexOfFirstItem =
+  leaveIndexOfLastItem - leaveItemsPerPage;
+
+const currentLeaveEmployees =
+  leaveEmployees.slice(
+    leaveIndexOfFirstItem,
+    leaveIndexOfLastItem
+  );
 
   const openLateModal = (emp) => {
   setSelectedLateEmployee(emp);
@@ -215,6 +259,16 @@ const currentLateEmployees =
 const closeLateModal = () => {
   setShowLateModal(false);
   setSelectedLateEmployee(null);
+};
+
+const openLeaveModal = (emp) => {
+  setSelectedLeaveEmployee(emp);
+  setShowLeaveModal(true);
+};
+
+const closeLeaveModal = () => {
+  setShowLeaveModal(false);
+  setSelectedLeaveEmployee(null);
 };
 
 const downloadLateCheckInExcel = () => {
@@ -276,6 +330,12 @@ const downloadLateCheckInExcel = () => {
 
 const fetchLateCheckInHistory =
   async () => {
+
+    if (!lateFromDate && !lateToDate) {
+      setLateFilteredEmployees([]);
+      setIsLateFilterApplied(false);
+      return;
+    }
 
     try {
 
@@ -389,7 +449,7 @@ const fetchLateCheckInHistory =
 
   useEffect(() => {
 
-  if (showLateModal) {
+  if (showLateModal||showLeaveModal) {
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow =
       "hidden";
@@ -405,7 +465,7 @@ const fetchLateCheckInHistory =
       "";
   };
 
-}, [showLateModal]);
+}, [showLateModal,showLeaveModal]);
 
   return (
     <div className="container-fluid">
@@ -422,7 +482,7 @@ const fetchLateCheckInHistory =
 
       {/* Summary Cards */}
       <div className="row  mb-4">
-        <div className="col-md-4 mb-3">
+        <div className="col-md-3 mb-3">
           <div className="card shadow-sm h-100 border-0">
             <div
               className="card-body d-flex align-items-center"
@@ -455,7 +515,7 @@ const fetchLateCheckInHistory =
           </div>
         </div>
 
-        <div className="col-md-4 mb-3">
+        <div className="col-md-3 mb-3">
           <div className="card shadow-sm h-100 border-0">
             <div
               className="card-body d-flex align-items-center"
@@ -488,7 +548,7 @@ const fetchLateCheckInHistory =
           </div>
         </div>
 
-        <div className="col-md-4 mb-3">
+        <div className="col-md-3 mb-3">
        <div
   className="card shadow-sm h-100 border-0"
   style={{ cursor: "pointer" }}
@@ -527,6 +587,45 @@ const fetchLateCheckInHistory =
             </div>
           </div>
         </div>
+        <div className="col-md-3 mb-3">
+  <div
+    className="card shadow-sm h-100 border-0"
+    style={{ cursor: "pointer" }}
+    onClick={() => setShowCardList("onLeave")}
+  >
+    <div
+      className="card-body d-flex align-items-center"
+      style={{ gap: "20px" }}
+    >
+      <h4
+        className="mb-0"
+        style={{
+          fontSize: "40px",
+          backgroundColor: "#D6E4FF",
+          padding: "10px",
+          textAlign: "center",
+          minWidth: "75px",
+          minHeight: "75px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {summary.onLeave}
+      </h4>
+
+      <p
+        className="mb-0 fw-semibold"
+        style={{
+          fontSize: "20px",
+          color: "#3A5FBE",
+        }}
+      >
+        Employees On Leave
+      </p>
+    </div>
+  </div>
+</div>
       </div>
       {showCardList === "lateCheckIn" ? (
   <>
@@ -811,7 +910,14 @@ currentLateEmployees.map((emp) => (
     whiteSpace: "nowrap",
   }}
 >
-            {new Date(emp.checkInTime).toLocaleDateString()}      
+            {new Date(emp.checkInTime).toLocaleDateString(
+  "en-GB",
+  {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }
+)}     
                 </td>
 
                 <td   style={{
@@ -961,7 +1067,16 @@ currentLateEmployees.map((emp) => (
 <div className="row mb-3">
   <div className="col-4 fw-bold">Date :</div>
   <div className="col-8">
-    {new Date(selectedLateEmployee.checkInTime).toLocaleDateString()}
+    {new Date(
+  selectedLateEmployee.checkInTime
+).toLocaleDateString(
+  "en-GB",
+  {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }
+)}
   </div>
 </div>
 
@@ -1001,6 +1116,568 @@ currentLateEmployees.map((emp) => (
 
 
   </>
+) : showCardList === "onLeave" ? (
+  <>
+  <div className="d-flex justify-content-between align-items-center mb-3">
+
+    <h2
+      style={{
+        color: "#3A5FBE",
+        fontSize: "25px",
+        marginBottom: 0,
+      }}
+    >
+      Employees On Leave
+    </h2>
+
+    <button
+      className="btn btn-sm custom-outline-btn"
+      style={{ minWidth: 90 }}
+      onClick={() => setShowCardList(null)}
+    >
+      Close
+    </button>
+
+  </div>
+ <div className="card mb-4 shadow-sm border-0">
+  <div className="card-body">
+    <div className="row align-items-center g-3">
+    <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+        <label
+                htmlFor="dateToFilter"
+                className="fw-bold mb-0 text-start text-md-end"
+                style={{
+                  width: "50px",
+                  fontSize: "16px",
+                  color: "#3A5FBE",
+                  minWidth: "50px",
+                  marginRight: "8px",
+                }}
+              >
+                Date
+                </label>
+  <input
+    type="date"
+    className="form-control"
+    value={leaveDate}
+    onChange={(e) =>
+      setLeaveDate(e.target.value)
+    }
+  />
+</div>
+
+    
+
+           <div className="col-12 col-md-auto ms-md-auto d-flex gap-2 mb-1 justify-content-end">
+        <button
+          className="btn btn-sm custom-outline-btn"
+           style={{ minWidth: 90 }}
+      onClick={async () => {
+  const token = localStorage.getItem("accessToken");
+
+  const leaveRes = await axios.get(
+    "http://localhost:8000/attendance/on-leave-employees",
+    {
+      params: {
+        date: leaveDate || undefined,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  setLeaveEmployees(
+    Array.isArray(leaveRes.data)
+      ? leaveRes.data
+      : leaveRes.data?.employees || []
+  );
+}}
+        >
+          Filter
+        </button>
+
+        <button
+          className="btn btn-sm custom-outline-btn"
+           style={{ minWidth: 90 }}
+onClick={async () => {
+  setLeaveDate("");
+
+  const token = localStorage.getItem("accessToken");
+
+  const leaveRes = await axios.get(
+    "http://localhost:8000/attendance/on-leave-employees",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  setLeaveEmployees(
+    Array.isArray(leaveRes.data)
+      ? leaveRes.data
+      : leaveRes.data?.employees || []
+  );
+}}
+        >
+          Reset
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    <div className="card shadow-sm border-0 mb-0">
+     
+
+      <div className="card-body p-0 table-responsive bg-white">
+        <table className="table table-hover mb-0">
+          <thead>
+            <tr>
+               <th    
+              style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}>
+              Employee ID
+              </th>
+             <th
+            style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Name
+          </th>
+
+           
+
+            <th    
+              style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}> 
+            Department
+            </th>
+
+            <th    
+              style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}>
+              Leave Type
+              </th>
+
+            <th  
+              style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}>
+              From Date
+              </th>
+
+            <th   
+             style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}>
+              To Date
+              </th>
+
+            <th    
+              style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}>
+              Status
+              </th>
+
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {leaveEmployees.length === 0 ? (
+
+            <tr>
+              <td
+                colSpan="7"
+                className="text-center py-4"
+              >
+                No employees on leave
+              </td>
+            </tr>
+
+          ) : (
+
+      currentLeaveEmployees.map((item) => (
+
+              <tr
+  key={item._id}
+  style={{ cursor: "pointer" }}
+  onClick={() => openLeaveModal(item)}
+>
+                <td  style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}>
+                  {item.employee?.employeeId}
+                  </td>
+                <td  
+                style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}> 
+                {item.employee?.name}
+                </td>
+
+              
+
+                <td
+                  style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}>
+                  {item.employee?.department}
+                  </td>
+
+                <td  style={{
+                    padding: "12px",
+                    fontSize: "14px",
+                    borderBottom: "1px solid #dee2e6",
+                    whiteSpace: "nowrap",
+                  }}>
+                    {item.leaveType}
+                    </td>
+
+                <td  style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}>
+                  {new Date(item.dateFrom).toLocaleDateString(
+                    "en-GB",
+                    {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    }
+                  )}
+                </td>
+
+                <td  style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}>
+                  {new Date(item.dateTo).toLocaleDateString(
+                    "en-GB",
+                    {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    }
+                  )}
+                </td>
+
+                <td  style={{
+                      padding: "12px",
+                      fontSize: "14px",
+                      borderBottom: "1px solid #dee2e6",
+                      whiteSpace: "nowrap",
+                    }}>
+                  <span
+                    style={{
+                      background: "#D6E4FF",
+                      display: "inline-block",
+                      padding: "6px 12px",
+                      fontWeight: 400,
+                      fontSize: "14px",
+                      width: 112,
+                      textAlign: "center",
+                    }}
+                  >
+                    On Leave
+                  </span>
+                </td>
+
+              </tr>
+
+            ))
+
+          )}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+  <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
+  <div className="d-flex align-items-center gap-3">
+
+    <div className="d-flex align-items-center">
+      <span style={{ fontSize: "14px", marginRight: "8px" }}>
+        Rows per page:
+      </span>
+
+      <select
+        className="form-select form-select-sm"
+        style={{ width: "auto", fontSize: "14px" }}
+        value={leaveItemsPerPage}
+        onChange={(e) => {
+          setLeaveItemsPerPage(Number(e.target.value));
+          setLeaveCurrentPage(1);
+        }}
+      >
+        <option value={5}>5</option>
+        <option value={10}>10</option>
+        <option value={25}>25</option>
+      </select>
+    </div>
+
+    <span style={{ fontSize: "14px" }}>
+      {leaveEmployees.length > 0
+        ? leaveIndexOfFirstItem + 1
+        : 0}
+      -
+      {Math.min(
+        leaveIndexOfLastItem,
+        leaveEmployees.length
+      )}{" "}
+      of {leaveEmployees.length}
+    </span>
+
+    <div className="d-flex align-items-center">
+      <button
+        className="btn btn-sm focus-ring"
+        disabled={leaveCurrentPage === 1}
+        onClick={() =>
+          setLeaveCurrentPage((prev) => prev - 1)
+        }
+      >
+        ‹
+      </button>
+
+      <button
+        className="btn btn-sm focus-ring"
+        disabled={
+          leaveCurrentPage === leaveTotalPages ||
+          leaveTotalPages === 0
+        }
+        onClick={() =>
+          setLeaveCurrentPage((prev) => prev + 1)
+        }
+      >
+        ›
+      </button>
+    </div>
+  </div>
+</nav>
+
+{showLeaveModal && selectedLeaveEmployee && (
+  <div
+    className="modal fade show"
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.5)",
+      zIndex: 1050,
+    }}
+  >
+    <div
+      className="modal-dialog modal-dialog-centered"
+      style={{ maxWidth: "600px", width: "100%" }}
+    >
+      <div className="modal-content">
+
+        <div
+          className="modal-header text-white"
+          style={{ backgroundColor: "#3A5FBE" }}
+        >
+          <h5 className="modal-title">
+            Leave Details
+          </h5>
+
+          <button
+            type="button"
+            className="btn-close btn-close-white"
+            onClick={closeLeaveModal}
+          />
+        </div>
+
+        <div className="modal-body">
+
+          <div className="row mb-3">
+            <div className="col-4 fw-bold">
+              Employee ID 
+            </div>
+
+            <div className="col-8">
+              {selectedLeaveEmployee.employee?.employeeId}
+            </div>
+          </div>
+
+          <div className="row mb-3">
+            <div className="col-4 fw-bold">
+              Name 
+            </div>
+
+            <div className="col-8">
+              {selectedLeaveEmployee.employee?.name}
+            </div>
+          </div>
+
+          <div className="row mb-3">
+            <div className="col-4 fw-bold">
+              Department 
+            </div>
+
+            <div className="col-8">
+              {selectedLeaveEmployee.employee?.department}
+            </div>
+          </div>
+
+          <div className="row mb-3">
+            <div className="col-4 fw-bold">
+              Leave Type 
+            </div>
+
+            <div className="col-8">
+              {selectedLeaveEmployee.leaveType}
+            </div>
+          </div>
+
+          <div className="row mb-3">
+            <div className="col-4 fw-bold">
+              From Date 
+            </div>
+
+            <div className="col-8">
+              {new Date(
+  selectedLeaveEmployee.dateFrom
+).toLocaleDateString(
+  "en-GB",
+  {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }
+)}
+            </div>
+          </div>
+
+          <div className="row mb-3">
+            <div className="col-4 fw-bold">
+              To Date 
+            </div>
+
+            <div className="col-8">
+              {new Date(
+  selectedLeaveEmployee.dateTo
+).toLocaleDateString(
+  "en-GB",
+  {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }
+)}
+            </div>
+          </div>
+
+          <div className="row mb-3">
+            <div className="col-4 fw-bold">
+              Reason 
+            </div>
+
+            <div className="col-8">
+              {selectedLeaveEmployee.reason}
+            </div>
+          </div>
+<div className="row mb-3">
+  <div className="col-4 fw-bold">
+    Status
+  </div>
+
+  <div className="col-8">
+    <span
+      style={{
+        background: "#D6E4FF",
+        color: "#1D4ED8",
+        display: "inline-block",
+        padding: "6px 14px",
+        fontWeight: 500,
+        fontSize: "13px",
+        minWidth: "110px",
+        textAlign: "center",
+        borderRadius: "999px",
+      }}
+    >
+      On Leave
+    </span>
+  </div>
+</div>
+        </div>
+
+        <div className="modal-footer">
+          <button
+            className="btn btn-sm custom-outline-btn"
+            style={{ minWidth: 90 }}
+            onClick={closeLeaveModal}
+          >
+            Close
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+)}
+</>
+
 ) : (
    <>
       {/* Filters Card */}
