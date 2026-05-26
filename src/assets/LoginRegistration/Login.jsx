@@ -118,76 +118,73 @@ const getCurrentLocation = () => {
 
   try {
     // ✅ First get location permission
-    const locationData = await getCurrentLocation();
+ const response = await axios.post("http://localhost:8000/login", {
+  email,
+  password,
+});
 
-    // ✅ Then login API call
-    const response = await axios.post("http://localhost:8000/login", {
-      email,
-      password,
-    });
+if (response.data.success) {
 
-    if (response.data.success) {
-   // ✅ Success Message
-      setSuccessMessage("Login Successfully... Redirecting");
-      alert("Login Successfully and Redirect.......");
-      // ✅ Save tokens
-      localStorage.setItem("accessToken", response.data.accessToken);
-      localStorage.setItem("refreshToken", response.data.refreshToken);
-      localStorage.setItem("role", response.data.role);
+  setSuccessMessage("Login Successfully... Redirecting");
 
-      localStorage.setItem(
-        "activeUser",
-        JSON.stringify({
-          _id: response.data.userId,
-          name: response.data.username,
-          role: response.data.role,
-          employeeId: response.data.employeeId,
-          image: response.data.image,
-          email: response.data.email,
-        })
-      );
+  // ✅ Save tokens
+  localStorage.setItem("accessToken", response.data.accessToken);
+  localStorage.setItem("refreshToken", response.data.refreshToken);
+  localStorage.setItem("role", response.data.role);
 
-      // ✅ Save login location in DB
+  localStorage.setItem(
+    "activeUser",
+    JSON.stringify({
+      _id: response.data.userId,
+      name: response.data.username,
+      role: response.data.role,
+      employeeId: response.data.employeeId,
+      image: response.data.image,
+      email: response.data.email,
+    })
+  );
+
+  // ✅ Remember Me
+  if (rememberMe) {
+    localStorage.setItem("rememberedEmail", email);
+    localStorage.setItem("rememberedPassword", password);
+    localStorage.setItem("rememberMe", "true");
+  } else {
+    localStorage.removeItem("rememberedEmail");
+    localStorage.removeItem("rememberedPassword");
+    localStorage.removeItem("rememberMe");
+  }
+
+  // ✅ Navigate Fast
+  navigate(
+    `/dashboard/${response.data.role}/${response.data.username}/${response.data.userId}`
+  );
+
+  // ✅ Save location in background
+  getCurrentLocation()
+    .then(async (locationData) => {
       await axios.post(
         "http://localhost:8000/save-login-location",
         {
           employeeId: response.data.employeeId,
           employeeName: response.data.username,
-        
           latitude: locationData.latitude,
           longitude: locationData.longitude,
           address: locationData.address,
           loginTime: new Date(),
         }
       );
+    })
+    .catch((err) => {
+      console.log("Location skipped:", err);
+    });
+}
 
-      // ✅ Remember Me
-      if (rememberMe) {
-        localStorage.setItem("rememberedEmail", email);
-        localStorage.setItem("rememberedPassword", password);
-        localStorage.setItem("rememberMe", "true");
-      } else {
-        localStorage.removeItem("rememberedEmail");
-        localStorage.removeItem("rememberedPassword");
-        localStorage.removeItem("rememberMe");
-      }
 
-      // navigate(
-      //   `/dashboard/${response.data.role}/${response.data.username}/${response.data.userId}`
-      // );
-       // ✅ Delay for success message
-    //   setTimeout(() => {
-    //     navigate(
-    //       `/dashboard/${response.data.role}/${response.data.username}/${response.data.userId}`
-    //     );
-    //   }, 100);
-    // }
-    navigate(
-  `/dashboard/${response.data.role}/${response.data.username}/${response.data.userId}`
-);
-    }
 
   } catch (err) {
+
+
 
     console.error("Login Error:", err);
 
@@ -218,7 +215,10 @@ const getCurrentLocation = () => {
     } else {
       setErrorMessage("Something went wrong");
     }
-  }
+    }finally{
+  setLoading(false);
+}
+  
 };
 
   return (
@@ -280,9 +280,20 @@ const getCurrentLocation = () => {
 )}
 
 {loading && (
-  <div className="loader-container">
-    <div className="loader"></div>
-    <p>Please wait...</p>
+  <div className="loader-overlay">
+    <div className="modern-loader">
+      <img
+        src="/emscwslogo.png"
+        alt="Loading"
+        className="loader-logo"
+      />
+
+      <div className="loading-spinner"></div>
+
+      <p className="loading-text">
+        Logging you in...
+      </p>
+    </div>
   </div>
 )}
             </div>

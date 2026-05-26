@@ -2289,16 +2289,28 @@ onClick={async () => {
       </nav>
         </>
 )}
-
-      <div className="text-end mt-3">
-        <button
-          className="btn btn-sm custom-outline-btn"
-          style={{ minWidth: 90 }}
-          onClick={() => window.history.go(-1)}
-        >
-          Back
-        </button>
-      </div>
+{showCardList && (
+  <div className="text-end mt-3">
+    <button
+      className="btn btn-sm custom-outline-btn"
+      style={{ minWidth: 90 }}
+      onClick={() => setShowCardList(null)}
+    >
+      Back
+    </button>
+  </div>
+)}
+     {!showCardList && (
+  <div className="text-end mt-3">
+    <button
+      className="btn btn-sm custom-outline-btn"
+      style={{ minWidth: 90 }}
+      onClick={() => window.history.go(-1)}
+    >
+      Back
+    </button>
+  </div>
+)}
 
       {showModal && selectedEmployee && (
         <div
