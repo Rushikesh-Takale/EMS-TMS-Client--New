@@ -31,7 +31,7 @@ function EmployeeLeaveBalance({ user, fetchNotifications}) {
       {/* <h4>Your Leave Balance</h4> */}
 
       <div className="row mb-4">
-        <div className="col-md-4 mb-3">
+        <div className="col-md-3 mb-3">
           <div className="card shadow-sm h-100 border-0">
             <div
               className="card-body d-flex align-items-center"
@@ -63,7 +63,7 @@ function EmployeeLeaveBalance({ user, fetchNotifications}) {
           </div>
         </div>
 
-        <div className="col-md-4 mb-3">
+        <div className="col-md-3 mb-3">
           <div className="card shadow-sm h-100 border-0">
             <div
               className="card-body d-flex align-items-center"
@@ -95,7 +95,7 @@ function EmployeeLeaveBalance({ user, fetchNotifications}) {
           </div>
         </div>
 
-        <div className="col-md-4 mb-3">
+        <div className="col-md-3 mb-3">
           <div className="card shadow-sm h-100 border-0">
             <div
               className="card-body d-flex align-items-center"
@@ -122,6 +122,38 @@ function EmployeeLeaveBalance({ user, fetchNotifications}) {
                 style={{ fontSize: "20px", color: "#3A5FBE" }}
               >
                 Total Leaves
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-3 mb-3">
+          <div className="card shadow-sm h-100 border-0">
+            <div
+              className="card-body d-flex align-items-center"
+              style={{ gap: "20px" }}
+            >
+              <h4
+                className="mb-0"
+                style={{
+                  fontSize: "40px",
+                  backgroundColor: "#faccccff",
+                  padding: "10px",
+                  textAlign: "center",
+                  minWidth: "75px",
+                  minHeight: "75px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {balance.LwpLeave}
+              </h4>
+              <p
+                className="mb-0 fw-semibold"
+                style={{ fontSize: "20px", color: "#3A5FBE" }}
+              >
+                Leave Without Pay
               </p>
             </div>
           </div>
