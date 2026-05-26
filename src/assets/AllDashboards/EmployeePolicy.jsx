@@ -830,7 +830,7 @@ useEffect(() => {
       zIndex: 2000,
     }}
   >
-    <div className="modal-dialog modal-dialog-centered">
+    <div className="modal-dialog modal-dialog-centered"style={{width:"580px"}}>
       <div className="modal-content">
 
         {/* Header */}
