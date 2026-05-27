@@ -293,8 +293,14 @@ setLeaveEmployees(leaveEmployeesData);
           const checkIn = emp.checkInTime;
           const checkOut = emp.checkOutTime;
           const workingHours = calculateWorkingHours(checkIn, checkOut);
-          const status = getStatus(checkIn, checkOut, workingHours);
+          // const status = getStatus(checkIn, checkOut, workingHours);
         
+          const status = getStatus(
+  checkIn,
+  checkOut,
+  workingHours,
+  emp.lateCheckInCount || 0
+);
           if (status === "Present" || status === "Working" || status === "Late Check-In") present++;
           else if (status === "Absent") absent++;
         
@@ -352,17 +358,177 @@ setLeaveEmployees(leaveEmployeesData);
   //   }
   // };
 
-  const getStatus = (checkIn, checkOut, workingHours) => {
-    if (!checkIn && !checkOut) return "Absent";
-    if (checkIn && !checkOut) return "Working";
-    if (workingHours >= 8) return "Present";
-    if (workingHours >= 4) return "Half Day";
+//   const getStatus = (
+//   checkIn,
+//   checkOut,
+//   workingHours,
+//   lateCheckInCount = 0
+// ) => {
+
+//   // ✅ 3 late check-ins = Half Day
+//   if (lateCheckInCount >= 3) {
+//     return "Half Day";
+//   }
+
+//   if (!checkIn && !checkOut) return "Absent";
+
+//   if (checkIn && !checkOut) return "Working";
+
+//   if (workingHours >= 8) return "Present";
+
+//   if (workingHours >= 4) return "Half Day";
+
+//   return "Absent";
+// };
+//snehal working
+// const getStatus = (
+//   checkIn,
+//   checkOut,
+//   workingHours,
+//   lateCheckInCount = 0
+// ) => {
+
+//   // ❌ No check-in
+//   if (!checkIn) {
+//     return "Absent";
+//   }
+
+//   const checkInTime = new Date(checkIn);
+
+//   // ✅ Office timing 9:10 AM
+//   const officeTime = new Date(checkInTime);
+//   officeTime.setHours(9, 10, 0, 0);
+
+//   // ✅ Late Check-In FIRST priority
+//   if (checkInTime > officeTime) {
+//     return "Late Check-In";
+//   }
+
+//   // ✅ Working
+//   if (checkIn && !checkOut) {
+//     return "Working";
+//   }
+
+//   // ✅ Half Day
+//   if (workingHours > 0 && workingHours < 8) {
+//     return "Half Day";
+//   }
+
+//   // ✅ Present
+//   return "Present";
+// };
+//working show late check
+// const getStatus = (
+//   checkIn,
+//   checkOut,
+//   workingHours,
+//   lateCheckInCount = 0
+// ) => {
+//   if (!checkIn) return "Absent";
+
+//   // ✅ Late check-in check
+//   const checkInDate = new Date(checkIn);
+//   const hours = checkInDate.getHours();
+//   const minutes = checkInDate.getMinutes();
+
+//   const isLate =
+//     hours > 9 || (hours === 9 && minutes > 10);
+
+//   // ✅ 3rd late attempt = Half Day
+//  // ✅ 1st & 2nd & 3rd attempt
+//   if (isLate) {
+
+//     // 3rd attempt
+//     if (lateCheckInCount >= 3) {
+//       return "Half Day / Late Check-In";
+//     }
+
+//     return "Late Check-In";
+//   }
+//   // ✅ 1st & 2nd late attempt
+//   if (isLate) {
+//     return "Late Check-In";
+//   }
+
+//   // ✅ Working
+//   if (checkIn && !checkOut) {
+//     return "Working";
+//   }
+
+//   // ✅ Half day based on working hours
+//   if (workingHours > 0 && workingHours < 4) {
+//     return "Half Day";
+//   }
+
+//   // ✅ Present
+//   if (workingHours >= 4) {
+//     return "Present";
+//   }
+
+//   return "Absent";
+// };
+const getStatus = (
+  checkIn,
+  checkOut,
+  workingHours,
+  lateCheckInCount = 0
+) => {
+
+  // ❌ No check-in
+  if (!checkIn) {
     return "Absent";
-  };
+  }
 
- 
+  // ✅ Current working employee (not checked out yet)
+  if (checkIn && !checkOut) {
 
+    // 1st & 2nd late attempt
+    if (lateCheckInCount === 1 || lateCheckInCount === 2) {
+      return "Working";
+    }
 
+    // 3rd late attempt
+    if (lateCheckInCount >= 3) {
+      return "Half Day/Late Check-In";
+    }
+
+    return "Working";
+  }
+
+  // ❌ Less than 4 hrs
+  if (workingHours < 4) {
+    return "Absent";
+  }
+
+  // ⚠️ Between 4 to 8 hrs
+  if (workingHours >= 4 && workingHours < 8) {
+
+    // 3rd late attempt
+    if (lateCheckInCount >= 3) {
+      return "Half Day/Late Check-In";
+    }
+
+    return "Half Day";
+  }
+
+  // ✅ 8+ hrs completed
+  if (workingHours >= 8) {
+
+    // 1st & 2nd late check-in
+    if (lateCheckInCount === 1 || lateCheckInCount === 2) {
+      return "Present/Late Check-In";
+    }
+
+    // 3rd late check-in
+    if (lateCheckInCount >= 3) {
+      return "Half Day/Late Check-In";
+    }
+
+    return "Present";
+  }
+
+  return "Absent";
+};
   // const totalPages = Math.ceil(employees.length / itemsPerPage);
   // const indexOfLastItem = currentPage * itemsPerPage;
   // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -579,7 +745,12 @@ if (error) {
         const checkIn = emp.checkInTime;
         const checkOut = emp.checkOutTime;
         const workingHours = calculateWorkingHours(checkIn, checkOut);
-        const status = getStatus(checkIn, checkOut, workingHours);
+       const status = getStatus(
+  checkIn,
+  checkOut,
+  workingHours,
+  emp.lateCheckInCount
+);
 
         // ✅ Late Check-In
         if (statusFilter === "Late Check-In") {
@@ -2101,7 +2272,13 @@ onClick={async () => {
                 const checkIn = emp.checkInTime;
                 const checkOut = emp.checkOutTime;
                 const workingHours = calculateWorkingHours(checkIn, checkOut);
-                const status = getStatus(checkIn, checkOut, workingHours);
+                // const status = getStatus(checkIn, checkOut, workingHours);
+                const status = getStatus(
+  checkIn,
+  checkOut,
+  workingHours,
+  emp.lateCheckInCount || 0
+);
                 const badgeStyle = {
                   base: {
                     display: "inline-block",
@@ -2115,7 +2292,15 @@ onClick={async () => {
                   "Half Day": { background: "#fff3cd" }, // soft yellow
                   Working: { background: "#cff4fc" }, // soft cyan
                   Absent: { background: "#f8d7da" }, 
-                   "Late Check-In": { background: "#FFE493" },// soft red
+                  "Present/Late Check-In": {
+  background: "#d1f7df",
+  color: "#000",
+},
+
+"Half Day/Late Check-In": {
+  background: "#fff3cd",
+  color: "#856404",
+},
                 };
 
                 return (
@@ -2190,23 +2375,72 @@ onClick={async () => {
                         ? getTotalBreakDurationHMS(emp.breaks)
                         : "-"}
                     </td>
-                    <td
+                    {/* <td
                       style={{
                         padding: "12px",
                         fontSize: "14px",
                         borderBottom: "1px solid #dee2e6",
                         whiteSpace: "nowrap",
                       }}
-                    >
-                      <span
+                    > */}
+                      {/* <span
                         style={{
                           ...badgeStyle.base,
                           ...(badgeStyle[status] || {}),
                         }}
                       >
                         {status}
-                      </span>
-                    </td>
+                      </span> */}
+                      
+<td
+  style={{
+    padding: "12px",
+    fontSize: "14px",
+    borderBottom: "1px solid #dee2e6",
+    whiteSpace: "nowrap",
+  }}
+>
+  <div>
+    <span
+      style={{
+        ...badgeStyle.base,
+        ...(badgeStyle[status] || {}),
+      }}
+    >
+      {status}
+    </span>
+
+    {/* {emp.lateCheckInCount > 0 && (
+      <div
+        style={{
+          fontSize: "11px",
+          color: "#dc3545",
+          marginTop: "4px",
+          fontWeight: "500",
+        }}
+      >
+        {emp.lateCheckInCount === 1 && "1st Attempt"}
+        {emp.lateCheckInCount === 2 && "2nd Attempt"}
+        {emp.lateCheckInCount >= 3 && "3rd Attempt"}
+      </div>
+    )} */}
+    {status === "Late Check-In" && emp.lateCheckInCount > 0 && (
+  <div
+    style={{
+      fontSize: "11px",
+      color: "#dc3545",
+      marginTop: "4px",
+      fontWeight: "500",
+    }}
+  >
+    {emp.lateCheckInCount === 1 && "1st Attempt"}
+    {emp.lateCheckInCount === 2 && "2nd Attempt"}
+    {emp.lateCheckInCount >= 3 && "3rd Attempt"}
+  </div>
+)}
+  </div>
+</td> 
+                    {/* </td> */}
                     <td
                       style={{
                         padding: "12px",
@@ -2289,28 +2523,16 @@ onClick={async () => {
       </nav>
         </>
 )}
-{showCardList && (
-  <div className="text-end mt-3">
-    <button
-      className="btn btn-sm custom-outline-btn"
-      style={{ minWidth: 90 }}
-      onClick={() => setShowCardList(null)}
-    >
-      Back
-    </button>
-  </div>
-)}
-     {!showCardList && (
-  <div className="text-end mt-3">
-    <button
-      className="btn btn-sm custom-outline-btn"
-      style={{ minWidth: 90 }}
-      onClick={() => window.history.go(-1)}
-    >
-      Back
-    </button>
-  </div>
-)}
+
+      <div className="text-end mt-3">
+        <button
+          className="btn btn-sm custom-outline-btn"
+          style={{ minWidth: 90 }}
+          onClick={() => window.history.go(-1)}
+        >
+          Back
+        </button>
+      </div>
 
       {showModal && selectedEmployee && (
         <div
@@ -2431,13 +2653,14 @@ onClick={async () => {
                           }
                         >
                           {getStatus(
-                            selectedEmployee.checkInTime,
-                            selectedEmployee.checkOutTime,
-                            calculateWorkingHours(
-                              selectedEmployee.checkInTime,
-                              selectedEmployee.checkOutTime,
-                            ),
-                          )}
+  selectedEmployee.checkInTime,
+  selectedEmployee.checkOutTime,
+  calculateWorkingHours(
+    selectedEmployee.checkInTime,
+    selectedEmployee.checkOutTime,
+  ),
+  selectedEmployee.lateCheckInCount || 0
+)}
                         </span>
                       </div>
                     </div>
