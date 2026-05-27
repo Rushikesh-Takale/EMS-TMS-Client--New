@@ -31,16 +31,24 @@ const ProbationList = () => {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  const fetchEmployees = async () => {
-    try {
-      const res = await authAxios.get("/admin/probation-ending-soon");
-      setEmployees(res.data);
-    } catch (err) {
-      console.error("Failed to fetch probation employees", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchEmployees = async () => {
+  try {
+    const res = await authAxios.get("/admin/probation-ending-soon");
+
+    const sortedEmployees = res.data.sort(
+      (a, b) =>
+        new Date(a.probationEndDate) -
+        new Date(b.probationEndDate)
+    );
+
+    setEmployees(sortedEmployees);
+
+  } catch (err) {
+    console.error("Failed to fetch probation employees", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchEmployees();
