@@ -300,31 +300,77 @@ const handleReset = () => {
       
         const today = new Date().toDateString();
       
-        // Today check-in only -> Working
-        if (
-          key === today &&
-          attendance.checkIn &&
-          !attendance.checkOut
-        ) {
-          updatedStatus = "Working";
-        }
+    
+if (
+  key === today &&
+  attendance.checkIn &&
+  !attendance.checkOut
+) {
+ // ✅ 3rd late attempt = Half Day
+  if (attendance.lateCheckInCount >= 3) {
+    updatedStatus = "Half Day/late check in";
+  }
+
+  // ✅ 1st & 2nd late attempt
+  else if (attendance.lateCheckIn === true) {
+    updatedStatus = "Late Check In";
+  }
+
+ 
+
+  // ✅ Otherwise Working
+  else {
+    updatedStatus = "Working";
+  }
+}
       
-        // Previous dates validation
-        else {
-      
-          // Missing checkIn/checkOut
-          if (!attendance.checkIn || !attendance.checkOut) {
-            updatedStatus = "Absent";
-          }
-      
-          // Working hours less than 8
-          if (
+else {
+
+  // ✅ Backend forced Half Day
+  if (attendance.dayStatus === "Half Day") {
+    updatedStatus = "Half Day";
+  }
+
+  // ✅ Missing checkin/checkout
+  else if (!attendance.checkIn || !attendance.checkOut) {
+    updatedStatus = "Absent";
+  }
+
+  // ✅ Less than 4 hrs
+  else if (
     !attendance.workingHours ||
-    parseFloat(attendance.workingHours) < 8
+    parseFloat(attendance.workingHours) < 4
   ) {
     updatedStatus = "Absent";
   }
+
+  // ✅ 3rd late attempt priority
+  else if (attendance.lateCheckInCount >= 3) {
+    updatedStatus = "Half Day/Late Check In";
   }
+
+  // ✅ 1st & 2nd late attempt
+  else if (
+    attendance.lateCheckIn === true &&
+    attendance.lateCheckInCount < 3
+  ) {
+    updatedStatus = "Late Check In";
+  }
+
+  // ✅ Between 4 to 8 hrs
+  else if (
+    parseFloat(attendance.workingHours) >= 4 &&
+    parseFloat(attendance.workingHours) < 8
+  ) {
+    updatedStatus = "Half Day";
+  }
+  
+
+  // ✅ Full Day
+  else {
+    updatedStatus = "Present";
+  }
+}
       
         result.push({
           ...attendance,
@@ -469,7 +515,10 @@ const statusBg = {
   "Weekly Off": { background: "#d9d9d9", color: "#000" },
   Holiday: { background: "#fff3cd", color: "#856404" },
   Leave: { background: "#c8e3f1", color: "#6c757d" },
-  Working: { background: "#cff4fc" }
+  Working: { background: "#cff4fc" },
+   "Half Day": { background: "#fff3cd", color: "#856404" },
+    // add this
+  "Late Check In": { background: "#f8d7da", color: "#721c24" },
 };
   //jacy code
   //const sortedAndFilteredData =filteredAttendance()
@@ -612,6 +661,11 @@ const statusBg = {
     <option value="Weekly Off">Weekly Off</option>
     <option value="Holiday">Holiday</option>
     <option value="Leave">Leaves</option>
+    <option value="Half Day">Half Day</option>
+    <option value="Late Check In">Late Check In</option>
+    <option value="Half Day/Late Check In">
+  Half Day/Late Check In
+</option>
   </select>
 </div>
 
@@ -858,7 +912,12 @@ const statusBg = {
                   <tr
                     key={att._id}
                     style={{ cursor: "pointer" }}
-                    onClick={() => handleRowClick(att)}
+                    onClick={() =>
+  handleRowClick({
+    ...att,
+    dayStatus: att.dayStatus,
+  })
+}
                   >
                     <td
                       style={{
@@ -1097,7 +1156,7 @@ const statusBg = {
 
                   <div className="row mb-3">
                     <div className="col-sm-3 fw-semibold">Status</div>
-                    <div className="col-sm-9">
+                    {/* <div className="col-sm-9">
                       <span
                         className="badge px-3 py-2"
                         style={{
@@ -1108,13 +1167,38 @@ const statusBg = {
                                 ? "#fff3cd"
                                 : selectedAttendance.dayStatus === "Weekly Off"
                                   ? "#e2e3e5"
+                                    : selectedAttendance.dayStatus === "Late Check In"
+                                      ? "#f8d7da"
                                   : "#f8d7da",
                           color: "#000",
                         }}
                       >
                         {selectedAttendance.dayStatus}
                       </span>
-                    </div>
+                    </div> */}
+                    <div className="col-sm-9">
+  <span
+    className="badge px-3 py-2"
+    style={{
+      background:
+        selectedAttendance.dayStatus === "Present"
+          ? "#d1f7df"
+          : selectedAttendance.dayStatus === "Half Day"
+          ? "#fff3cd"
+          : selectedAttendance.dayStatus === "Weekly Off"
+          ? "#e2e3e5"
+          : selectedAttendance.dayStatus === "Late Check In"
+          ? "#f8d7da"
+          : "#f8d7da",
+      color:
+        selectedAttendance.dayStatus === "Late Check In"
+          ? "#721c24"
+          : "#000",
+    }}
+  >
+    {selectedAttendance.dayStatus || "-"}
+  </span>
+</div>
                   </div>
 
                   <div className="row mb-3">

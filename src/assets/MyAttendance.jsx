@@ -59,10 +59,7 @@ function MyAttendance({ employeeId }) {
   const navigate = useNavigate();
   const { role, username, id } = useParams();
 
-  // Whenever workMode changes, save it
-  // useEffect(() => {
-  //   localStorage.setItem("workMode", workMode);
-  // }, [workMode]);
+ 
 
   // Fetch manager info
   useEffect(() => {
@@ -80,18 +77,20 @@ function MyAttendance({ employeeId }) {
     if (!employeeId) return; // ✅ Skip until defined
     const fetchData = async () => {
       try {
-        const [attRes, leaveRes, weeklyRes, holidayRes, regRes] =
-          await Promise.all([
-            axios.get(`http://localhost:8000/attendance/${employeeId}`),
-            axios.get(`http://localhost:8000/leave/my/${employeeId}`),
-            axios.get(
-              `http://localhost:8000/admin/weeklyoff/${new Date().getFullYear()}`,
-            ),
-            axios.get(`http://localhost:8000/getHolidays`),
-            axios.get(
-              `http://localhost:8000/attendance/regularization/my/${employeeId}`,
-            ),
-          ]);
+     
+        const [attRes, leaveRes, weeklyRes, holidayRes, regRes, lateRes] =
+  await Promise.all([
+    axios.get(`http://localhost:8000/attendance/${employeeId}`),
+    axios.get(`http://localhost:8000/leave/my/${employeeId}`),
+    axios.get(
+      `http://localhost:8000/admin/weeklyoff/${new Date().getFullYear()}`
+    ),
+    axios.get(`http://localhost:8000/getHolidays`),
+    axios.get(
+      `http://localhost:8000/attendance/regularization/my/${employeeId}`
+    ),
+  
+  ]);
 
         setWeeklyOff(weeklyRes.data.data?.saturdays || []);
         setHolidays(holidayRes.data || []);
@@ -114,7 +113,24 @@ function MyAttendance({ employeeId }) {
         });
 
         // Merge attendance + leaves first
+        // const mergedAttendance = [...attRes.data, ...expandedLeaves];
         const mergedAttendance = [...attRes.data, ...expandedLeaves];
+        // Late Check-In merge
+// const lateCheckins = lateRes.data || [];
+
+// mergedAttendance = mergedAttendance.map((att) => {
+//   const lateRecord = lateCheckins.find(
+//     (late) =>
+//       late.employeeId === employeeId &&
+//       new Date(late.date).toDateString() === new Date(att.date).toDateString()
+//   );
+
+//   return {
+//     ...att,
+//     isLateCheckIn: !!lateRecord,
+//     lateType: lateRecord?.lateType || null, // "Full Day" / "Half Day"
+//   };
+// });
 
         // Merge regularizations
         regRes.data.forEach((reg) => {
@@ -168,11 +184,13 @@ function MyAttendance({ employeeId }) {
         });
 
         setAttendance(mergedAttendance);
+       
         // 👇 Default to today’s record
         const today = new Date();
         setSelectedDate(today);
         setSelectedRecord(
           mergedAttendance.find(
+         
             (rec) => new Date(rec.date).toDateString() === today.toDateString(),
           ) || null,
         );
@@ -225,51 +243,104 @@ function MyAttendance({ employeeId }) {
     (new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60);
 
   // Updated getDayStatus using workingHours if available
-  const getDayStatus = (record) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  // const getDayStatus = (record) => {
+  //   const today = new Date();
+  //   today.setHours(0, 0, 0, 0);
 
-    const recordDate = new Date(record.date);
-    recordDate.setHours(0, 0, 0, 0);
+  //   const recordDate = new Date(record.date);
+  //   recordDate.setHours(0, 0, 0, 0);
 
-    if (record.leaveRef) return record.dayStatus;
+  //   if (record.leaveRef) return record.dayStatus;
 
-    let hours =
-      record.workingHours ||
-      (record.checkIn && record.checkOut
-        ? getWorkedHoursDecimal(record.checkIn, record.checkOut)
-        : 0);
+  //   let hours =
+  //     record.workingHours ||
+  //     (record.checkIn && record.checkOut
+  //       ? getWorkedHoursDecimal(record.checkIn, record.checkOut)
+  //       : 0);
 
-    if (record.regStatus === "Rejected") {
-      return "Regularization Rejected";
-    }
+  //   if (record.regStatus === "Rejected") {
+  //     return "Regularization Rejected";
+  //   }
 
     
-    if (record.regStatus === "Approved") {
-      if (hours >= 8) return "Regularized (Full Day)";
-      if (hours >= 4) return "Regularized (Half Day)";
-      return "Regularized";
-    }
-    // New change
-    if (record.regStatus === "Pending") {
-      return "Pending Regularization";
-    }
-    if (recordDate.getTime() === today.getTime()) {
-      if (record.checkIn && !record.checkOut) return "Working";
-    }
+  //   if (record.regStatus === "Approved") {
+  //     if (hours >= 8) return "Regularized (Full Day)";
+  //     if (hours >= 4) return "Regularized (Half Day)";
+  //     return "Regularized";
+  //   }
+  //   // New change
+  //   if (record.regStatus === "Pending") {
+  //     return "Pending Regularization";
+  //   }
+  //   if (recordDate.getTime() === today.getTime()) {
+  //     if (record.checkIn && !record.checkOut) return "Working";
+  //   }
 
-    if (
-      recordDate.getTime() < today.getTime() &&
-      record.checkIn &&
-      !record.checkOut
-    )
-      return "Absent";
-    if (!record.checkIn && !record.checkOut) return "Absent";
+  //   if (
+  //     recordDate.getTime() < today.getTime() &&
+  //     record.checkIn &&
+  //     !record.checkOut
+  //   )
+  //     return "Absent";
+  //   if (!record.checkIn && !record.checkOut) return "Absent";
 
-    if (hours >= 8) return "Full Day";
-    if (hours >= 4) return "Half Day";
+  //   if (hours >= 8) return "Full Day";
+  //   if (hours >= 4) return "Half Day";
+  //   return "Absent";
+  // };
+ const getDayStatus = (record) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const recordDate = new Date(record.date);
+  recordDate.setHours(0, 0, 0, 0);
+
+  if (record.leaveRef) return record.dayStatus;
+
+  let hours =
+    record.workingHours ||
+    (record.checkIn && record.checkOut
+      ? getWorkedHoursDecimal(record.checkIn, record.checkOut)
+      : 0);
+
+  // ✅ NEW CONDITION FOR LATE CHECK-IN
+  if (record.lateCheckInCount >= 3) {
+    return "Late Check-In Half Day";
+  }
+
+  if (record.lateCheckInCount > 0) {
+    return "Late Check-In";
+  }
+
+  if (record.regStatus === "Approved") {
+    if (hours >= 8) return "Regularized (Full Day)";
+    if (hours >= 4) return "Regularized (Half Day)";
+    return "Regularized";
+  }
+
+  if (record.regStatus === "Pending") {
+    return "Pending Regularization";
+  }
+
+  if (hours >= 8) return "Full Day";
+
+  if (recordDate.getTime() === today.getTime()) {
+    if (record.checkIn && !record.checkOut) return "Working";
+  }
+
+  if (
+    recordDate.getTime() < today.getTime() &&
+    record.checkIn &&
+    !record.checkOut
+  )
     return "Absent";
-  };
+
+  if (!record.checkIn && !record.checkOut) return "Absent";
+
+  if (hours >= 4) return "Half Day";
+
+  return "Absent";
+};
 
 
   const shouldShowRegularizationButton = (record, date) => {
@@ -296,6 +367,13 @@ function MyAttendance({ employeeId }) {
     return false;
   };
 
+  // const attendanceMap = {};
+  // attendance.forEach((rec) => {
+  //   const dateKey = new Date(rec.date).toDateString();
+  //   if (!attendanceMap[dateKey] || rec.leaveRef || rec.regStatus) {
+  //     attendanceMap[dateKey] = { ...rec, dayStatus: getDayStatus(rec) };
+  //   }
+  // });
   const attendanceMap = {};
   attendance.forEach((rec) => {
     const dateKey = new Date(rec.date).toDateString();
@@ -303,6 +381,17 @@ function MyAttendance({ employeeId }) {
       attendanceMap[dateKey] = { ...rec, dayStatus: getDayStatus(rec) };
     }
   });
+  // else {
+  //   attendanceMap[dateKey] = {
+  //     ...existing,
+  //     ...rec,
+  //     dayStatus: getDayStatus({
+  //       ...existing,
+  //       ...rec,
+  //     }),
+  //   };
+  // }
+
 
   const isWeeklyOff = (date) => {
     if (date.getDay() === 0) return true;
@@ -402,67 +491,132 @@ function MyAttendance({ employeeId }) {
   //new code
 
   // Tooltip content function
-  const getTooltipContent = (date) => {
-    const key1 = date.toDateString();
-    const key2 = date.toISOString().slice(0, 10);
-    const rec = attendanceMap[key1] ?? attendanceMap[key2];
+  // const getTooltipContent = (date) => {
+  //   const key1 = date.toDateString();
+  //   const key2 = date.toISOString().slice(0, 10);
+  //   const rec = attendanceMap[key1] ?? attendanceMap[key2];
   
-    if (isHoliday(date)) {
-      const holiday = getHoliday(date);
-      return ` Holiday: ${holiday?.name || "Holiday"}`;
-    }
+  //   if (isHoliday(date)) {
+  //     const holiday = getHoliday(date);
+  //     return ` Holiday: ${holiday?.name || "Holiday"}`;
+  //   }
   
-    // Check for weekly off
-    if (isWeeklyOff(date)) {
-      if (date.getDay() === 0) return " Sunday (Weekly Off)";
-      return "Saturday (Weekly Off)";
-    }
+  //   // Check for weekly off
+  //   if (isWeeklyOff(date)) {
+  //     if (date.getDay() === 0) return " Sunday (Weekly Off)";
+  //     return "Saturday (Weekly Off)";
+  //   }
     
-    // If no record exists for this date
-    if (!rec) {
-      return "No record";
-    }
+  //   // If no record exists for this date
+  //   if (!rec) {
+  //     return "No record";
+  //   }
   
-    // Handle leave records
-    if (rec.leaveRef) {
-      const leave = rec.leaveRef;
-      let statusIcon = "";
-      if (leave.status === "approved") statusIcon = "";
-      if (leave.status === "rejected") statusIcon = "";
-      if (leave.status === "pending") statusIcon = "";
-      return `${statusIcon} Leave: ${leave.leaveType} (${leave.status?.toUpperCase()})`;
-    }
+  //   // Handle leave records
+  //   if (rec.leaveRef) {
+  //     const leave = rec.leaveRef;
+  //     let statusIcon = "";
+  //     if (leave.status === "approved") statusIcon = "";
+  //     if (leave.status === "rejected") statusIcon = "";
+  //     if (leave.status === "pending") statusIcon = "";
+  //     return `${statusIcon} Leave: ${leave.leaveType} (${leave.status?.toUpperCase()})`;
+  //   }
   
-    const ds = rec.dayStatus || "";
-    const reg = rec.regStatus || "";
+  //   const ds = rec.dayStatus || "";
+  //   const reg = rec.regStatus || "";
   
-    // Handle regularization status
-    if (reg === "Approved") {
-      if (ds.includes("Full")) return "Regularized (Full Day)";
-      if (ds.includes("Half")) return "Regularized (Half Day)";
-      return "Regularized";
-    }
+  //   // Handle regularization status
+  //   if (reg === "Approved") {
+  //     if (ds.includes("Full")) return "Regularized (Full Day)";
+  //     if (ds.includes("Half")) return "Regularized (Half Day)";
+  //     return "Regularized";
+  //   }
   
-    if (reg === "Pending") return "Pending Regularization";
-    if (reg === "Rejected") return "Regularization Rejected";
+  //   if (reg === "Pending") return "Pending Regularization";
+  //   if (reg === "Rejected") return "Regularization Rejected";
   
-    // Handle attendance status
-    if (ds === "Working") return "Working (Not Checked Out)";
-    if (ds === "Full Day") return "Present (Full Day)";
-    if (ds === "Half Day") return "Half Day Present";
-    if (ds === "Absent") return "Absent";
+  //   // Handle attendance status
+  //   if (ds === "Working") return "Working (Not Checked Out)";
+  //   if (ds === "Full Day") return "Present (Full Day)";
+  //   if (ds === "Half Day") return "Half Day Present";
+  //   if (ds === "Absent") return "Absent";
   
-    // Handle check-in/out issues
-    if (rec.checkIn && !rec.checkOut) return "Checked In (No Checkout)";
-    if (!rec.checkIn && rec.checkOut) return "Checked Out (No Checkin)";
-    if (!rec.checkIn && !rec.checkOut) return "No Check-in/out";
+  //   // Handle check-in/out issues
+  //   if (rec.checkIn && !rec.checkOut) return "Checked In (No Checkout)";
+  //   if (!rec.checkIn && rec.checkOut) return "Checked Out (No Checkin)";
+  //   if (!rec.checkIn && !rec.checkOut) return "No Check-in/out";
   
-    return ds || "No record";
-  };
+  //   return ds || "No record";
+  // };
+const getTooltipContent = (date) => {
+  const key1 = date.toDateString();
+  const key2 = date.toISOString().slice(0, 10);
+
+  const rec = attendanceMap[key1] ?? attendanceMap[key2];
+
+  if (isHoliday(date)) {
+    const holiday = getHoliday(date);
+    return `Holiday: ${holiday?.name || "Holiday"}`;
+  }
+
+  if (isWeeklyOff(date)) {
+    if (date.getDay() === 0) return "Sunday (Weekly Off)";
+    return "Saturday (Weekly Off)";
+  }
+
+  if (!rec) {
+    return "No record";
+  }
+
+ // ✅ SHOW LATE ATTEMPT
+  if (rec.lateCheckInCount >= 3) {
+    return `Late Check-In (3rd Attempt - Half Day)`;
+  }
+
+  if (rec.lateCheckInCount > 0) {
+    return `Late Check-In (${rec.lateCheckInCount} Attempt)`;
+  }
+
+  // Leave
+  if (rec.leaveRef) {
+    return `Leave: ${rec.leaveRef.leaveType} (${rec.leaveRef.status?.toUpperCase()})`;
+  }
+
+  const ds = rec.dayStatus || "";
+  const reg = rec.regStatus || "";
+
+  if (reg === "Approved") {
+    if (ds.includes("Full")) return "Regularized (Full Day)";
+    if (ds.includes("Half")) return "Regularized (Half Day)";
+    return "Regularized";
+  }
+
+  if (reg === "Pending") return "Pending Regularization";
+
+  if (reg === "Rejected") return "Regularization Rejected";
+
+  if (ds === "Working") return "Working (Not Checked Out)";
+
+  if (ds === "Full Day") return "Present (Full Day)";
+
+  if (ds === "Half Day") return "Half Day Present";
+
+  if (ds === "Absent") return "Absent";
+
+  if (rec.checkIn && !rec.checkOut)
+    return "Checked In (No Checkout)";
+
+  if (!rec.checkIn && rec.checkOut)
+    return "Checked Out (No Checkin)";
+
+  if (!rec.checkIn && !rec.checkOut)
+    return "No Check-in/out";
+
+  return ds || "No record";
+};
 
   const tileContent = ({ date, view }) => {
     if (view !== "month") return null;
-    
     const isCurrentMonth =
       date.getMonth() === activeStartDate.getMonth() &&
       date.getFullYear() === activeStartDate.getFullYear();
@@ -520,15 +674,36 @@ function MyAttendance({ employeeId }) {
     }
 
     // 1) Pending regularization ⇒ separate color, NOT present
-    if (reg === "Pending") return "pending-regularization-day";
+  //   if (reg === "Pending") return "pending-regularization-day";
 
-  if (
-    ds === "Half Day" || 
-    ds.includes("Half") || 
-    ds === "Regularized (Half Day)"
-  ) {
-    return "halfday-day";
-  }
+  // if (
+  //   ds === "Half Day" || 
+  //   ds.includes("Half") || 
+  //   ds === "Regularized (Half Day)"
+  // ) {
+  //   return "halfday-day";
+  // }
+  // 1) Pending regularization
+if (reg === "Pending") return "pending-regularization-day";
+
+ // ✅ LATE CHECK-IN HALF DAY
+    if (ds === "Late Check-In Half Day") {
+      return "late-halfday";
+    }
+
+    // ✅ NORMAL LATE CHECK-IN
+    if (ds === "Late Check-In") {
+      return "late-checkin-day";
+    }
+
+
+if (
+  ds === "Half Day" ||
+  ds.includes("Half") ||
+  ds === "Regularized (Half Day)"
+) {
+  return "halfday-day";
+}
 
     // 2) Approved regularization or real present days ⇒ green
     if (
@@ -1081,6 +1256,23 @@ function MyAttendance({ employeeId }) {
             ></span>{" "}
               Selected
             </span>
+           
+  <span>
+  <span
+    className="legend-box"
+    style={{ background: "#f723be" }}
+  ></span>{" "}
+  Late Check-In
+</span>
+
+<span>
+  <span
+    className="legend-box"
+    style={{ background: "#ffb703" }}
+  ></span>{" "}
+  Late Half Day
+</span>
+
             </div>
           </div>
           {/* Calender card End */}
@@ -1116,6 +1308,7 @@ function MyAttendance({ employeeId }) {
                 (rec) =>
                   new Date(rec.date).toDateString() === today.toDateString(),
               );
+              
               return (
                 <div className="attendance-details">
                   {todayRecord ? (
