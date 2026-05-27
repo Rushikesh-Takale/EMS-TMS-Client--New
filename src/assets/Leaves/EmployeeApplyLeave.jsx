@@ -9,6 +9,10 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
     duration: "full",
     reason: "",
   });
+  const [leaveBalances, setLeaveBalances] = useState({
+    sickLeaveBalance: 0,
+    casualLeaveBalance: 0
+  });
   const [message, setMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -146,20 +150,54 @@ function EmployeeApplyLeave({ user, onLeaveApplied }) {
   }, [user]);
 
   useEffect(() => {
+    const fetchLeaveBalances = async () => {
+      if (!user?._id) return;
+      try {
+        const res = await axios.get(`http://localhost:8000/leave/${user._id}`);
+        setLeaveBalances({
+          sickLeaveBalance: res.data.sickLeaveBalance || 0,
+          casualLeaveBalance: res.data.casualLeaveBalance || 0
+        });
+      } catch (err) {
+        console.error("Error fetching leave balances:", err);
+      }
+    };
+    fetchLeaveBalances();
+  }, [user]);
+  
+  
+
+  useEffect(() => {
     if (!showModal) return;
+    
     const now = new Date();
     const doj = new Date(user.doj);
     const probationEnd = new Date(doj);
     probationEnd.setMonth(probationEnd.getMonth() + user.probationMonths);
+    
+    const hasSL = leaveBalances.sickLeaveBalance > 0;
+    const hasCL = leaveBalances.casualLeaveBalance > 0;
+    
     if (now < probationEnd) {
-      setForm((prev) => ({ ...prev, leaveType: "LWP" }));
       setAvailableLeaveTypes(["LWP"]);
+      setForm((prev) => ({ ...prev, leaveType: "LWP" }));
     } else {
-      setAvailableLeaveTypes(["SL", "CL", "LWP"]);
-      setForm((prev) => ({ ...prev, leaveType: "SL" }));
+      const available = [];
+      if (hasCL) available.push("CL");
+      if (hasSL) available.push("SL");
+      available.push("LWP"); 
+      
+      setAvailableLeaveTypes(available);
+      
+      if (hasCL) {
+        setForm((prev) => ({ ...prev, leaveType: "CL" }));
+      } else if (hasSL) {
+        setForm((prev) => ({ ...prev, leaveType: "SL" }));
+      } else {
+        setForm((prev) => ({ ...prev, leaveType: "LWP" }));
+      }
     }
-  }, [showModal, user]);
-
+  }, [showModal, user, leaveBalances]);
   const popupRef = useRef(null);
   const previewPopupRef = useRef(null);
 
@@ -631,14 +669,11 @@ style={{
                           value="CL"
                           checked={form.leaveType === "CL"}
                           onChange={handleChange}
-                          disabled={
-                            availableLeaveTypes.length === 1 &&
-                            availableLeaveTypes[0] === "LWP"
-                          }
+                          disabled={!availableLeaveTypes.includes("CL") || leaveBalances.casualLeaveBalance === 0}
                           style={{
                             width: "20px",
                             height: "20px",
-                            cursor: "pointer",
+                            cursor: leaveBalances.casualLeaveBalance === 0 ? "not-allowed" : "pointer",
                             accentColor: "#2E4A8B",
                           }}
                         />
@@ -649,7 +684,7 @@ style={{
                             fontSize: "14px",
                             color: "#495057",
                             marginLeft: "8px",
-                            cursor: "pointer",
+                            cursor: leaveBalances.casualLeaveBalance === 0 ? "not-allowed" : "pointer",
                           }}
                         >
                           Casual
@@ -664,14 +699,12 @@ style={{
                           value="SL"
                           checked={form.leaveType === "SL"}
                           onChange={handleChange}
-                          disabled={
-                            availableLeaveTypes.length === 1 &&
-                            availableLeaveTypes[0] === "LWP"
-                          }
+                          disabled={!availableLeaveTypes.includes("SL") || leaveBalances.sickLeaveBalance === 0}
                           style={{
                             width: "20px",
                             height: "20px",
                             cursor: "pointer",
+                            cursor: leaveBalances.sickLeaveBalance === 0 ? "not-allowed" : "pointer",
                             accentColor: "#2E4A8B",
                           }}
                         />
@@ -682,7 +715,7 @@ style={{
                             fontSize: "14px",
                             color: "#495057",
                             marginLeft: "8px",
-                            cursor: "pointer",
+                            cursor: leaveBalances.sickLeaveBalance === 0 ? "not-allowed" : "pointer",
                           }}
                         >
                           Sick
