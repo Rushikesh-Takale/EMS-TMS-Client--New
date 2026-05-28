@@ -186,9 +186,9 @@ function Notification({ userId,notifications, fetchNotifications}) {
         `/dashboard/${role}/${username}/${id}/performance`
       );
     }
-    else if (n.type === "Probation") {
+else if (n.type === "Probation") {
   navigate(
-    `/dashboard/${role}/${username}/${id}/employee`
+    `/dashboard/${role}/${username}/${id}/probation`
   );
 }
     else if (n.type === "Job") {
