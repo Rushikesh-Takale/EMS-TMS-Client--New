@@ -282,9 +282,24 @@ const handleReset = () => {
     // Map existing records by normalized date
     const byDate = new Map();
     src.forEach((att) => {
-      const d = new Date(att.date);
-      const key = d.toDateString();
-      byDate.set(key, att);
+      // const d = new Date(att.date);
+      // const key = d.toDateString();
+      const normalizeDate = (date) => {
+  const d = new Date(date);
+
+  return new Date(
+    d.getFullYear(),
+    d.getMonth(),
+    d.getDate()
+  );
+};
+      // byDate.set(key, att);
+      src.forEach((att) => {
+  const d = normalizeDate(att.date);
+  const key = d.toDateString();
+
+  byDate.set(key, att);
+});
     });
 
     const result = [];
@@ -301,81 +316,159 @@ const handleReset = () => {
         const today = new Date().toDateString();
       
     
+// if (
+//   key === today &&
+//   attendance.checkIn &&
+//   !attendance.checkOut
+// ) {
+//  // ✅ 3rd late attempt = Half Day
+//   if (attendance.lateCheckInCount >= 3) {
+//     updatedStatus = "Half Day/late check in";
+//   }
+
+//   // ✅ 1st & 2nd late attempt
+//   else if (attendance.lateCheckIn === true) {
+//     updatedStatus = "Late Check In";
+//   }
+
+ 
+
+//   // ✅ Otherwise Working
+//   else {
+//     updatedStatus = "Working";
+//   }
+// }
+      
+// else {
+
+//   // ✅ Backend forced Half Day
+//   if (attendance.dayStatus === "Half Day") {
+//     updatedStatus = "Half Day";
+//   }
+
+//   // ✅ Missing checkin/checkout
+//   else if (!attendance.checkIn || !attendance.checkOut) {
+//     updatedStatus = "Absent";
+//   }
+
+//   // ✅ Less than 4 hrs
+//   else if (
+//     !attendance.workingHours ||
+//     parseFloat(attendance.workingHours) < 4
+//   ) {
+//     updatedStatus = "Absent";
+//   }
+const hours = parseFloat(attendance.workingHours || 0);
+
 if (
   key === today &&
   attendance.checkIn &&
   !attendance.checkOut
 ) {
- // ✅ 3rd late attempt = Half Day
-  if (attendance.lateCheckInCount >= 3) {
-    updatedStatus = "Half Day/late check in";
-  }
-
-  // ✅ 1st & 2nd late attempt
-  else if (attendance.lateCheckIn === true) {
-    updatedStatus = "Late Check In";
-  }
-
- 
-
-  // ✅ Otherwise Working
-  else {
-    updatedStatus = "Working";
-  }
+  updatedStatus = "Working";
 }
-      
+
 else {
 
-  // ✅ Backend forced Half Day
-  if (attendance.dayStatus === "Half Day") {
-    updatedStatus = "Half Day";
-  }
-
-  // ✅ Missing checkin/checkout
-  else if (!attendance.checkIn || !attendance.checkOut) {
+  // No checkin / checkout
+  if (!attendance.checkIn || !attendance.checkOut) {
     updatedStatus = "Absent";
   }
 
-  // ✅ Less than 4 hrs
-  else if (
-    !attendance.workingHours ||
-    parseFloat(attendance.workingHours) < 4
-  ) {
+  // Less than 4 hrs
+  else if (hours < 4) {
     updatedStatus = "Absent";
   }
 
-  // ✅ 3rd late attempt priority
-  else if (attendance.lateCheckInCount >= 3) {
-    updatedStatus = "Half Day/Late Check In";
-  }
+  // =========================
+  // LATE CHECK-IN CONDITIONS
+  // =========================
 
-  // ✅ 1st & 2nd late attempt
-  else if (
-    attendance.lateCheckIn === true &&
-    attendance.lateCheckInCount < 3
-  ) {
-    updatedStatus = "Late Check In";
-  }
+  // =========================
+  // NORMAL CONDITIONS
+  // =========================
+// =========================
+// 3rd ATTEMPT PENALTY
+// =========================
+if (attendance.lateCheckInCount >= 3) {
+  updatedStatus = "Half Day/Late Check In/Penalty";
+}
 
-  // ✅ Between 4 to 8 hrs
-  else if (
-    parseFloat(attendance.workingHours) >= 4 &&
-    parseFloat(attendance.workingHours) < 8
-  ) {
+// =========================
+// LATE CHECK-IN CONDITIONS
+// =========================
+else if (
+  attendance.lateCheckIn === true &&
+  hours >= 4 &&
+  hours < 8
+) {
+  updatedStatus = "Half Day/Late Check In";
+}
+
+else if (
+  attendance.lateCheckIn === true &&
+  hours >= 8
+) {
+  updatedStatus = "Present/Late Check In";
+}
+  // Half Day
+  else if (hours >= 4 && hours < 8) {
     updatedStatus = "Half Day";
   }
-  
 
-  // ✅ Full Day
-  else {
+  // Present
+  else if (hours >= 8) {
     updatedStatus = "Present";
   }
+
+  // Fallback
+  else {
+    updatedStatus = "Absent";
+  }
 }
+
+//   // ✅ 3rd late attempt priority
+//   else if (attendance.lateCheckInCount >= 3) {
+//     updatedStatus = "Half Day/Late Check In";
+//   }
+
+//   // ✅ 1st & 2nd late attempt
+//   else if (
+//     attendance.lateCheckIn === true &&
+//     attendance.lateCheckInCount < 3
+//   ) {
+//     updatedStatus = "Late Check In";
+//   }
+
+//   // ✅ Between 4 to 8 hrs
+//   else if (
+//     parseFloat(attendance.workingHours) >= 4 &&
+//     parseFloat(attendance.workingHours) < 8
+//   ) {
+//     updatedStatus = "Half Day";
+//   }
+  
+
+//   // ✅ Full Day
+//   else {
+//     updatedStatus = "Present";
+//   }
+// }
       
         result.push({
           ...attendance,
           dayStatus: updatedStatus,
         });
+        console.log(
+  "DATE:",
+  attendance.date,
+  "LateCount:",
+  attendance.lateCheckInCount,
+  "Hours:",
+  hours,
+  "FINAL STATUS:",
+  updatedStatus
+);
       } else {
         const day = d.getDay(); // 0 = Sunday, 6 = Saturday
 
@@ -519,7 +612,21 @@ const statusBg = {
    "Half Day": { background: "#fff3cd", color: "#856404" },
     // add this
   "Late Check In": { background: "#f8d7da", color: "#721c24" },
+  "Present/Late Check In": {
+  background: "#f8d7da",
+  color: "#721c24",
+},
+
+"Half Day/Late Check In": {
+  background: "#ffe69c",
+  color: "#856404",
+},
+"Half Day/Late Check In/Penalty": {
+  background: "#71f49d",
+  color: "#9d0208",
+},
 };
+
   //jacy code
   //const sortedAndFilteredData =filteredAttendance()
   const sortedAndFilteredData = displayData
@@ -663,7 +770,15 @@ const statusBg = {
     <option value="Leave">Leaves</option>
     <option value="Half Day">Half Day</option>
     <option value="Late Check In">Late Check In</option>
-    <option value="Half Day/Late Check In">
+    <option value="Half Day/Late Check In/Penalty">
+  Half Day/Late Check In/Penalty
+</option>
+  
+<option value="Present/Late Check In">
+  Present/Late Check In
+</option>
+
+<option value="Half Day/Late Check In">
   Half Day/Late Check In
 </option>
   </select>
@@ -987,10 +1102,12 @@ const statusBg = {
     display: "inline-block",
     textAlign: "center",
     minWidth: "110px",
-    ...(statusBg[att.dayStatus] || {}),
+    // ...(statusBg[att.dayStatus] || {}),
+    ...(statusBg[att.dayStatus?.trim()] || {}),
   }}
 >
-  {att.dayStatus}
+  {/* {att.dayStatus} */}
+  {att.dayStatus?.trim()}
 </span>
                     </td>
 
