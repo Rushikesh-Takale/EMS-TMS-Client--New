@@ -299,19 +299,28 @@ function EmployeeProfileForAdmin({ employee: stateEmployee }) {
         if (value.length > 18) return;
       }
     }
-    // --- Live restrictions (prevent invalid typing) ---
-    if (name === "bankName") {
-      // ✅ Allow only letters and spaces (no numbers or symbols)
-      if (!/^[A-Za-z\s]*$/.test(value)) return;
-    }
-    if (key === "ifsc") {
-      const upperValue = value.toUpperCase();
-    
-      if (!/^[A-Z0-9]*$/.test(upperValue)) return;
-      if (upperValue.length > 11) return;
-    
-      value = upperValue;
-    }
+  // --- Bank field restrictions ---
+if (name.startsWith("bankDetails.")) {
+  const key = name.split(".")[1];
+
+  if (key === "bankName") {
+    if (!/^[A-Za-z\s]*$/.test(value)) return;
+  }
+
+  if (key === "accountNumber") {
+    if (!/^\d*$/.test(value)) return;
+    if (value.length > 18) return;
+  }
+
+  if (key === "ifsc") {
+    const upperValue = value.toUpperCase();
+
+    if (!/^[A-Z0-9]*$/.test(upperValue)) return;
+    if (upperValue.length > 11) return;
+
+    value = upperValue;
+  }
+}
 
     if (files && files[0]) {
       // File input
