@@ -10,7 +10,26 @@
 } */
 
 
+/* Late Full Day */
+.late-checkin-day {
+  background: #f72585 !important;
+  color: white !important;
+  border-radius: 8px;
+}
 
+/* Late Half Day */
+.late-halfday {
+  background: #ffb703 !important;
+  color: black !important;
+  border-radius: 8px;
+}
+
+/* Penalty */
+.late-halfday-penalty {
+  background: #d00000 !important;
+  color: white !important;
+  border-radius: 8px;
+}
 .present-day {
   background: #4caf50 !important; /* green */
   color: white !important;

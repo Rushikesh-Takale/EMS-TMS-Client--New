@@ -390,6 +390,63 @@ function MyAttendanceCalendar({ employeeId }) {
 //   };
 // ✅ UPDATED getDayStatus FUNCTION
 
+// const getDayStatus = (record) => {
+//   const today = new Date();
+//   today.setHours(0, 0, 0, 0);
+
+//   const recordDate = new Date(record.date);
+//   recordDate.setHours(0, 0, 0, 0);
+
+//   if (record.leaveRef) return record.dayStatus;
+
+//   let hours =
+//     record.workingHours ||
+//     (record.checkIn && record.checkOut
+//       ? getWorkedHoursDecimal(record.checkIn, record.checkOut)
+//       : 0);
+
+//   // ✅ NEW CONDITION FOR LATE CHECK-IN
+//   if (record.lateCheckInCount >= 3) {
+//     return "Late Check-In Half Day";
+//   }
+
+//   if (record.lateCheckInCount > 0) {
+//     return "Late Check-In";
+//   }
+
+//   if (record.regStatus === "Approved") {
+//     if (hours >= 8) return "Regularized (Full Day)";
+//     if (hours >= 4) return "Regularized (Half Day)";
+//     return "Regularized";
+//   }
+
+//   if (record.regStatus === "Pending") {
+//     return "Pending Regularization";
+//   }
+
+//   if (hours >= 8) return "Full Day";
+
+//   if (recordDate.getTime() === today.getTime()) {
+//     if (record.checkIn && !record.checkOut) return "Working";
+//   }
+
+//   if (
+//     recordDate.getTime() < today.getTime() &&
+//     record.checkIn &&
+//     !record.checkOut
+//   )
+//     return "Absent";
+
+//   if (!record.checkIn && !record.checkOut) return "Absent";
+
+//   if (hours >= 4) return "Half Day";
+
+//   return "Absent";
+// };
+
+
+
+
 const getDayStatus = (record) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -397,26 +454,43 @@ const getDayStatus = (record) => {
   const recordDate = new Date(record.date);
   recordDate.setHours(0, 0, 0, 0);
 
+  // Leave
   if (record.leaveRef) return record.dayStatus;
 
+  // Working Hours
   let hours =
     record.workingHours ||
     (record.checkIn && record.checkOut
       ? getWorkedHoursDecimal(record.checkIn, record.checkOut)
       : 0);
 
-  // ✅ NEW CONDITION FOR LATE CHECK-IN
-  if (record.lateCheckInCount >= 3) {
-    return "Late Check-In Half Day";
+  // Today Working
+  if (
+    recordDate.getTime() === today.getTime() &&
+    record.checkIn &&
+    !record.checkOut
+  ) {
+    return "Working";
   }
 
-  if (record.lateCheckInCount > 0) {
-    return "Late Check-In";
+  // Past date but forgot checkout
+  if (
+    recordDate.getTime() < today.getTime() &&
+    record.checkIn &&
+    !record.checkOut
+  ) {
+    return "Absent";
   }
 
+  // No attendance
+  if (!record.checkIn && !record.checkOut) {
+    return "Absent";
+  }
+
+  // Regularization
   if (record.regStatus === "Approved") {
-    if (hours >= 8) return "Regularized (Full Day)";
-    if (hours >= 4) return "Regularized (Half Day)";
+    if (hours >= 8) return "Regularized Full Day";
+    if (hours >= 4) return "Regularized Half Day";
     return "Regularized";
   }
 
@@ -424,23 +498,40 @@ const getDayStatus = (record) => {
     return "Pending Regularization";
   }
 
-  if (hours >= 8) return "Full Day";
+  // =========================
+  // LATE CHECK-IN CONDITIONS
+  // =========================
 
-  if (recordDate.getTime() === today.getTime()) {
-    if (record.checkIn && !record.checkOut) return "Working";
+  // 3rd late check-in => Penalty Half Day
+  if (record.lateCheckInCount >= 3) {
+    return "Late Check-In Half Day Penalty";
   }
 
-  if (
-    recordDate.getTime() < today.getTime() &&
-    record.checkIn &&
-    !record.checkOut
-  )
-    return "Absent";
+  // Late check-in + Full Day
+  if (record.lateCheckInCount > 0 && hours >= 8) {
+    return "Late Check-In Full Day";
+  }
 
-  if (!record.checkIn && !record.checkOut) return "Absent";
+  // Late check-in + Half Day
+  if (record.lateCheckInCount > 0 && hours >= 4) {
+    return "Late Check-In Half Day";
+  }
 
-  if (hours >= 4) return "Half Day";
+  // =========================
+  // NORMAL CONDITIONS
+  // =========================
 
+  // Full Day
+  if (hours >= 8) {
+    return "Full Day";
+  }
+
+  // Half Day
+  if (hours >= 4) {
+    return "Half Day";
+  }
+
+  // Less than 4 hr
   return "Absent";
 };
   const attendanceMap = {};
@@ -464,82 +555,6 @@ const getDayStatus = (record) => {
     return false;
   };
 
-  // const getTooltipContent = (date) => {
-  //   const key1 = date.toDateString();
-  //   const key2 = date.toISOString().slice(0, 10);
-  //   const rec = attendanceMap[key1] ?? attendanceMap[key2];
-
-  //   if (isHoliday(date)) {
-  //     return `Holiday: ${getHoliday(date)?.name}`;
-  //   }
-
-  //   if (isWeeklyOff(date)) {
-  //     return "Weekly Off";
-  //   }
-  //   if (!rec) return "No record";
-
-  //   if (rec.leaveRef) {
-  //     return `Leave: ${rec.leaveRef.leaveType} (${rec.leaveRef.status})`;
-  //   }
-
-  //   return rec.dayStatus || "No record";
-  // };
-
-//   const tileClassName = ({ date, view }) => {
-//     if (view !== "month") return "";
-
-//     const today = new Date();
-//     const isToday =
-//       date.getDate() === today.getDate() &&
-//       date.getMonth() === today.getMonth() &&
-//       date.getFullYear() === today.getFullYear();
-
-//     // support two common key formats in case your map uses ISO keys elsewhere
-//     const key1 = date.toDateString(); // "Thu Nov 13 2025"
-//     const key2 = date.toISOString().slice(0, 10); // "2025-11-13"
-//     const rec = attendanceMap[key1] ?? attendanceMap[key2];
-
-//     if (isToday) return "today-day";
-
-//     // weekly off / holiday highest
-//     if (isWeeklyOff(date)) return "weekly-off-day";
-//     if (isHoliday(date)) return "holiday-day";
-
-//     // If record indicates PRESENT — give it priority over leave
-//     if (rec) {
-//       const ds = rec.dayStatus || "";
-//       const reg = rec.regStatus || "";
-
-//       if (ds === "Regularized (Half Day)" || ds.includes("Half") && reg === "Approved") {
-//         return "halfday-day";
-//       }
-// if (reg === "Pending") return "pending-regularization-day";
-//       if (
-//         ds === "Working" ||
-//         ds === "Full Day" ||
-//         ds.includes("Regularized") ||
-//         reg === "Approved"
-//       ) {
-//         return "present-day";
-//       }
-//       if (ds === "Half Day" || ds.includes("Half")) return "halfday-day";
-      
-
-//       // leaves (after present checks)
-//       if (rec.leaveRef) {
-//         const st = (rec.leaveRef.status || "").toLowerCase();
-//         if (st === "approved") return "leave-day";
-//         if (st === "rejected") return "rejected-leave-day";
-//         if (st === "pending") return "pending-leave-day";
-//       }
-
-//       // forgot checkin/out
-//       if (!rec.checkIn || !rec.checkOut) return "forgot-checkinout";
-//     }
-
-//     return "";
-//   };
-// ✅ UPDATED tileClassName FUNCTION
 // ✅ UPDATED TOOLTIP FUNCTION
 
 const getTooltipContent = (date) => {
@@ -559,13 +574,24 @@ const getTooltipContent = (date) => {
   if (!rec) return "No record";
 
   // ✅ SHOW LATE ATTEMPT
-  if (rec.lateCheckInCount >= 3) {
-    return `Late Check-In (3rd Attempt - Half Day)`;
-  }
+  // if (rec.lateCheckInCount >= 3) {
+  //   return `Late Check-In (3rd Attempt - Half Day)`;
+  // }
 
-  if (rec.lateCheckInCount > 0) {
-    return `Late Check-In (${rec.lateCheckInCount} Attempt)`;
-  }
+  // if (rec.lateCheckInCount > 0) {
+  //   return `Late Check-In (${rec.lateCheckInCount} Attempt)`;
+  // }
+  if (rec.dayStatus === "Late Check-In Half Day Penalty") {
+  return `Late Check-In + Half Day + Penalty`;
+}
+
+if (rec.dayStatus === "Late Check-In Full Day") {
+  return `Late Check-In + Full Day`;
+}
+
+if (rec.dayStatus === "Late Check-In Half Day") {
+  return `Late Check-In + Half Day`;
+}
 
   if (rec.leaveRef) {
     return `Leave: ${rec.leaveRef.leaveType} (${rec.leaveRef.status})`;
@@ -599,15 +625,28 @@ const tileClassName = ({ date, view }) => {
     const reg = rec.regStatus || "";
 
     // ✅ LATE CHECK-IN HALF DAY
-    if (ds === "Late Check-In Half Day") {
-      return "late-halfday";
-    }
+    // if (ds === "Late Check-In Half Day") {
+    //   return "late-halfday";
+    // }
 
-    // ✅ NORMAL LATE CHECK-IN
-    if (ds === "Late Check-In") {
-      return "late-checkin-day";
-    }
+    // // ✅ NORMAL LATE CHECK-IN
+    // if (ds === "Late Check-In") {
+    //   return "late-checkin-day";
+    // }
+// 3rd late penalty
+if (ds === "Late Check-In Half Day Penalty") {
+  return "late-halfday-penalty";
+}
 
+// Late + Full Day
+if (ds === "Late Check-In Full Day") {
+  return "late-checkin-day";
+}
+
+// Late + Half Day
+if (ds === "Late Check-In Half Day") {
+  return "late-halfday";
+}
     if (
       ds === "Regularized (Half Day)" ||
       (ds.includes("Half") && reg === "Approved")

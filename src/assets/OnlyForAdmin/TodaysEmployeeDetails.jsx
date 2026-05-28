@@ -4,6 +4,7 @@ import * as XLSX from "xlsx";
 import { useNavigate, useParams } from "react-router-dom";
 
 function TodaysEmployeeDetails() {
+
   const [attendanceData, setAttendanceData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -1146,6 +1147,18 @@ setDownloadedFile("");
         <table className="table table-hover mb-0">
           <thead>
             <tr>
+              <th
+  style={{
+    fontWeight: "500",
+    fontSize: "14px",
+    color: "#6c757d",
+    borderBottom: "2px solid #dee2e6",
+    padding: "12px",
+    whiteSpace: "nowrap",
+  }}
+>
+  Employee ID
+</th>
              <th
   style={{
     fontWeight: "500",
@@ -1158,6 +1171,7 @@ setDownloadedFile("");
 >
   Name
 </th>
+
 
 <th
   style={{
@@ -1235,6 +1249,16 @@ currentLateEmployees.map((emp) => (
   style={{ cursor: "pointer" }}
   onClick={() => openLateModal(emp)}
 >
+  <td
+  style={{
+    padding: "12px",
+    fontSize: "14px",
+    borderBottom: "1px solid #dee2e6",
+    whiteSpace: "nowrap",
+  }}
+>
+  {emp.employeeId || "-"}
+</td>
                <td
   style={{
     padding: "12px",
