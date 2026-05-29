@@ -11,6 +11,7 @@ function TLTeamMemberAttendance() {
   const { role, username, id } = useParams(); // 👈 id = teamLeadId
   const navigate = useNavigate();
   const modalRef = useRef(null);
+  const leaveModalRef = useRef(null);
 
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,45 +49,51 @@ const [selectedLeaveEmployee, setSelectedLeaveEmployee] =
   });
 
   useEffect(() => {
-    if (!showLateModal) return;
+    if (!showLateModal && !showLeaveModal) return;
   
-    const handleTabKey = (e) => {
-      if (e.key !== "Tab") return;
+    const modal = showLateModal ? modalRef.current : leaveModalRef.current;
+    if (!modal) return;
   
-      const focusableElements = modalRef.current.querySelectorAll(
-        "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
-      );
+    const focusableElements = modal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
   
-      const first = focusableElements[0];
-      const last = focusableElements[focusableElements.length - 1];
+    const firstEl = focusableElements[0];
+    const lastEl = focusableElements[focusableElements.length - 1];
   
-      if (e.shiftKey) {
-        if (document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        if (showLateModal) closeLateModal();
+        if (showLeaveModal) closeLeaveModal();
+      }
+  
+      if (e.key === "Tab") {
+        if (e.shiftKey) {
+          if (document.activeElement === firstEl) {
+            e.preventDefault();
+            lastEl.focus();
+          }
+        } else {
+          if (document.activeElement === lastEl) {
+            e.preventDefault();
+            firstEl.focus();
+          }
         }
       }
     };
   
-    document.addEventListener("keydown", handleTabKey);
-  
-    setTimeout(() => {
-      modalRef.current?.focus();
-    }, 100);
+    document.addEventListener("keydown", handleKeyDown);
+    modal.focus();
   
     return () => {
-      document.removeEventListener("keydown", handleTabKey);
+      document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [showLateModal]);
+  }, [showLateModal, showLeaveModal]);
 
   useEffect(() => {
 
-    if (showLateModal) {
+    if (showLateModal || showLeaveModal) {
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow =
         "hidden";
@@ -102,7 +109,7 @@ const [selectedLeaveEmployee, setSelectedLeaveEmployee] =
         "";
     };
   
-  }, [showLateModal]);
+  }, [showLateModal, showLeaveModal]);
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -1560,6 +1567,8 @@ onClick={async () => {
 {showLeaveModal && selectedLeaveEmployee && (
   <div
     className="modal fade show"
+    ref={leaveModalRef}
+    tabIndex={-1}
     style={{
       display: "flex",
       alignItems: "center",
