@@ -15,6 +15,11 @@ function TodaysEmployeeDetails() {
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [presentCurrentPage, setPresentCurrentPage] = useState(1);
+const [presentItemsPerPage, setPresentItemsPerPage] = useState(5);
+
+const [absentCurrentPage, setAbsentCurrentPage] = useState(1);
+const [absentItemsPerPage, setAbsentItemsPerPage] = useState(5);
 
   // NEW: Status filter state
   const [statusFilter, setStatusFilter] = useState("All");
@@ -47,10 +52,17 @@ const [showLateModal, setShowLateModal] = useState(false);
 const [showLeaveModal, setShowLeaveModal] = useState(false);
 const [selectedLeaveEmployee, setSelectedLeaveEmployee] =useState(null);
 const [selectedLateEmployee, setSelectedLateEmployee] = useState(null);
-const [downloadedFile, setDownloadedFile] =
-  useState("");
+const [downloadedFile, setDownloadedFile] =useState("");
   const [leaveDate, setLeaveDate] = useState("");
+  const [showPresentModal, setShowPresentModal] = useState(false);
+const [selectedPresentEmployee, setSelectedPresentEmployee] = useState(null);
 
+const [showAbsentModal, setShowAbsentModal] = useState(false);
+const [selectedAbsentEmployee, setSelectedAbsentEmployee] = useState(null);
+const [presentSearch, setPresentSearch] = useState("");
+const [appliedPresentSearch, setAppliedPresentSearch] = useState("");
+const [absentSearch, setAbsentSearch] = useState("");
+const [appliedAbsentSearch, setAppliedAbsentSearch] = useState("");
       useEffect(() => {
             const isModalOpen = showModal || showLateModal;
           
@@ -113,7 +125,7 @@ const [downloadedFile, setDownloadedFile] =
       }, [showModal, showLateModal]);
 
   useEffect(() => {
-  const isModalOpen = showModal || showLateModal||showLeaveModal;
+  const isModalOpen = showModal || showLateModal||showLeaveModal||showPresentModal||showAbsentModal;
 
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
@@ -127,7 +139,7 @@ const [downloadedFile, setDownloadedFile] =
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
-}, [showModal, showLateModal,showLeaveModal,]);
+}, [showModal, showLateModal,showLeaveModal,showAbsentModal,showPresentModal]);
   const openEmployeePopup = async (emp) => {
     try {
       setSelectedEmployee(emp);
@@ -345,129 +357,7 @@ setLeaveEmployees(leaveEmployeesData);
     return diffHrs.toFixed(2);
   };
 
-  //shivani
-  // const focusStyles = {
-  //   onFocus: (e) => {
-  //     e.target.style.backgroundColor = "#3A5FBE";
-  //     e.target.style.color = "white";
-  //     e.target.style.border = "1px solid #3A5FBE";
-  //   },
-  //   onBlur: (e) => {
-  //     e.target.style.backgroundColor = "transparent";
-  //     e.target.style.color = "#3A5FBE";
-  //     e.target.style.border = "1px solid #3A5FBE";
-  //   }
-  // };
-
-//   const getStatus = (
-//   checkIn,
-//   checkOut,
-//   workingHours,
-//   lateCheckInCount = 0
-// ) => {
-
-//   // ✅ 3 late check-ins = Half Day
-//   if (lateCheckInCount >= 3) {
-//     return "Half Day";
-//   }
-
-//   if (!checkIn && !checkOut) return "Absent";
-
-//   if (checkIn && !checkOut) return "Working";
-
-//   if (workingHours >= 8) return "Present";
-
-//   if (workingHours >= 4) return "Half Day";
-
-//   return "Absent";
-// };
-//snehal working
-// const getStatus = (
-//   checkIn,
-//   checkOut,
-//   workingHours,
-//   lateCheckInCount = 0
-// ) => {
-
-//   // ❌ No check-in
-//   if (!checkIn) {
-//     return "Absent";
-//   }
-
-//   const checkInTime = new Date(checkIn);
-
-//   // ✅ Office timing 9:10 AM
-//   const officeTime = new Date(checkInTime);
-//   officeTime.setHours(9, 10, 0, 0);
-
-//   // ✅ Late Check-In FIRST priority
-//   if (checkInTime > officeTime) {
-//     return "Late Check-In";
-//   }
-
-//   // ✅ Working
-//   if (checkIn && !checkOut) {
-//     return "Working";
-//   }
-
-//   // ✅ Half Day
-//   if (workingHours > 0 && workingHours < 8) {
-//     return "Half Day";
-//   }
-
-//   // ✅ Present
-//   return "Present";
-// };
-//working show late check
-// const getStatus = (
-//   checkIn,
-//   checkOut,
-//   workingHours,
-//   lateCheckInCount = 0
-// ) => {
-//   if (!checkIn) return "Absent";
-
-//   // ✅ Late check-in check
-//   const checkInDate = new Date(checkIn);
-//   const hours = checkInDate.getHours();
-//   const minutes = checkInDate.getMinutes();
-
-//   const isLate =
-//     hours > 9 || (hours === 9 && minutes > 10);
-
-//   // ✅ 3rd late attempt = Half Day
-//  // ✅ 1st & 2nd & 3rd attempt
-//   if (isLate) {
-
-//     // 3rd attempt
-//     if (lateCheckInCount >= 3) {
-//       return "Half Day / Late Check-In";
-//     }
-
-//     return "Late Check-In";
-//   }
-//   // ✅ 1st & 2nd late attempt
-//   if (isLate) {
-//     return "Late Check-In";
-//   }
-
-//   // ✅ Working
-//   if (checkIn && !checkOut) {
-//     return "Working";
-//   }
-
-//   // ✅ Half day based on working hours
-//   if (workingHours > 0 && workingHours < 4) {
-//     return "Half Day";
-//   }
-
-//   // ✅ Present
-//   if (workingHours >= 4) {
-//     return "Present";
-//   }
-
-//   return "Absent";
-// };
+  
 const getStatus = (
   checkIn,
   checkOut,
@@ -530,20 +420,48 @@ const getStatus = (
 
   return "Absent";
 };
-  // const totalPages = Math.ceil(employees.length / itemsPerPage);
-  // const indexOfLastItem = currentPage * itemsPerPage;
-  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  // const currentEmployees = employees.slice(indexOfFirstItem, indexOfLastItem);
 
-  // const handlePageChange = (newPage) => {
-  //   if (newPage >= 1 && newPage <= totalPages) {
-  //     setCurrentPage(newPage);
-  //   }
-  // };
-
-  // dipali code
-  // NEW: Filter employees by status
   const employees = attendanceData?.employees || [];
+  const presentEmployees = employees.filter((emp) => {
+  const status = getStatus(
+    emp.checkInTime,
+    emp.checkOutTime,
+    calculateWorkingHours(
+      emp.checkInTime,
+      emp.checkOutTime
+    ),
+    emp.lateCheckInCount || 0
+  );
+
+  return (
+    status === "Present" ||
+    status === "Working" ||
+    status === "Present/Late Check-In"
+  );
+});
+const filteredPresentEmployees = presentEmployees.filter((emp) =>
+  emp.name
+    ?.toLowerCase()
+    .includes(appliedPresentSearch.toLowerCase())
+);
+const absentEmployees = employees.filter((emp) => {
+  const status = getStatus(
+    emp.checkInTime,
+    emp.checkOutTime,
+    calculateWorkingHours(
+      emp.checkInTime,
+      emp.checkOutTime
+    ),
+    emp.lateCheckInCount || 0
+  );
+
+  return status === "Absent";
+});
+const filteredAbsentEmployees = absentEmployees.filter((emp) =>
+  emp.name
+    ?.toLowerCase()
+    .includes(appliedAbsentSearch.toLowerCase())
+);
 const lateCheckInEmployees = useMemo(() => {
   if (lateCheckInEmployeesData.length > 0) {
     return lateCheckInEmployeesData;
@@ -599,6 +517,37 @@ const currentLateEmployees =
   lateCheckInEmployees.slice(
     lateIndexOfFirstItem,
     lateIndexOfLastItem
+  );
+ const presentTotalPages = Math.ceil(
+  filteredPresentEmployees.length / presentItemsPerPage
+);
+
+const presentIndexOfLastItem =
+  presentCurrentPage * presentItemsPerPage;
+
+const presentIndexOfFirstItem =
+  presentIndexOfLastItem - presentItemsPerPage;
+
+const currentPresentEmployees =
+  filteredPresentEmployees.slice(
+    presentIndexOfFirstItem,
+    presentIndexOfLastItem
+  );
+
+const absentTotalPages = Math.ceil(
+  filteredAbsentEmployees.length / absentItemsPerPage
+);
+
+const absentIndexOfLastItem =
+  absentCurrentPage * absentItemsPerPage;
+
+const absentIndexOfFirstItem =
+  absentIndexOfLastItem - absentItemsPerPage;
+
+const currentAbsentEmployees =
+  filteredAbsentEmployees.slice(
+    absentIndexOfFirstItem,
+    absentIndexOfLastItem
   );
 const fetchLateCheckInHistory = async () => {
 
@@ -707,6 +656,25 @@ const openLeaveModal = (emp) => {
 const closeLeaveModal = () => {
   setShowLeaveModal(false);
   setSelectedLeaveEmployee(null);
+};
+const openPresentModal = (emp) => {
+  setSelectedPresentEmployee(emp);
+  setShowPresentModal(true);
+};
+
+const closePresentModal = () => {
+  setShowPresentModal(false);
+  setSelectedPresentEmployee(null);
+};
+
+const openAbsentModal = (emp) => {
+  setSelectedAbsentEmployee(emp);
+  setShowAbsentModal(true);
+};
+
+const closeAbsentModal = () => {
+  setShowAbsentModal(false);
+  setSelectedAbsentEmployee(null);
 };
  if (loading)
     return (
@@ -836,7 +804,11 @@ const currentLeaveEmployees =
       {/* ✅ Summary Cards */}
       <div className="row mb-4">
         <div className="col-md-3 mb-4">
-          <div className="card shadow-sm h-100 border-0">
+          <div
+            className="card shadow-sm h-100 border-0"
+            style={{ cursor: "pointer" }}
+            onClick={() => setShowCardList("present")}
+          >
             <div
               className="card-body d-flex align-items-center"
               style={{ gap: "20px" }}
@@ -868,7 +840,11 @@ const currentLeaveEmployees =
         </div>
 
         <div className="col-md-3 mb-4">
-          <div className="card shadow-sm h-100 border-0">
+          <div
+                className="card shadow-sm h-100 border-0"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowCardList("absent")}
+              >
             <div
               className="card-body d-flex  align-items-center"
               style={{ gap: "20px" }}
@@ -975,6 +951,7 @@ const currentLeaveEmployees =
   </div>
 </div>
       </div>
+      
       {showCardList === "lateCheckIn" ? (
   <>
   <div className="d-flex justify-content-between align-items-center mb-3">
@@ -1528,7 +1505,851 @@ currentLateEmployees.map((emp) => (
 
 
   </>
-) : showCardList === "onLeave" ? (
+) : showCardList === "present" ? (
+<>
+  <div className="d-flex justify-content-between align-items-center mb-3">
+    <h2
+      style={{
+        color: "#3A5FBE",
+        fontSize: "25px",
+        marginBottom: 0,
+      }}
+    >
+      Present Employees
+    </h2>
+
+    <button
+      className="btn btn-sm custom-outline-btn"
+      onClick={() => setShowCardList(null)}
+       style={{ minWidth: 90 }}
+    >
+      Close
+    </button>
+  </div>
+  <div className="card mb-4 shadow-sm border-0">
+  <div className="card-body">
+    <div className="row align-items-center g-3">
+   <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
+
+    <label
+      className="fw-bold mb-0"
+      style={{
+        fontSize: "16px",
+        color: "#3A5FBE",
+      }}
+    >
+      Name
+    </label>
+
+    <input
+      type="text"
+      className="form-control"
+      value={presentSearch}
+      placeholder="Search by name"
+      onChange={(e) => {
+        const value = e.target.value;
+        if (/^[A-Za-z\s]*$/.test(value)) {
+          setPresentSearch(value);
+        }
+      }}
+    />
+</div>
+<div className="col-12 col-md-auto ms-md-auto d-flex gap-2 mb-1 justify-content-end">
+    <button
+     className="btn btn-sm custom-outline-btn"
+    style={{ minWidth: 90 }}
+      onClick={() => {
+        setAppliedPresentSearch(presentSearch);
+        setPresentCurrentPage(1);
+      }}
+    >
+      Filter
+    </button>
+
+    <button
+     className="btn btn-sm custom-outline-btn"
+    style={{ minWidth: 90 }}
+      onClick={() => {
+        setPresentSearch("");
+        setAppliedPresentSearch("");
+        setPresentCurrentPage(1);
+      }}
+    >
+      Reset
+    </button>
+
+  </div>
+</div>
+</div>
+</div>
+
+    <div className="card shadow-sm border-0 mb-0">
+      <div className="card-body p-0 table-responsive bg-white">
+        <table className="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th   style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}
+            >
+              Employee ID
+              </th>
+
+            <th   style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}
+            >
+              Name
+              </th>
+
+            <th   style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}
+            >
+              Check-In
+              </th>
+
+            <th   style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}
+            >
+              Check-Out
+              </th>
+
+            <th   style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}
+            > 
+            Total Hours
+            </th>
+
+            <th   style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}
+            >
+              Status
+              </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {filteredPresentEmployees.length === 0 ? (
+            <tr>
+              <td colSpan="6" className="text-center">
+                No data available
+              </td>
+            </tr>
+          ) : (
+            currentPresentEmployees.map((emp) => (
+              
+            <tr
+                  key={emp._id}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => openPresentModal(emp)}
+                >
+                <td style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}
+                > 
+                {emp.employeeId}
+                </td>
+
+                <td style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}
+                >
+                  {emp.name}
+                  </td>
+
+                <td style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}
+                >
+                  {emp.checkInTime
+                    ? new Date(
+                        emp.checkInTime
+                      ).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "-"}
+                </td>
+
+                <td style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}>
+                  {emp.checkOutTime
+                    ? new Date(
+                        emp.checkOutTime
+                      ).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "-"}
+                </td>
+
+                <td style={{
+                  padding: "10px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}>
+                  {calculateWorkingHours(
+                    emp.checkInTime,
+                    emp.checkOutTime
+                  ) || "-"}
+                </td>
+<td>
+  <span
+    style={{
+      background:
+        getStatus(
+          emp.checkInTime,
+          emp.checkOutTime,
+          calculateWorkingHours(
+            emp.checkInTime,
+            emp.checkOutTime
+          ),
+          emp.lateCheckInCount || 0
+        ) === "Working"
+          ? "#cff4fc"
+          : "#D7F5E4",
+                    display: "inline-block",
+                    padding: "6px 12px",
+                    fontWeight: 400,
+                    fontSize: "14px",
+                    width: 112,
+                    textAlign: "center",
+    }}
+  >
+    {getStatus(
+      emp.checkInTime,
+      emp.checkOutTime,
+      calculateWorkingHours(
+        emp.checkInTime,
+        emp.checkOutTime
+      ),
+      emp.lateCheckInCount || 0
+    )}
+  </span>
+</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
+  <div className="d-flex align-items-center gap-3">
+
+    <div className="d-flex align-items-center">
+      <span style={{ fontSize: "14px", marginRight: "8px" }}>
+        Rows per page:
+      </span>
+
+      <select
+        className="form-select form-select-sm"
+        style={{ width: "auto" }}
+        value={presentItemsPerPage}
+        onChange={(e) => {
+          setPresentItemsPerPage(Number(e.target.value));
+          setPresentCurrentPage(1);
+        }}
+      >
+        <option value={5}>5</option>
+        <option value={10}>10</option>
+        <option value={25}>25</option>
+      </select>
+    </div>
+
+    <span>
+      {filteredPresentEmployees.length > 0
+        ? presentIndexOfFirstItem + 1
+        : 0}
+      -
+      {Math.min(
+        presentIndexOfLastItem,
+        filteredPresentEmployees.length
+      )} of {filteredPresentEmployees.length}
+    </span>
+
+    <button
+      className="btn btn-sm"
+      disabled={presentCurrentPage === 1}
+      onClick={() =>
+        setPresentCurrentPage((prev) => prev - 1)
+      }
+    >
+      ‹
+    </button>
+
+    <button
+      className="btn btn-sm"
+      disabled={
+        presentCurrentPage === presentTotalPages
+      }
+      onClick={() =>
+        setPresentCurrentPage((prev) => prev + 1)
+      }
+    >
+      ›
+    </button>
+
+  </div>
+</nav>
+{showPresentModal && selectedPresentEmployee && (
+  <div className="modal fade show" style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0,0,0,0.5)",
+    zIndex: 1050,
+  }}>
+    <div className="modal-dialog modal-dialog-centered" style={{minWidth:550}}>
+      <div className="modal-content">
+
+        <div
+          className="modal-header text-white"
+          style={{ backgroundColor: "#3A5FBE" }}
+        >
+          <h5 className="modal-title">
+            Present Employee Details
+          </h5>
+
+          <button
+            type="button"
+            className="btn-close btn-close-white"
+            onClick={closePresentModal}
+          />
+        </div>
+
+       <div className="modal-body">
+
+  <div className="row mb-3">
+    <div className="col-4 fw-bold">Employee ID</div>
+    <div className="col-8">
+      {selectedPresentEmployee.employeeId || "-"}
+    </div>
+  </div>
+
+  <div className="row mb-3">
+    <div className="col-4 fw-bold">Name</div>
+    <div className="col-8">
+      {selectedPresentEmployee.name}
+    </div>
+  </div>
+
+  <div className="row mb-3">
+    <div className="col-4 fw-bold">Department</div>
+    <div className="col-8">
+      {selectedPresentEmployee.department}
+    </div>
+  </div>
+
+  <div className="row mb-3">
+    <div className="col-4 fw-bold">Designation</div>
+    <div className="col-8">
+      {selectedPresentEmployee.designation}
+    </div>
+  </div>
+
+  <div className="row mb-3">
+    <div className="col-4 fw-bold">Check In</div>
+    <div className="col-8">
+      {selectedPresentEmployee.checkInTime
+        ? new Date(
+            selectedPresentEmployee.checkInTime
+          ).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        : "-"}
+    </div>
+  </div>
+
+  <div className="row mb-3">
+    <div className="col-4 fw-bold">Check Out</div>
+    <div className="col-8">
+      {selectedPresentEmployee.checkOutTime
+        ? new Date(
+            selectedPresentEmployee.checkOutTime
+          ).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        : "-"}
+    </div>
+  </div>
+
+  <div className="row mb-2">
+    <div className="col-4 fw-bold">Status</div>
+    <div className="col-8">
+      <span
+        style={{
+          background:
+            getStatus(
+              selectedPresentEmployee.checkInTime,
+              selectedPresentEmployee.checkOutTime,
+              calculateWorkingHours(
+                selectedPresentEmployee.checkInTime,
+                selectedPresentEmployee.checkOutTime
+              ),
+              selectedPresentEmployee.lateCheckInCount || 0
+            ) === "Working"
+              ? "#cff4fc"
+              : "#D7F5E4",
+          display: "inline-block",
+          padding: "6px 12px",
+          borderRadius: "4px",
+        }}
+      >
+        {getStatus(
+          selectedPresentEmployee.checkInTime,
+          selectedPresentEmployee.checkOutTime,
+          calculateWorkingHours(
+            selectedPresentEmployee.checkInTime,
+            selectedPresentEmployee.checkOutTime
+          ),
+          selectedPresentEmployee.lateCheckInCount || 0
+        )}
+      </span>
+    </div>
+  </div>
+
+</div>
+
+        <div className="modal-footer">
+          <button
+            className="btn btn-sm custom-outline-btn"
+            onClick={closePresentModal}
+            style={{minWidth:90}}
+          >
+            Close
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+)}
+</>
+): showCardList === "absent" ? (
+<>
+  <div className="d-flex justify-content-between align-items-center mb-3">
+    <h2
+      style={{
+        color: "#3A5FBE",
+        fontSize: "25px",
+        marginBottom: 0,
+      }}
+    >
+      Absent Employees
+    </h2>
+
+    <button
+      className="btn btn-sm custom-outline-btn"
+      onClick={() => setShowCardList(null)}
+      style={{ minWidth: 90 }}
+    >
+      Close
+    </button>
+  </div>
+  <div className="card mb-4 shadow-sm border-0">
+  <div className="card-body">
+    <div className="row align-items-center g-3">
+   <div className="col-12 col-md-auto d-flex align-items-center gap-2 mb-1 ms-2">
+
+    <label
+      className="fw-bold mb-0"
+      style={{
+        fontSize: "16px",
+        color: "#3A5FBE",
+      }}
+    >
+      Name
+    </label>
+
+    <input
+      type="text"
+      className="form-control"
+      value={absentSearch}
+      placeholder="Search by name"
+        onChange={(e) => {
+        const value = e.target.value;
+        if (/^[A-Za-z\s]*$/.test(value)) {
+          setAbsentSearch(value);
+        }
+      }}
+    />
+</div>
+<div className="col-12 col-md-auto ms-md-auto d-flex gap-2 mb-1 justify-content-end">
+    <button
+     className="btn btn-sm custom-outline-btn"
+    style={{ minWidth: 90 }}
+         onClick={() => {
+        setAppliedAbsentSearch(absentSearch);
+        setAbsentCurrentPage(1);
+      }}
+    >
+      Filter
+    </button>
+
+    <button
+     className="btn btn-sm custom-outline-btn"
+    style={{ minWidth: 90 }}
+      onClick={() => {
+        setAbsentSearch("");
+        setAppliedAbsentSearch("");
+        setAbsentCurrentPage(1);
+      }}
+    >
+      Reset
+    </button>
+
+  </div>
+</div>
+</div>
+</div>
+  <div className="card shadow-sm border-0">
+    <div className="card-body p-0 table-responsive bg-white">
+      <table className="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th  style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}>
+              Employee ID
+              </th>
+
+            <th  style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}
+            >
+              Name
+              </th>
+               <th  style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}>
+             Department
+              </th>
+               <th  style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}>
+              Designation
+              </th>
+
+            <th  style={{
+              fontWeight: "500",
+              fontSize: "14px",
+              color: "#6c757d",
+              borderBottom: "2px solid #dee2e6",
+              padding: "12px",
+              whiteSpace: "nowrap",
+            }}>
+              Status
+              </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {filteredAbsentEmployees.length === 0 ? (
+            <tr>
+              <td colSpan="3" className="text-center">
+                No data available
+              </td>
+            </tr>
+          ) : (
+            currentAbsentEmployees.map((emp) => (
+            <tr
+              key={emp._id}
+              style={{ cursor: "pointer" }}
+              onClick={() => openAbsentModal(emp)}
+            >
+                <td style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}
+                >
+                  {emp.employeeId}
+                  </td>
+
+                <td style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}
+                >
+                  {emp.name}
+                  
+                  </td>
+                    <td style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}
+                >
+                {emp.department}
+                  
+                  </td>
+                    <td style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}
+                >
+                  {emp.designation}
+                  
+                  </td>
+                <td>
+                  <span
+                    style={{
+                      background: "#F8D7DA",
+                     display: "inline-block",
+                    padding: "6px 12px",
+                    fontWeight: 400,
+                    fontSize: "14px",
+                    width: 112,
+                    textAlign: "center",
+                    }}
+                  >
+                    Absent
+                  </span>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+    <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
+  <div className="d-flex align-items-center gap-3">
+
+    <div className="d-flex align-items-center">
+      <span style={{ fontSize: "14px", marginRight: "8px" }}>
+        Rows per page:
+      </span>
+
+      <select
+        className="form-select form-select-sm"
+        style={{ width: "auto" }}
+        value={absentItemsPerPage}
+        onChange={(e) => {
+          setAbsentItemsPerPage(Number(e.target.value));
+          setAbsentCurrentPage(1);
+        }}
+      >
+        <option value={5}>5</option>
+        <option value={10}>10</option>
+        <option value={25}>25</option>
+      </select>
+    </div>
+
+    <span>
+      {filteredAbsentEmployees.length > 0
+        ? absentIndexOfFirstItem + 1
+        : 0}
+      -
+      {Math.min(
+        absentIndexOfLastItem,
+        filteredAbsentEmployees.length
+      )} of {filteredAbsentEmployees.length}
+    </span>
+
+    <button
+      className="btn btn-sm"
+      disabled={absentCurrentPage === 1}
+      onClick={() =>
+        setAbsentCurrentPage((prev) => prev - 1)
+      }
+    >
+      ‹
+    </button>
+
+    <button
+      className="btn btn-sm"
+      disabled={
+        absentCurrentPage === absentTotalPages
+      }
+      onClick={() =>
+        setAbsentCurrentPage((prev) => prev + 1)
+      }
+    >
+      ›
+    </button>
+
+  </div>
+</nav>
+{showAbsentModal && selectedAbsentEmployee && (
+  <div
+    className="modal fade show"
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.5)",
+      zIndex: 1050,
+    }}
+  >
+    <div
+      className="modal-dialog modal-dialog-centered"
+      style={{ maxWidth: "500px", width: "100%" }}
+    >
+      <div className="modal-content">
+
+        <div
+          className="modal-header text-white"
+          style={{ backgroundColor: "#3A5FBE" }}
+        >
+          <h5 className="modal-title">
+            Absent Employee Details
+          </h5>
+
+          <button
+            type="button"
+            className="btn-close btn-close-white"
+            onClick={closeAbsentModal}
+          />
+        </div>
+
+       <div className="modal-body">
+
+  <div className="row mb-3 align-items-center">
+    <div className="col-4 fw-bold">Employee ID</div>
+    <div className="col-8">
+      {selectedAbsentEmployee.employeeId || "-"}
+    </div>
+  </div>
+
+  <div className="row mb-3 align-items-center">
+    <div className="col-4 fw-bold">Name</div>
+    <div className="col-8">
+      {selectedAbsentEmployee.name}
+    </div>
+  </div>
+
+  <div className="row mb-3 align-items-center">
+    <div className="col-4 fw-bold">Department</div>
+    <div className="col-8">
+      {selectedAbsentEmployee.department}
+    </div>
+  </div>
+
+  <div className="row mb-3 align-items-center">
+    <div className="col-4 fw-bold">Designation</div>
+    <div className="col-8">
+      {selectedAbsentEmployee.designation}
+    </div>
+  </div>
+
+  <div className="row mb-2 align-items-center">
+    <div className="col-4 fw-bold">Status</div>
+    <div className="col-8">
+      <span
+        style={{
+          background: "#F8D7DA",
+          display: "inline-block",
+          padding: "6px 12px",
+          borderRadius: "4px",
+          minWidth: "112px",
+          textAlign: "center",
+        }}
+      >
+        Absent
+      </span>
+    </div>
+  </div>
+
+</div>
+
+        <div className="modal-footer">
+          <button
+            className="btn btn-sm custom-outline-btn"
+            style={{ minWidth: 90 }}
+            onClick={closeAbsentModal}
+          >
+            Close
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+)}
+</>
+) :showCardList === "onLeave" ? (
   <>
   <div className="d-flex justify-content-between align-items-center mb-3">
 
