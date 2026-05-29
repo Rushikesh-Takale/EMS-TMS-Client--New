@@ -448,49 +448,151 @@ y: {
   },
 };
   //  Updated applyFilters function
- const applyFilters = () => {
+//  const applyFilters = () => {
+//   let temp = [...allTasks];
+
+//   //  Search filter
+//   if (searchQuery.trim()) {
+//     const query = searchQuery.toLowerCase();
+
+//     temp = temp.filter((task) => {
+//       const searchableFields = [
+//         task.projectName,
+//         task.title,
+//         task.assignedTo,
+//         // task.description,
+//         task.status,
+//         task.createdBy,
+//         task.time,
+//         task.assignDate,
+//         task.deadline,
+//       ];
+
+//       return searchableFields
+//         .join(" ")
+//         .toLowerCase()
+//         .includes(query);
+//     });
+//   }
+
+//   //  Assign Date range filter (NO Date object usage)
+//   if (assignDateFromFilter || assignDateToFilter) {
+//     temp = temp.filter((task) => {
+//       if (!task.assignDate) return false;
+
+//       const taskDateStr = task.assignDate.slice(0, 10); // YYYY-MM-DD
+
+//       return (
+//         (!assignDateFromFilter ||
+//           taskDateStr >= assignDateFromFilter) &&
+//         (!assignDateToFilter || taskDateStr <= assignDateToFilter)
+//       );
+//     });
+//   }
+
+//   //  Sort by deadline (safe)
+//   temp.sort(
+//     (a, b) =>
+//       new Date(a.deadline || "9999-12-31") -
+//       new Date(b.deadline || "9999-12-31")
+//   );
+
+//   setFilteredTasks(temp);
+//   setCurrentPage(1);
+// };
+
+const applyFilters = () => {
   let temp = [...allTasks];
 
-  //  Search filter
+  // ✅ Search filter
   if (searchQuery.trim()) {
-    const query = searchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase().trim();
 
     temp = temp.filter((task) => {
+      const statusLower = task.status?.toLowerCase() || "";
+
       const searchableFields = [
         task.projectName,
         task.title,
         task.assignedTo,
-        // task.description,
-        task.status,
         task.createdBy,
         task.time,
         task.assignDate,
         task.deadline,
       ];
 
-      return searchableFields
+      const searchString = searchableFields
         .join(" ")
-        .toLowerCase()
-        .includes(query);
-    });
-  }
+        .toLowerCase();
 
-  //  Assign Date range filter (NO Date object usage)
-  if (assignDateFromFilter || assignDateToFilter) {
-    temp = temp.filter((task) => {
-      if (!task.assignDate) return false;
+      // ✅ Completed search
+      // Includes:
+      // Completed
+      // Completed (Delayed by X days)
+      if (query === "completed") {
+        return statusLower.startsWith("completed");
+      }
 
-      const taskDateStr = task.assignDate.slice(0, 10); // YYYY-MM-DD
+      // ✅ Delayed search
+      // Includes ONLY:
+      // Delayed (In Progress)
+      if (query === "delayed") {
+        return statusLower === "delayed (in progress)";
+      }
 
+      // ✅ In Progress search
+      // Includes ONLY:
+      // On Track (In Progress)
+      if (
+        query === "in progress" ||
+        query === "on-track-in progress"
+      ) {
+        return statusLower === "on track (in progress)";
+      }
+
+      // ✅ Assigned search
+      if (query === "assigned") {
+        return statusLower === "assigned";
+      }
+
+      // ✅ Hold search
+      if (query === "hold" || query === "on hold") {
+        return (
+          statusLower === "hold" ||
+          statusLower === "on hold"
+        );
+      }
+
+      // ✅ Cancelled search
+      if (query === "cancelled") {
+        return statusLower === "cancelled";
+      }
+
+      // ✅ Default search
       return (
-        (!assignDateFromFilter ||
-          taskDateStr >= assignDateFromFilter) &&
-        (!assignDateToFilter || taskDateStr <= assignDateToFilter)
+        searchString.includes(query) ||
+        statusLower.includes(query)
       );
     });
   }
 
-  //  Sort by deadline (safe)
+  // ✅ Assign Date Filter
+  if (assignDateFromFilter || assignDateToFilter) {
+    temp = temp.filter((task) => {
+      if (!task.assignDate) return false;
+
+      const taskDateStr = task.assignDate.slice(0, 10);
+
+      return (
+        (!assignDateFromFilter ||
+          taskDateStr >= assignDateFromFilter) &&
+        (!assignDateToFilter ||
+          taskDateStr <= assignDateToFilter)
+      );
+    });
+  }
+
+  // ✅ Sort by deadline
   temp.sort(
     (a, b) =>
       new Date(a.deadline || "9999-12-31") -
