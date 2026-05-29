@@ -1011,45 +1011,143 @@ const TLTaskTMS = ({ role }) => {
     }
   }
 
+  // const applyFilters = () => {
+  //   let temp = [...allTasks];
+
+  //   if (searchInput.trim() !== "") {
+  //     const query = searchInput.toLowerCase();
+  //     temp = temp.filter((task) => {
+  //       const searchableFields = [
+  //         task.taskId,
+  //         task.taskName,
+  //         task.projectName,
+  //         task.assignedTo?.name,
+  //         task.department,
+  //         task.typeOfTask,
+  //         task.status?.name,
+  //         task.progressPercentage,
+  //         task.taskDescription,
+  //       ];
+  //       const searchString = searchableFields.join(" ").toLowerCase();
+  //       return searchString.includes(query);
+  //     });
+  //   }
+
+  //   if (assignDateFromFilter || assignDateToFilter) {
+  //     temp = temp.filter((task) => {
+  //       if (!task.dateOfTaskAssignment) return false;
+  //       const taskDateStr = new Date(task.dateOfTaskAssignment)
+  //         .toISOString()
+  //         .split("T")[0];
+  //       return (
+  //         (!assignDateFromFilter || taskDateStr >= assignDateFromFilter) &&
+  //         (!assignDateToFilter || taskDateStr <= assignDateToFilter)
+  //       );
+  //     });
+  //   }
+
+  //   setFilteredTasks(temp);
+  //   setCurrentPage(1);
+  // };
+
   const applyFilters = () => {
-    let temp = [...allTasks];
+  let temp = [...allTasks];
 
-    if (searchInput.trim() !== "") {
-      const query = searchInput.toLowerCase();
-      temp = temp.filter((task) => {
-        const searchableFields = [
-          task.taskId,
-          task.taskName,
-          task.projectName,
-          task.assignedTo?.name,
-          task.department,
-          task.typeOfTask,
-          task.status?.name,
-          task.progressPercentage,
-          task.taskDescription,
-        ];
-        const searchString = searchableFields.join(" ").toLowerCase();
-        return searchString.includes(query);
-      });
+  // if (searchInput.trim() !== "") {
+  //   const query = searchInput.toLowerCase();
+
+  //   temp = temp.filter((task) => {
+  //     const derivedStatus = getDerivedStatus(task);
+
+  //     const searchableFields = [
+  //       task.taskId,
+  //       task.taskName,
+  //       task.projectName,
+  //       task.assignedTo?.name,
+  //       task.department,
+  //       task.typeOfTask,
+  //       derivedStatus, // ✅ use derived status here
+  //       task.progressPercentage,
+  //       task.taskDescription,
+  //     ];
+
+  //     const searchString = searchableFields
+  //       .join(" ")
+  //       .toLowerCase();
+
+  //     return searchString.includes(query);
+  //   });
+  // }
+if (searchInput.trim() !== "") {
+  const query = searchInput.toLowerCase().trim();
+
+  temp = temp.filter((task) => {
+    const derivedStatus = getDerivedStatus(task);
+    const statusLower = derivedStatus.toLowerCase();
+
+    const searchableFields = [
+      task.taskId,
+      task.taskName,
+      task.projectName,
+      task.assignedTo?.name,
+      task.department,
+      task.typeOfTask,
+      task.progressPercentage,
+      task.taskDescription,
+    ];
+
+    const searchString = searchableFields
+      .join(" ")
+      .toLowerCase();
+
+    // ✅ Completed search
+    // Includes:
+    // "Completed"
+    // "Completed (Delayed by X days)"
+    if (query === "completed") {
+      return statusLower.startsWith("completed");
     }
 
-    if (assignDateFromFilter || assignDateToFilter) {
-      temp = temp.filter((task) => {
-        if (!task.dateOfTaskAssignment) return false;
-        const taskDateStr = new Date(task.dateOfTaskAssignment)
-          .toISOString()
-          .split("T")[0];
-        return (
-          (!assignDateFromFilter || taskDateStr >= assignDateFromFilter) &&
-          (!assignDateToFilter || taskDateStr <= assignDateToFilter)
-        );
-      });
+    // ✅ Delayed search
+    // Includes ONLY:
+    // "Delayed (In Progress)"
+    if (query === "delayed") {
+      return statusLower === "delayed (in progress)";
     }
 
-    setFilteredTasks(temp);
-    setCurrentPage(1);
-  };
+    // ✅ In Progress search
+    // Includes ONLY on-track In Progress
+    if (query === "in progress") {
+      return statusLower === "in progress";
+    }
 
+    // ✅ Default search
+    return (
+      searchString.includes(query) ||
+      statusLower.includes(query)
+    );
+  });
+}
+  if (assignDateFromFilter || assignDateToFilter) {
+    temp = temp.filter((task) => {
+      if (!task.dateOfTaskAssignment) return false;
+
+      const taskDateStr = new Date(task.dateOfTaskAssignment)
+        .toISOString()
+        .split("T")[0];
+
+      return (
+        (!assignDateFromFilter ||
+          taskDateStr >= assignDateFromFilter) &&
+        (!assignDateToFilter ||
+          taskDateStr <= assignDateToFilter)
+      );
+    });
+  }
+
+  setFilteredTasks(temp);
+  setCurrentPage(1);
+};
   const resetFilters = () => {
     setSearchInput("");
     setAssignDateFromFilter("");

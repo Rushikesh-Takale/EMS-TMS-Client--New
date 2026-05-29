@@ -311,121 +311,151 @@ const handleReset = () => {
       if (byDate.has(key)) {
         const attendance = byDate.get(key);
       
-        let updatedStatus = attendance.dayStatus;
+        // let updatedStatus = attendance.dayStatus;
       
         const today = new Date().toDateString();
+        const reg = attendance.regularizationRequest;
+const hours = parseFloat(attendance.workingHours || 0);
+
+let updatedStatus = attendance.dayStatus;
+let isRegularized = false;
+
+/* =========================
+   1. REGULARIZATION (TOP PRIORITY)
+========================= */
+if (reg && reg.status === "Approved") {
+  if (reg.type === "Full Day") {
+    updatedStatus = "Present/Regularized";
+  } 
+  else if (reg.type === "Half Day") {
+    updatedStatus = "Half Day (Approved)";
+  }
+
+  isRegularized = true;
+}
+
+/* =========================
+   2. NORMAL LOGIC (ONLY IF NOT REGULARIZED)
+========================= */
+if (!isRegularized) {
+
+  if (
+    key === today &&
+    attendance.checkIn &&
+    !attendance.checkOut
+  ) {
+    updatedStatus = "Working";
+  }
+
+  else if (!attendance.checkIn || !attendance.checkOut) {
+    updatedStatus = "Absent";
+  }
+
+  else if (hours < 4) {
+    updatedStatus = "Absent";
+  }
+
+  // 3rd attempt penalty
+  else if (attendance.lateCheckInCount >= 3) {
+    updatedStatus = "Half Day/Late Check In/Penalty";
+  }
+
+  else if (
+    attendance.lateCheckIn === true &&
+    hours >= 4 &&
+    hours < 8
+  ) {
+    updatedStatus = "Half Day/Late Check In";
+  }
+
+  else if (
+    attendance.lateCheckIn === true &&
+    hours >= 8
+  ) {
+    updatedStatus = "Present/Late Check In";
+  }
+
+  else if (hours >= 4 && hours < 8) {
+    updatedStatus = "Half Day";
+  }
+
+  else if (hours >= 8) {
+    updatedStatus = "Present";
+  }
+
+  else {
+    updatedStatus = "Absent";
+  }
+}
       
-    
+//         const hours = parseFloat(attendance.workingHours || 0);
+
 // if (
 //   key === today &&
 //   attendance.checkIn &&
 //   !attendance.checkOut
 // ) {
-//  // ✅ 3rd late attempt = Half Day
-//   if (attendance.lateCheckInCount >= 3) {
-//     updatedStatus = "Half Day/late check in";
-//   }
-
-//   // ✅ 1st & 2nd late attempt
-//   else if (attendance.lateCheckIn === true) {
-//     updatedStatus = "Late Check In";
-//   }
-
- 
-
-//   // ✅ Otherwise Working
-//   else {
-//     updatedStatus = "Working";
-//   }
+//   updatedStatus = "Working";
 // }
-      
+
 // else {
 
-//   // ✅ Backend forced Half Day
-//   if (attendance.dayStatus === "Half Day") {
+//   // No checkin / checkout
+//   if (!attendance.checkIn || !attendance.checkOut) {
+//     updatedStatus = "Absent";
+//   }
+
+//   // Less than 4 hrs
+//   else if (hours < 4) {
+//     updatedStatus = "Absent";
+//   }
+
+//   // =========================
+//   // LATE CHECK-IN CONDITIONS
+//   // =========================
+
+//   // =========================
+//   // NORMAL CONDITIONS
+//   // =========================
+// // =========================
+// // 3rd ATTEMPT PENALTY
+// // =========================
+// if (attendance.lateCheckInCount >= 3) {
+//   updatedStatus = "Half Day/Late Check In/Penalty";
+// }
+
+// // =========================
+// // LATE CHECK-IN CONDITIONS
+// // =========================
+// else if (
+//   attendance.lateCheckIn === true &&
+//   hours >= 4 &&
+//   hours < 8
+// ) {
+//   updatedStatus = "Half Day/Late Check In";
+// }
+
+// else if (
+//   attendance.lateCheckIn === true &&
+//   hours >= 8
+// ) {
+//   updatedStatus = "Present/Late Check In";
+// }
+//   // Half Day
+//   else if (hours >= 4 && hours < 8) {
 //     updatedStatus = "Half Day";
 //   }
 
-//   // ✅ Missing checkin/checkout
-//   else if (!attendance.checkIn || !attendance.checkOut) {
-//     updatedStatus = "Absent";
+//   // Present
+//   else if (hours >= 8) {
+//     updatedStatus = "Present";
 //   }
 
-//   // ✅ Less than 4 hrs
-//   else if (
-//     !attendance.workingHours ||
-//     parseFloat(attendance.workingHours) < 4
-//   ) {
+//   // Fallback
+//   else {
 //     updatedStatus = "Absent";
 //   }
-const hours = parseFloat(attendance.workingHours || 0);
-
-if (
-  key === today &&
-  attendance.checkIn &&
-  !attendance.checkOut
-) {
-  updatedStatus = "Working";
-}
-
-else {
-
-  // No checkin / checkout
-  if (!attendance.checkIn || !attendance.checkOut) {
-    updatedStatus = "Absent";
-  }
-
-  // Less than 4 hrs
-  else if (hours < 4) {
-    updatedStatus = "Absent";
-  }
-
-  // =========================
-  // LATE CHECK-IN CONDITIONS
-  // =========================
-
-  // =========================
-  // NORMAL CONDITIONS
-  // =========================
-// =========================
-// 3rd ATTEMPT PENALTY
-// =========================
-if (attendance.lateCheckInCount >= 3) {
-  updatedStatus = "Half Day/Late Check In/Penalty";
-}
-
-// =========================
-// LATE CHECK-IN CONDITIONS
-// =========================
-else if (
-  attendance.lateCheckIn === true &&
-  hours >= 4 &&
-  hours < 8
-) {
-  updatedStatus = "Half Day/Late Check In";
-}
-
-else if (
-  attendance.lateCheckIn === true &&
-  hours >= 8
-) {
-  updatedStatus = "Present/Late Check In";
-}
-  // Half Day
-  else if (hours >= 4 && hours < 8) {
-    updatedStatus = "Half Day";
-  }
-
-  // Present
-  else if (hours >= 8) {
-    updatedStatus = "Present";
-  }
-
-  // Fallback
-  else {
-    updatedStatus = "Absent";
-  }
-}
+// }
 
 //   // ✅ 3rd late attempt priority
 //   else if (attendance.lateCheckInCount >= 3) {
@@ -454,6 +484,10 @@ else if (
 //     updatedStatus = "Present";
 //   }
 // }
+
+
+
+
       
         result.push({
           ...attendance,
