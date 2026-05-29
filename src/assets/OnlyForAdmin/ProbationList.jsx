@@ -647,7 +647,7 @@ const ProbationList = () => {
 
                 <div className="d-flex mb-2">
                   <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
-                    DOJ:
+                    DOJ
                   </label>
 
                   <span>{formatDate(selectedEmp.doj)}</span>
@@ -665,7 +665,7 @@ const ProbationList = () => {
 
                 <div className="d-flex mb-2 align-items-center">
                   <label className="form-label fw-semibold" style={{ minWidth: "170px" }}>
-                    Status:
+                    Status
                   </label>
 
                   <span
