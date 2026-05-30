@@ -33,6 +33,7 @@ const [absentItemsPerPage, setAbsentItemsPerPage] = useState(5);
   const [breakLoading, setBreakLoading] = useState(false);
   const modalRef = useRef(null);
   const lateModalRef = useRef(null);
+  const leaveModalRef = useRef(null);
   const [lateSearch, setLateSearch] = useState("");
  
   const [appliedLateSearch, setAppliedLateSearch] = useState("");
@@ -64,17 +65,16 @@ const [appliedPresentSearch, setAppliedPresentSearch] = useState("");
 const [absentSearch, setAbsentSearch] = useState("");
 const [appliedAbsentSearch, setAppliedAbsentSearch] = useState("");
       useEffect(() => {
-            const isModalOpen = showModal || showLateModal;
+            const isModalOpen = showModal || showLateModal ||showLeaveModal;
           
-            if (
-              (!showModal && !showLateModal) ||
-              (!modalRef.current && !lateModalRef.current)
-            )
+            if ((!showModal && !showLateModal && !showLeaveModal) || (!modalRef.current && !lateModalRef.current && !leaveModalRef.current))
               return;
           
-            const modal = showModal
-              ? modalRef.current
-              : lateModalRef.current;
+              let modal = null;
+              if (showModal) modal = modalRef.current;
+              else if (showLateModal) modal = lateModalRef.current;
+              else if (showLeaveModal) modal = leaveModalRef.current;
+              
           
             const focusableElements = modal.querySelectorAll(
               'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -97,6 +97,9 @@ const [appliedAbsentSearch, setAppliedAbsentSearch] = useState("");
                 if (showLateModal) {
                   setShowLateModal(false);
                 }
+              if (showLeaveModal) {
+                setShowLeaveModal(false);
+              }
               }
           
               if (e.key === "Tab") {
@@ -122,7 +125,7 @@ const [appliedAbsentSearch, setAppliedAbsentSearch] = useState("");
                 handleKeyDown
               );
             };
-      }, [showModal, showLateModal]);
+      }, [showModal, showLateModal,showLeaveModal]);
 
   useEffect(() => {
   const isModalOpen = showModal || showLateModal||showLeaveModal||showPresentModal||showAbsentModal;
@@ -556,30 +559,42 @@ const fetchLateCheckInHistory = async () => {
     return;
   }
 
-  try {
-    const token = localStorage.getItem("accessToken");
+  const fetchLateCheckInHistory = async () => {
+    const today = new Date().toISOString().split('T')[0];
+    
+    const fromDate = lateFromDate || today;
+    const toDate = lateToDate || today;
+  
+    try {
+      const token = localStorage.getItem("accessToken");
+      const res = await axios.get(
+        `http://localhost:8000/attendance/late-checkins`,
+        {
+          params: {
+            from: fromDate,
+            to: toDate,
+            name: lateSearch,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      setLateCheckInEmployeesData(res.data);
+      setLateCurrentPage(1);
+        
+    } catch (err) {
+      console.error(err);
+      setLateCheckInEmployeesData([]);
+    }
+  };
 
-    const res = await axios.get(
-      `http://localhost:8000/attendance/late-checkins`,
-      {
-        params: {
-          from: lateFromDate,
-          to: lateToDate,
-          name: lateSearch,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    setLateCheckInEmployeesData(res.data);
-    setLateCurrentPage(1);
-
-  } catch (err) {
-    console.error(err);
-  }
-};
+  useEffect(() => {
+    if (showCardList === "lateCheckIn") {
+      fetchLateCheckInHistory();
+    }
+  }, [showCardList]);
 
 const downloadLateCheckInExcel = () => {
 
@@ -1095,20 +1110,21 @@ onClick={fetchLateCheckInHistory}
   </button>
 
   <button
-    type="button"
-    className="btn btn-sm custom-outline-btn"
-    style={{ minWidth: 90 }}
+  type="button"
+  className="btn btn-sm custom-outline-btn"
+  style={{ minWidth: 90 }}
 onClick={() => {
   setLateSearch("");
   setLateFromDate("");
   setLateToDate("");
   setLateCurrentPage(1);
-setLateCheckInEmployeesData([]);
+// setLateCheckInEmployeesData([]);
 setDownloadedFile("");
+fetchLateCheckInHistory();
 }}
-  >
-    Reset
-  </button>
+>
+  Reset
+</button>
 </div>
   </div>
     </div>
@@ -1234,7 +1250,7 @@ currentLateEmployees.map((emp) => (
     whiteSpace: "nowrap",
   }}
 >
-  {emp.employeeId || "-"}
+{emp.employeeId || emp.employee?.employeeId || "-"}
 </td>
                <td
   style={{
@@ -2749,6 +2765,8 @@ onClick={async () => {
 {showLeaveModal && selectedLeaveEmployee && (
   <div
     className="modal fade show"
+    ref={leaveModalRef}
+    tabIndex="-1"
     style={{
       display: "flex",
       alignItems: "center",

@@ -36,12 +36,15 @@ function Notification({ userId,notifications, fetchNotifications}) {
       // Mark as read in backend
       await axios.put(`http://localhost:8000/notifications/${n._id}/read`);
 
+
       // Update state locally for instant UI feedback
-      setNotifications((prev) =>
-        prev.map((item) =>
-          item._id === n._id ? { ...item, isRead: true } : item,
-        ),
-      );
+      // setNotifications((prev) =>
+      //   prev.map((item) =>
+      //     item._id === n._id ? { ...item, isRead: true } : item,
+      //   ),
+      // );
+
+      await fetchNotifications();
     } catch (err) {
       console.error("Failed to mark notification as read", err);
     }
