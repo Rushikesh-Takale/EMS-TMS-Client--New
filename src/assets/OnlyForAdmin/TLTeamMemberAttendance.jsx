@@ -12,6 +12,7 @@ function TLTeamMemberAttendance() {
   const navigate = useNavigate();
   const modalRef = useRef(null);
   const leaveModalRef = useRef(null);
+  const [cardHistory, setCardHistory] = useState([]);
 
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -423,6 +424,22 @@ const downloadLateCheckInExcel = () => {
     console.error(err);
   }
 };
+
+const openCard = (cardName) => {
+  setCardHistory((prev) => [...prev, showCardList]);
+  setShowCardList(cardName);
+};
+
+const handleBack = () => {
+  if (cardHistory.length > 0) {
+    const previousCard = cardHistory[cardHistory.length - 1];
+    setShowCardList(previousCard);
+    setCardHistory((prev) => prev.slice(0, -1));
+  } else {
+    window.history.go(-1);
+  }
+};
+
 const fetchLateCheckInHistory = async () => {
 
   if (!lateFromDate && !lateToDate) {
@@ -591,7 +608,7 @@ setAppliedStatusFilter(statusFilter);
          <div
   className="card shadow-sm h-100 border-0"
   style={{ cursor: "pointer" }}
-  onClick={() => setShowCardList("present")}
+  onClick={() => openCard("present")}
 >
             <div
               className="card-body d-flex align-items-center"
@@ -628,7 +645,7 @@ setAppliedStatusFilter(statusFilter);
          <div
   className="card shadow-sm h-100 border-0"
   style={{ cursor: "pointer" }}
-  onClick={() => setShowCardList("absent")}
+  onClick={() => openCard("absent")}
 >
             <div
               className="card-body d-flex align-items-center"
@@ -665,7 +682,7 @@ setAppliedStatusFilter(statusFilter);
          <div
   className="card shadow-sm h-100 border-0"
   style={{ cursor: "pointer" }}
-  onClick={() => setShowCardList("lateCheckIn")}
+  onClick={() => openCard("lateCheckIn")}
 >
             <div
               className="card-body d-flex align-items-center"
@@ -702,7 +719,7 @@ setAppliedStatusFilter(statusFilter);
   <div
     className="card shadow-sm h-100 border-0"
     style={{ cursor: "pointer" }}
-    onClick={() => setShowCardList("onLeave")}
+    onClick={() => openCard("onLeave")}
   >
     <div
       className="card-body d-flex align-items-center"
@@ -3092,7 +3109,7 @@ onClick={async () => {
         <button
           className="btn btn-sm custom-outline-btn"
           style={{ minWidth: 90 }}
-          onClick={() => window.history.go(-1)}
+          onClick={handleBack}
         >
           Back
         </button>

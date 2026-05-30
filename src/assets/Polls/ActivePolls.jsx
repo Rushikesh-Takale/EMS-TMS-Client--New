@@ -832,7 +832,7 @@ const ActivePolls = ({ user }) => {
   }}
   >
 <label
-  className="d-flex align-items-start"
+  className="d-flex align-items-center"
   style={{
     flex: 1,
     minWidth: 0,

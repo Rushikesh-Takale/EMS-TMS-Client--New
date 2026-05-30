@@ -278,6 +278,12 @@ useEffect(() => {
       return;
     }
 
+    if (!applyForm.comments || applyForm.comments.trim() === "") {
+      alert("Comment is required");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const token = getToken();
       const response = await axios.post(
@@ -1634,7 +1640,7 @@ if (!user || role !== "hr") {
 
               <div className="mb-3">
                   <div className="col-12">
-                    <label className="form-label fw-semibold">Comments</label>
+                    <label className="form-label fw-semibold"> Comments <span style={{ color: "red" }}>  *</span></label>
 
                     <textarea
                       className="form-control"

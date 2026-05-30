@@ -11,6 +11,7 @@ function TodaysEmployeeDetails() {
   const { role, username, id } = useParams();
   const navigate = useNavigate();
   const [showCardList, setShowCardList] = useState(null);
+  const [cardHistory, setCardHistory] = useState([]);
 
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -686,6 +687,23 @@ const closeAbsentModal = () => {
   setShowAbsentModal(false);
   setSelectedAbsentEmployee(null);
 };
+
+const openCard = (cardName) => {
+  setCardHistory((prev) => [...prev, showCardList]);
+  setShowCardList(cardName);
+};
+
+const handleBack = () => {
+  if (cardHistory.length > 0) {
+    const previousCard = cardHistory[cardHistory.length - 1];
+    setShowCardList(previousCard);
+    setCardHistory((prev) => prev.slice(0, -1));
+  } else {
+    window.history.go(-1);
+  }
+};
+
+
  if (loading)
     return (
       <div
@@ -817,7 +835,7 @@ const currentLeaveEmployees =
           <div
             className="card shadow-sm h-100 border-0"
             style={{ cursor: "pointer" }}
-            onClick={() => setShowCardList("present")}
+            onClick={() => openCard("present")}
           >
             <div
               className="card-body d-flex align-items-center"
@@ -853,7 +871,7 @@ const currentLeaveEmployees =
           <div
                 className="card shadow-sm h-100 border-0"
                 style={{ cursor: "pointer" }}
-                onClick={() => setShowCardList("absent")}
+                onClick={() => openCard("absent")}
               >
             <div
               className="card-body d-flex  align-items-center"
@@ -889,7 +907,7 @@ const currentLeaveEmployees =
   <div
   className="card shadow-sm h-100 border-0"
   style={{ cursor: "pointer" }}
-  onClick={() => setShowCardList("lateCheckIn")}
+  onClick={() => openCard("lateCheckIn")}
 >
             <div
               className="card-body d-flex align-items-center"
@@ -925,7 +943,7 @@ const currentLeaveEmployees =
 <div
   className="card shadow-sm h-100 border-0"
   style={{ cursor: "pointer" }}
-  onClick={() => setShowCardList("onLeave")}
+  onClick={() => openCard("onLeave")}
 >
     <div
       className="card-body d-flex align-items-center"
@@ -3386,7 +3404,7 @@ onClick={async () => {
         <button
           className="btn btn-sm custom-outline-btn"
           style={{ minWidth: 90 }}
-          onClick={() => window.history.go(-1)}
+          onClick={handleBack}
         >
           Back
         </button>

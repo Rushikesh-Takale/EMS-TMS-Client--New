@@ -852,7 +852,7 @@ function EmployeeResignation({ user }) {
                         className="form-label fw-semibold"
                         style={{ color: "#212529" }}
                       >
-                        Comment
+                         Comment <span style={{ color: "red" }}>  *</span>
                       </label>
                       <textarea
                         className="form-control"
