@@ -517,45 +517,121 @@ const MangerTaskTMS = ({ role }) => {
     fetchWeeklyOffs();
   }, []);
 
+  // const applyFilters = () => {
+  //   let temp = [...allTasks];
+
+  //   if (searchInput.trim() !== "") {
+  //     const query = searchInput.toLowerCase();
+  //     temp = temp.filter((task) => {
+  //       const searchableFields = [
+  //         task.taskId,
+  //         task.taskName,
+  //         task.projectName,
+  //         task.assignedTo?.name,
+  //         task.employeeName,
+  //         task.department,
+  //         task.typeOfTask,
+  //         task.status?.name,
+  //         task.progressPercentage,
+  //         task.taskDescription,
+  //         task.createdBy?.name,
+  //       ];
+  //       const searchString = searchableFields.join(" ").toLowerCase();
+  //       return searchString.includes(query);
+  //     });
+  //   }
+
+  //   if (assignDateFromFilter || assignDateToFilter) {
+  //     temp = temp.filter((task) => {
+  //       if (!task.dateOfTaskAssignment) return false;
+  //       const taskDateStr = new Date(task.dateOfTaskAssignment).toISOString().split("T")[0];
+  //       return (
+  //         (!assignDateFromFilter || taskDateStr >= assignDateFromFilter) &&
+  //         (!assignDateToFilter || taskDateStr <= assignDateToFilter)
+  //       );
+  //     });
+  //   }
+
+  //   setFilteredTasks(temp);
+  //   setCurrentPage(1);
+  // };
+
   const applyFilters = () => {
-    let temp = [...allTasks];
+  let temp = [...allTasks];
 
-    if (searchInput.trim() !== "") {
-      const query = searchInput.toLowerCase();
-      temp = temp.filter((task) => {
-        const searchableFields = [
-          task.taskId,
-          task.taskName,
-          task.projectName,
-          task.assignedTo?.name,
-          task.employeeName,
-          task.department,
-          task.typeOfTask,
-          task.status?.name,
-          task.progressPercentage,
-          task.taskDescription,
-          task.createdBy?.name,
-        ];
-        const searchString = searchableFields.join(" ").toLowerCase();
-        return searchString.includes(query);
-      });
-    }
+  if (searchInput.trim() !== "") {
+    const query = searchInput.toLowerCase().trim();
 
-    if (assignDateFromFilter || assignDateToFilter) {
-      temp = temp.filter((task) => {
-        if (!task.dateOfTaskAssignment) return false;
-        const taskDateStr = new Date(task.dateOfTaskAssignment).toISOString().split("T")[0];
-        return (
-          (!assignDateFromFilter || taskDateStr >= assignDateFromFilter) &&
-          (!assignDateToFilter || taskDateStr <= assignDateToFilter)
-        );
-      });
-    }
+    temp = temp.filter((task) => {
+      const derivedStatus = getDerivedStatus(task);
+      const statusLower = derivedStatus.toLowerCase();
 
-    setFilteredTasks(temp);
-    setCurrentPage(1);
-  };
+      const searchableFields = [
+        task.taskId,
+        task.taskName,
+        task.projectName,
+        task.assignedTo?.name,
+        task.employeeName,
+        task.department,
+        task.typeOfTask,
+        task.progressPercentage,
+        task.taskDescription,
+        task.createdBy?.name,
+      ];
 
+      const searchString = searchableFields
+        .join(" ")
+        .toLowerCase();
+
+      // ✅ Completed search
+      // Includes:
+      // Completed
+      // Completed (Delayed by X days)
+      if (query === "completed") {
+        return statusLower.startsWith("completed");
+      }
+
+      // ✅ Delayed search
+      // Includes ONLY:
+      // Delayed (In Progress)
+      if (query === "delayed") {
+        return statusLower === "delayed (in progress)";
+      }
+
+      // ✅ In Progress search
+      // Includes ONLY normal in progress
+      if (query === "in progress") {
+        return statusLower === "in progress";
+      }
+
+      // ✅ Default search
+      return (
+        searchString.includes(query) ||
+        statusLower.includes(query)
+      );
+    });
+  }
+
+  if (assignDateFromFilter || assignDateToFilter) {
+    temp = temp.filter((task) => {
+      if (!task.dateOfTaskAssignment) return false;
+
+      const taskDateStr = new Date(task.dateOfTaskAssignment)
+        .toISOString()
+        .split("T")[0];
+
+      return (
+        (!assignDateFromFilter ||
+          taskDateStr >= assignDateFromFilter) &&
+        (!assignDateToFilter ||
+          taskDateStr <= assignDateToFilter)
+      );
+    });
+  }
+
+  setFilteredTasks(temp);
+  setCurrentPage(1);
+};
   const resetFilters = () => {
     setSearchInput("");
     setAssignDateFromFilter("");

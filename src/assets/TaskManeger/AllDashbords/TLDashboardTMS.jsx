@@ -430,7 +430,7 @@ function TLDashboardTMS() {
                     className="mb-0 fw-semibold"
                     style={{ color: "#3A5FBE", fontSize: "18px" }}
                   >
-                    Total Assigned Tasks
+                    Total Tasks
                   </p>
                 </div>
                 <button
