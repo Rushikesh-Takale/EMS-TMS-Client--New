@@ -40,7 +40,7 @@ useEffect(() => {
 
   // Focus modal when opened
   setTimeout(() => {
-    firstEl.focus();
+    modal.focus();
   }, 100);
 
   const handleKeyDown = (e) => {
@@ -742,7 +742,7 @@ useEffect(() => {
 
                     <div className="mb-2 row">
                       <label className="col-4 form-label fw-semibold mb-0">
-                        Created Date:
+                        Created Date
                       </label>
                       <div className="col-8">
                         <p className="mb-0">
@@ -753,7 +753,7 @@ useEffect(() => {
 
                     <div className="mb-2 row">
                       <label className="col-4 form-label fw-semibold mb-0">
-                        Last Updated:
+                        Last Updated
                       </label>
                       <div className="col-8">
                         <p className="mb-0">

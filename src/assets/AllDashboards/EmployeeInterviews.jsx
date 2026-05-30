@@ -291,7 +291,7 @@ const formatTo12Hour = (time24) => {
           marginBottom: "40px",
         }}
       >
-        My Scheduled Interveiw
+        My Scheduled Interview
       </h2>
 
       {showTable && (

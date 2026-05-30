@@ -312,7 +312,7 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
     );
   }
 
-  if (leaves.length === 0) return <p>No leave applications found.</p>;
+  // if (leaves.length === 0) return <p>No leave applications found.</p>;
 
   // ✅ NEW: Function to get correct duration
   

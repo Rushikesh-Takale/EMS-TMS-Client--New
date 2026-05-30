@@ -75,12 +75,8 @@ function Gallery() {
   };
 
   useEffect(() => {
-    if (galleryItems.length > 0) {
-      const itemsByType = galleryItems.filter(item => item.type === activeTable);
-      setFilteredItems(itemsByType);
-      setCurrentPage(1);
-    }
-  }, [galleryItems, activeTable]);
+    handleFilter();
+  }, [activeTable, galleryItems]);
 
   useEffect(() => {
     if (showUploadModal || showViewModal || showEditModal) {
@@ -98,10 +94,32 @@ function Gallery() {
   }, [showUploadModal, showViewModal, showEditModal]);
 
   const fetchGallery = async () => {
-    const res = await axios.get(API_URL);
-    setGalleryItems(res.data);
-    // setFilteredItems(res.data); // important
-    setFilteredItems(res.data.filter(item => item.type === 'image'));
+    try {
+      const res = await axios.get(API_URL);
+  
+      const data = res.data;
+  
+      setGalleryItems(data);
+  
+      const filtered = data.filter((item) => {
+        const textMatch =
+          item.title?.toLowerCase().includes(searchInput.toLowerCase()) ||
+          item.description?.toLowerCase().includes(searchInput.toLowerCase()) ||
+          item.category?.toLowerCase().includes(searchInput.toLowerCase());
+  
+        const categoryMatch =
+          !searchCategory || item.category === searchCategory;
+  
+        const typeMatch = item.type === activeTable;
+  
+        return textMatch && categoryMatch && typeMatch;
+      });
+  
+      setFilteredItems(filtered);
+  
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   /* ================= FILE SELECT ================= */

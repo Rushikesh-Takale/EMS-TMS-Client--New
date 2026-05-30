@@ -282,6 +282,12 @@ useEffect(() => {
       return;
     }
 
+    if (!applyForm.comments || applyForm.comments.trim() === "") {
+      alert("Comment is required");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const token = getToken();
 
@@ -1632,7 +1638,7 @@ useEffect(() => {
 
               <div className="mb-3">
                   <div className="col-12">
-                    <label className="form-label fw-semibold">Comments</label>
+                    <label className="form-label fw-semibold">Comments <span style={{ color: "red" }}>  *</span></label>
 
                     <textarea
                       className="form-control"

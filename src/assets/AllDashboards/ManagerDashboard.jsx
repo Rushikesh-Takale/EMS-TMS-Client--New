@@ -54,9 +54,21 @@ const [regReasonError, setRegReasonError] = useState("");
   const [selectedRegularization, setSelectedRegularization] = useState(null);
 
   useEffect(() => {
-    setFilteredLeaves(leaves);
-    setFilteredRegularizations(regularizations);
-  }, [leaves, regularizations]);
+
+    if (leaveStatusFilter === "All") {
+      setFilteredLeaves(leaves);
+    }
+  
+    if (regStatusFilter === "All") {
+      setFilteredRegularizations(regularizations);
+    }
+  
+  }, [
+    leaves,
+    regularizations,
+    leaveStatusFilter,
+    regStatusFilter,
+  ]);
 
   useEffect(() => {
 
@@ -269,6 +281,11 @@ const updateLeaveStatus = async (leaveId, status) => {
       }
     );
 
+    if (leaveStatusFilter !== "All") {
+      setFilteredLeaves((prev) =>
+        prev.filter((l) => l.status === leaveStatusFilter)
+      );
+    }
     alert(`Leave request ${status} successfully!`);
 
   } catch (err) {

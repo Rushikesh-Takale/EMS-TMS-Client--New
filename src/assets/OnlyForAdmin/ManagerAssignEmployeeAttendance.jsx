@@ -14,6 +14,7 @@ function ManagerAssignedEmployeesAttendance() {
 
   // ✅ Pagination states
   const [currentPage, setCurrentPage] = useState(1);
+  const [cardHistory, setCardHistory] = useState([]);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const [statusFilter, setStatusFilter] = useState("All");
@@ -428,6 +429,11 @@ const downloadLateCheckInExcel = () => {
   }
 };
 
+const openCard = (cardName) => {
+  setCardHistory((prev) => [...prev, showCardList]);
+  setShowCardList(cardName);
+};
+
 const fetchLateCheckInHistory =
   async () => {
 
@@ -567,6 +573,25 @@ const fetchLateCheckInHistory =
 
 }, [showLateModal,showLeaveModal,showAbsentModal,showPresentModal]);
 
+const handleBack = () => {
+  if (cardHistory.length > 0) {
+
+    const previousCard =
+      cardHistory[cardHistory.length - 1];
+
+    setShowCardList(previousCard);
+
+    setCardHistory((prev) =>
+      prev.slice(0, -1)
+    );
+
+  } else {
+
+    window.history.go(-1);
+
+  }
+};
+
   return (
     <div className="container-fluid">
       <h2
@@ -586,7 +611,7 @@ const fetchLateCheckInHistory =
         <div
                 className="card shadow-sm h-100 border-0"
                 style={{ cursor: "pointer" }}
-                onClick={() => setShowCardList("present")}
+                onClick={() => openCard("present")}
               >
             <div
               className="card-body d-flex align-items-center"
@@ -623,7 +648,7 @@ const fetchLateCheckInHistory =
          <div
   className="card shadow-sm h-100 border-0"
   style={{ cursor: "pointer" }}
-  onClick={() => setShowCardList("absent")}
+  onClick={() => openCard("absent")}
 >
             <div
               className="card-body d-flex align-items-center"
@@ -661,7 +686,7 @@ const fetchLateCheckInHistory =
   className="card shadow-sm h-100 border-0"
   style={{ cursor: "pointer" }}
   onClick={() =>
-    setShowCardList("lateCheckIn")
+    openCard("lateCheckIn")
   }
 >
             <div
@@ -699,7 +724,7 @@ const fetchLateCheckInHistory =
   <div
     className="card shadow-sm h-100 border-0"
     style={{ cursor: "pointer" }}
-    onClick={() => setShowCardList("onLeave")}
+    onClick={() => openCard("onLeave")}
   >
     <div
       className="card-body d-flex align-items-center"
@@ -3029,7 +3054,7 @@ onClick={async () => {
         <button
           className="btn btn-sm custom-outline-btn"
           style={{ minWidth: 90 }}
-          onClick={() => window.history.go(-1)}
+          onClick={handleBack}
         >
           Back
         </button>

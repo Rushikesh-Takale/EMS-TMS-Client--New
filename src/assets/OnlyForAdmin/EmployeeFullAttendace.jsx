@@ -914,256 +914,246 @@ const statusBg = {
 </div>
 
       {/* 🔹 Table Section */}
-     {sortedAndFilteredData.length === 0 ? (
-  <p>No attendance records found for selected dates.</p>
-) : (
-              <div className="table-responsive">
-        <table className="table table-hover mb-0 bg-white">
-          <thead style={{ backgroundColor: "#ffffffff" }}>
-            <tr>
-              <th
+      <div className="table-responsive">
+  <table className="table table-hover mb-0">
+    <thead>
+      <tr>
+        <th
+          style={{
+            fontWeight: "500",
+            fontSize: "14px",
+            color: "#6c757d",
+            borderBottom: "2px solid #dee2e6",
+            padding: "12px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Date
+        </th>
+
+        <th
+          style={{
+            fontWeight: "500",
+            fontSize: "14px",
+            color: "#6c757d",
+            borderBottom: "2px solid #dee2e6",
+            padding: "12px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Check In
+        </th>
+
+        <th
+          style={{
+            fontWeight: "500",
+            fontSize: "14px",
+            color: "#6c757d",
+            borderBottom: "2px solid #dee2e6",
+            padding: "12px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Check Out
+        </th>
+
+        <th
+          style={{
+            fontWeight: "500",
+            fontSize: "14px",
+            color: "#6c757d",
+            borderBottom: "2px solid #dee2e6",
+            padding: "12px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Total Hours
+        </th>
+
+        <th
+          style={{
+            fontWeight: "500",
+            fontSize: "14px",
+            color: "#6c757d",
+            borderBottom: "2px solid #dee2e6",
+            padding: "12px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Mode
+        </th>
+
+        <th
+          style={{
+            fontWeight: "500",
+            fontSize: "14px",
+            color: "#6c757d",
+            borderBottom: "2px solid #dee2e6",
+            padding: "12px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Status
+        </th>
+
+        <th
+          style={{
+            fontWeight: "500",
+            fontSize: "14px",
+            color: "#6c757d",
+            borderBottom: "2px solid #dee2e6",
+            padding: "12px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Location
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {currentItems.length === 0 ? (
+        <tr>
+          <td colSpan="7" className="text-center py-4"style={{ color: "#6c757d", fontWeight: "400" }}>
+            No data available
+          </td>
+        </tr>
+      ) : (
+        currentItems.map((att) => {
+          const date = fmtDate(att.date);
+
+          const checkIn = att.checkIn
+            ? new Date(att.checkIn).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "-";
+
+          const checkOut = att.checkOut
+            ? new Date(att.checkOut).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "-";
+
+          const workingHours = att.workingHours
+            ? `${att.workingHours} hrs`
+            : "-";
+
+          const modeDisplay =
+            att.dayStatus === "Absent" ||
+            att.dayStatus === "Leave"
+              ? "-"
+              : att.mode === "Office"
+              ? "WFO"
+              : att.mode || "-";
+
+          return (
+            <tr
+              key={att._id}
+              style={{ cursor: "pointer" }}
+              onClick={() =>
+                handleRowClick({
+                  ...att,
+                  dayStatus: att.dayStatus,
+                })
+              }
+            >
+              <td
                 style={{
-                  fontWeight: "500",
-                  fontSize: "14px",
-                  color: "#6c757d",
-                  borderBottom: "2px solid #dee2e6",
                   padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
                   whiteSpace: "nowrap",
                 }}
               >
-                  Date
-                </th>
+                {date}
+              </td>
 
-                <th
-                 style={{
-                  fontWeight: "500",
-                  fontSize: "14px",
-                  color: "#6c757d",
-                  borderBottom: "2px solid #dee2e6",
+              <td
+                style={{
                   padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
                   whiteSpace: "nowrap",
                 }}
-                >
-                  Check  In
-                </th>
+              >
+                {checkIn}
+              </td>
 
-                <th
+              <td
+                style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {checkOut}
+              </td>
+
+              <td
+                style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {workingHours}
+              </td>
+
+              <td
+                style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {modeDisplay}
+              </td>
+
+              <td
+                style={{
+                  padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span
                   style={{
-                  fontWeight: "500",
-                  fontSize: "14px",
-                  color: "#6c757d",
-                  borderBottom: "2px solid #dee2e6",
+                    ...(statusBg[att.dayStatus?.trim()] || {}),
+                    display: "inline-block",
+                    padding: "6px 12px",
+                    fontWeight: 400,
+                    fontSize: "14px",
+                    width: 112,
+                    textAlign: "center",
+                  }}
+                >
+                  {att.dayStatus?.trim()}
+                </span>
+              </td>
+
+              <td
+                style={{
                   padding: "12px",
+                  fontSize: "14px",
+                  borderBottom: "1px solid #dee2e6",
                   whiteSpace: "nowrap",
                 }}
-                >
-                  Check Out
-                </th>
-
-                <th
-                  style={{
-                  fontWeight: "500",
-                  fontSize: "14px",
-                  color: "#6c757d",
-                  borderBottom: "2px solid #dee2e6",
-                  padding: "12px",
-                  whiteSpace: "nowrap",
-                }}
-                >
-                  Total Hours
-                </th>
-
-                <th
-                  style={{
-                  fontWeight: "500",
-                  fontSize: "14px",
-                  color: "#6c757d",
-                  borderBottom: "2px solid #dee2e6",
-                  padding: "12px",
-                  whiteSpace: "nowrap",
-                }}
-                >
-                  Mode
-                </th>
-
-                <th
-                  style={{
-                  fontWeight: "500",
-                  fontSize: "14px",
-                  color: "#6c757d",
-                  borderBottom: "2px solid #dee2e6",
-                  padding: "12px",
-                  whiteSpace: "nowrap",
-                }}
-                >
-                  Status
-                </th>
-
-                <th
-                  style={{
-                  fontWeight: "500",
-                  fontSize: "14px",
-                  color: "#6c757d",
-                  borderBottom: "2px solid #dee2e6",
-                  padding: "12px",
-                  whiteSpace: "nowrap",
-                }}
-                >
-                  Location
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((att) => {
-                const date = fmtDate(att.date);
-                const checkIn = att.checkIn
-                  ? new Date(att.checkIn).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                  : "-";
-                const checkOut = att.checkOut
-                  ? new Date(att.checkOut).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                  : "-";
-                const workingHours = att.workingHours
-                  ? `${att.workingHours} hrs`
-                  : "-";
-                // jacy code
-                const modeDisplay =
-                  att.dayStatus === "Absent" ||
-                  att.dayStatus === "Leave" ||
-                  att.dayStatus === "Leave (Sandwiched)"
-                    ? "-"
-                    : att.dayStatus === "Present" && att.mode === "Office"
-                      ? "WFO"
-                      : att.mode;
-
-                const reg = att.regularizationRequest;
-                const hasRegularization = reg && reg.status !== null;
-                const isLeave = att.dayStatus === "Leave";
-                const leaveType = att.leaveType;
-
-                let details = "";
-                if (hasRegularization) {
-                  details = `Regularization (${reg.status})`;
-                } else if (isLeave) {
-                  details = `Leave (${leaveType || "N/A"})`;
-                } else if (att.checkIn || att.checkOut) {
-                  details = "Checked In/Out Normally";
-                } else {
-                  details = "No Activity";
-                }
-
-                return (
-                  <tr
-                    key={att._id}
-                    style={{ cursor: "pointer" }}
-                    onClick={() =>
-  handleRowClick({
-    ...att,
-    dayStatus: att.dayStatus,
-  })
-}
-                  >
-                    <td
-                      style={{
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {date}
-                    </td>
-
-                    <td
-                      style={{
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {checkIn}
-                    </td>
-                    <td
-                      style={{
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {checkOut}
-                    </td>
-                    <td
-                      style={{
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {workingHours}
-                    </td>
-                    <td
-                      style={{
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {modeDisplay}
-                    </td>
-                    <td
-                      style={{
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                    <span
-  style={{
-    padding: "6px 14px",
-    borderRadius: "6px",
-    fontSize: "14px",
-    fontWeight: "400",
-    display: "inline-block",
-    textAlign: "center",
-    minWidth: "110px",
-    // ...(statusBg[att.dayStatus] || {}),
-    ...(statusBg[att.dayStatus?.trim()] || {}),
-  }}
->
-  {/* {att.dayStatus} */}
-  {att.dayStatus?.trim()}
-</span>
-                    </td>
-
-                    <td
-                      style={{
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderBottom: "1px solid #dee2e6",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {att.employeeCheckInLocation?.address || "N/A"}
-                    </td>
-                    {/* <td>{details}</td> */}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-         
+              >
+                {att.employeeCheckInLocation?.address || "N/A"}
+              </td>
+            </tr>
+          );
+        })
       )}
+    </tbody>
+  </table>
+</div>
       {/* 🔹 Pagination Controls */}
       <nav className="d-flex align-items-center justify-content-end mt-3 text-muted">
         <div className="d-flex align-items-center gap-3">

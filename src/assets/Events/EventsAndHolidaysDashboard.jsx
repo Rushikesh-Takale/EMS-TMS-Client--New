@@ -764,9 +764,15 @@ onClick={(e) => {
                 {/* Header */}
                 <div
                   className="modal-header text-white"
-                  style={{ backgroundColor: "#3A5FBE" }}
+                  style={{  backgroundColor: "#3A5FBE",
+                  flexWrap: "wrap",       
+                  gap: "8px"      }}
                 >
-                  <h5 className="modal-title">{selectedAnnouncement.name}</h5>
+                  <h5 className="modal-title"  style={{
+      wordBreak: "break-word",     
+      maxWidth: "500px",          
+      lineHeight: "1.4"
+    }}>{selectedAnnouncement.name}</h5>
                   <button
                     type="button"
                     className="btn-close btn-close-white"
