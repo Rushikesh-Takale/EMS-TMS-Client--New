@@ -552,55 +552,50 @@ const currentAbsentEmployees =
     absentIndexOfFirstItem,
     absentIndexOfLastItem
   );
-const fetchLateCheckInHistory = async () => {
 
+
+const fetchLateCheckInHistory = async () => {
   if (!lateFromDate && !lateToDate) {
     setLateCheckInEmployeesData([]);
     return;
   }
 
-  const fetchLateCheckInHistory = async () => {
-    const today = new Date().toISOString().split('T')[0];
-    
-    const fromDate = lateFromDate || today;
-    const toDate = lateToDate || today;
-  
-    try {
-      const token = localStorage.getItem("accessToken");
-      const res = await axios.get(
-        `http://localhost:8000/attendance/late-checkins`,
-        {
-          params: {
-            from: fromDate,
-            to: toDate,
-            name: lateSearch,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  
-      setLateCheckInEmployeesData(res.data);
-      setLateCurrentPage(1);
-        
-    } catch (err) {
-      console.error(err);
-      setLateCheckInEmployeesData([]);
-    }
-  };
+  const today = new Date().toISOString().split('T')[0];
+  const fromDate = lateFromDate || today;
+  const toDate = lateToDate || today;
 
-  useEffect(() => {
-    if (showCardList === "lateCheckIn") {
-      fetchLateCheckInHistory();
-    }
-  }, [showCardList]);
+  try {
+    const token = localStorage.getItem("accessToken");
+    const res = await axios.get(
+      `http://localhost:8000/attendance/late-checkins`,
+      {
+        params: {
+          from: fromDate,
+          to: toDate,
+          name: lateSearch,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-const downloadLateCheckInExcel = () => {
+    setLateCheckInEmployeesData(res.data);
+    setLateCurrentPage(1);
+  } catch (err) {
+    console.error(err);
+    setLateCheckInEmployeesData([]);
+  }
+};
 
-  const employeeName =
-    lateSearch?.trim() ||
-    "All_Employees";
+useEffect(() => {
+  if (showCardList === "lateCheckIn") {
+    fetchLateCheckInHistory();
+  }
+}, [showCardList]);
+
+const downloadLateCheckInExcel = () => {  
+  const employeeName = lateSearch?.trim() ||"All_Employees";
 
   const safeName =
     employeeName.replace(/\s+/g, "_");
