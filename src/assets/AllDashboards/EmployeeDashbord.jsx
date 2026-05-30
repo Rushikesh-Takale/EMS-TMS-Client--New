@@ -59,17 +59,29 @@ function EmployeeDashboard({ user }) {
       const today = toLocalDate(new Date());
       const res = await authAxios.get(`/leave/my/${user._id}`);
       console.log("leave check", res.data);
-      const todayApplied = res.data.find((leave) => {
-        const from = toLocalDate(leave.dateFrom);
-        const to = toLocalDate(leave.dateTo);
+      // const todayApplied = res.data.find((leave) => {
+      //   const from = toLocalDate(leave.dateFrom);
+      //   const to = toLocalDate(leave.dateTo);
 
-        return (
-          from &&
-          to &&
-          today >= from &&
-          today <= to 
-        );
-      });
+      //   return (
+      //     from &&
+      //     to &&
+      //     today >= from &&
+      //     today <= to 
+      //   );
+      // });
+      const todayApplied = res.data.find((leave) => {
+  const from = toLocalDate(leave.dateFrom);
+  const to = toLocalDate(leave.dateTo);
+
+  return (
+    from &&
+    to &&
+    today >= from &&
+    today <= to &&
+    leave.status?.toLowerCase() === "approved"
+  );
+});
 
       console.log("test leave checkin", todayApplied);
       return todayApplied || null;
