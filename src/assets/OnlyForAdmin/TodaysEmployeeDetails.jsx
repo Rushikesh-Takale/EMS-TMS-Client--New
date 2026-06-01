@@ -602,12 +602,16 @@ const downloadLateCheckInExcel = () => {
     employeeName.replace(/\s+/g, "_");
 
   // prevent same file multiple times
-  if (downloadedFile === safeName) return;
+  // if (downloadedFile === safeName) return;
 
   try {
 
     const excelData =
       lateCheckInEmployees.map((emp) => ({
+  "Employee ID":
+        emp.employeeId ||
+        emp.employee?.employeeId ||
+        "-",
         Name: emp.name,
 
         "Check-In Time": new Date(
@@ -648,7 +652,50 @@ const downloadLateCheckInExcel = () => {
     console.error(err);
   }
 };
+// const downloadLateCheckInExcel = () => {
+//   try {
+//     const excelData = lateCheckInEmployees.map((emp) => ({
+//       "Employee ID":
+//         emp.employeeId ||
+//         emp.employee?.employeeId ||
+//         "-",
 
+//       Name:
+//         emp.name ||
+//         emp.employee?.name ||
+//         "-",
+
+//       "Check-In Time": emp.checkInTime
+//         ? new Date(emp.checkInTime).toLocaleTimeString([], {
+//             hour: "2-digit",
+//             minute: "2-digit",
+//           })
+//         : "-",
+
+//       Date: emp.checkInTime
+//         ? new Date(emp.checkInTime).toLocaleDateString("en-GB")
+//         : "-",
+
+//       Status: "Late Check-In",
+//     }));
+
+//     const worksheet = XLSX.utils.json_to_sheet(excelData);
+//     const workbook = XLSX.utils.book_new();
+
+//     XLSX.utils.book_append_sheet(
+//       workbook,
+//       worksheet,
+//       "Late Check-Ins"
+//     );
+
+//     XLSX.writeFile(
+//       workbook,
+//       `Late_CheckIns.xlsx`
+//     );
+//   } catch (err) {
+//     console.error("Excel Download Error:", err);
+//   }
+// };
 const openLateModal = (emp) => {
   setSelectedLateEmployee(emp);
   setShowLateModal(true);
