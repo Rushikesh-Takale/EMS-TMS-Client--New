@@ -35,50 +35,52 @@ function ApplyRegularization({ user, selectedRecord }) {
   const modalRef = useRef(null);
 
   //TANVI
-  useEffect(() => {
-    if (!showModal || !modalRef.current) return;
+useEffect(() => {
+  if (!showModal || !modalRef.current) return;
 
-    const modal = modalRef.current;
+  const modal = modalRef.current;
 
-    const focusableElements = modal.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+  const getFocusableElements = () =>
+    modal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
+
+  setTimeout(() => {
+    const focusableElements = getFocusableElements();
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus();
+    }
+  }, 0);
+
+  const handleKeyDown = (e) => {
+    const focusableElements = getFocusableElements();
+
+    if (!focusableElements.length) return;
 
     const firstEl = focusableElements[0];
     const lastEl = focusableElements[focusableElements.length - 1];
 
-    // ⭐ modal open होताच focus
-    modal.focus();
-
-    const handleKeyDown = (e) => {
-      // ESC key → modal close
-      if (e.key === "Escape") {
-        e.preventDefault();
-        setShowModal(null);
-      }
-
-      // TAB key → focus trap
-      if (e.key === "Tab") {
-        if (e.shiftKey) {
-          if (document.activeElement === firstEl) {
-            e.preventDefault();
-            lastEl.focus();
-          }
-        } else {
-          if (document.activeElement === lastEl) {
-            e.preventDefault();
-            firstEl.focus();
-          }
+    if (e.key === "Tab") {
+      if (e.shiftKey) {
+        if (document.activeElement === firstEl) {
+          e.preventDefault();
+          lastEl.focus();
+        }
+      } else {
+        if (document.activeElement === lastEl) {
+          e.preventDefault();
+          firstEl.focus();
         }
       }
-    };
+    }
+  };
 
-    modal.addEventListener("keydown", handleKeyDown);
+  modal.addEventListener("keydown", handleKeyDown);
 
-    return () => {
-      modal.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [showModal]);
+  return () => {
+    modal.removeEventListener("keydown", handleKeyDown);
+  };
+}, [showModal]);
   // ✅ Function to fetch counts
   const fetchCounts = async () => {
     try {
@@ -738,12 +740,13 @@ setCheckOutTime(null);
 
       {/* 🔹 Modal */}
       {showModal && (
-        <div
-          className="modal fade show d-block"
-          tabIndex="-1"
-          ref={modalRef}
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        >
+<div
+  className="modal fade show d-block"
+  ref={modalRef}
+  tabIndex={-1}
+ 
+  style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+>
           <div
             className="modal-dialog modal-dialog-centered"
             style={{ width: "600px" ,  }}
@@ -988,7 +991,7 @@ setCheckOutTime(null);
                     </div>
                   </div>
 
-                  <div className="d-flex justify-content-end gap-2">
+                 <div className="modal-footer">
                   <button
                     type="submit"
                     className="btn btn-sm custom-outline-btn"

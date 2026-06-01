@@ -80,7 +80,7 @@ const EventCard = () => {
           className="card shadow-sm h-100 border-0"
         style={{
           borderRadius: "10px",
-          height: "340px",
+          height: "330px",
           width: "100%",
         }}
         >
@@ -140,7 +140,7 @@ const EventCard = () => {
             overflow: "hidden",
             textOverflow: "ellipsis",
             wordBreak: "break-word",
-            minHeight: "48px",
+            minHeight: "30px",
           }}
         >
           {currentEvent.type} - {currentEvent.name}

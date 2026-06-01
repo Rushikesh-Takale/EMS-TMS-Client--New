@@ -552,7 +552,11 @@ useEffect(() => {
         }
       } else {
         if (!field.value.trim()) {
-          error = `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} is required`;
+          const fieldLabel = fieldName
+  .replace(/([A-Z])/g, " $1")
+  .replace(/^./, (str) => str.toUpperCase());
+
+error = `${fieldLabel} is required`;
           hasError = true;
         }
       }

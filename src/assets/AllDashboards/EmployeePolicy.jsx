@@ -852,7 +852,7 @@ useEffect(() => {
 <div className="modal-body">
   <p>
     By checking this box, I confirm that I have read,
-    understood, and accepted the company policy.
+    understood and accepted the company policy.
   </p>
 
   <p>
