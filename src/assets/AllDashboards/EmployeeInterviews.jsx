@@ -305,15 +305,16 @@ const formatTo12Hour = (time24) => {
               }}
             >
               {/* STATUS */}
-              <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
+              <div className="col-12 col-md-auto d-flex align-items-center  mb-1 ms-2">
                 <label
                   htmlFor="statusFilter"
-                  className="fw-bold mb-0"
+                 
+                 className="fw-bold mb-0 text-start text-md-end"
                   style={{
                     fontSize: "16px",
                     color: "#3A5FBE",
                     width: "50px",
-                    minWidth: "30px",
+                    minWidth: "50px",
                     marginRight: "8px",
                   }}
                 >
@@ -321,6 +322,17 @@ const formatTo12Hour = (time24) => {
                 </label>
 
                 <select
+               
+  size="small"
+  MenuProps={{
+    PaperProps: {
+      sx: {
+        maxHeight: 180,
+        width: 180,
+      },
+    },
+  }}
+
                   id="statusFilter"
                   className="form-select"
                   value={statusFilter}
