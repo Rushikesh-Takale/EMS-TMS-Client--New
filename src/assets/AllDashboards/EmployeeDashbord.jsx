@@ -1023,8 +1023,8 @@ const handleStartBreak = async () => {
             <div
               className="w-100"
               style={{
-                minHeight: "547px",
-                 height: "535px",
+                minHeight: "529x",
+                 height: "529px",
                 display: "flex",
                 marginTop:"-25px"
               }}
