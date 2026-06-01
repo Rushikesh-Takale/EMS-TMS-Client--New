@@ -320,6 +320,7 @@ const formatTo12Hour = (time24) => {
                 >
                   Status
                 </label>
+
                 <select
                
   size="small"
@@ -334,16 +335,21 @@ const formatTo12Hour = (time24) => {
 
                   id="statusFilter"
                   className="form-select"
-                  style={{ minWidth: 100 }}
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
+                  style={{
+                    minWidth: "140px",
+                    flex: 1,
+                  }}
                 >
+                  <>
                   <option value="All">All</option>
                   <option value="Scheduled">Scheduled</option>
                   <option value="On-going">On-going</option>
                   <option value="Completed">Completed</option>
                   <option value="Not-completed">Not-completed</option>
                   <option value="Cancelled">Cancelled</option>
+                  </>
                 </select>
               </div>
 
@@ -966,6 +972,27 @@ setDownloadUrl(selected.resumeUrl);
           background: #3A5FBE;
           color: #fff;
         }
+    
+
+  @media (max-width: 425px) {
+    #statusFilter {
+      width: 100% !important;
+      min-width: unset !important;
+    }
+
+    .form-select {
+      width: 100% !important;
+      font-size: 14px;
+    }
+
+    .card-body {
+      overflow: visible !important;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+    }
+  }
       `}</style>
     </div>
   );
