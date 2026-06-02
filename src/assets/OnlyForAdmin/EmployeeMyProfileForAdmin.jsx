@@ -34,7 +34,7 @@ function EmployeeProfileForAdmin({ employee: stateEmployee }) {
         try {
           const token = localStorage.getItem("accessToken");
           const res = await axios.get(
-            `https://ems-tms-server-new.vercel.app//getEmployee/${empId}`,
+            `https://ems-tms-server-new.vercel.app/getEmployee/${empId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -429,7 +429,7 @@ if (name.startsWith("bankDetails.")) {
       });
 
       await axios.put(
-        `https://ems-tms-server-new.vercel.app//employees/${employee._id || empId}`,
+        `https://ems-tms-server-new.vercel.app/employees/${employee._id || empId}`,
         data,
         {
           headers: {
@@ -443,7 +443,7 @@ if (name.startsWith("bankDetails.")) {
       setIsEditing(false);
 
       const updated = await axios.get(
-        `https://ems-tms-server-new.vercel.app//getEmployee/${employee._id || empId}`,
+        `https://ems-tms-server-new.vercel.app/getEmployee/${employee._id || empId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -533,7 +533,7 @@ if (name.startsWith("bankDetails.")) {
 
     const url = fileName.startsWith("http")
       ? fileName
-      : `https://ems-tms-server-new.vercel.app//uploads/${fileName}`;
+      : `https://ems-tms-server-new.vercel.app/uploads/${fileName}`;
 
     const fileType = getFileType(fileName);
 
@@ -572,7 +572,7 @@ if (name.startsWith("bankDetails.")) {
     try {
       const token = localStorage.getItem("accessToken");
       const res = await axios.delete(
-        `https://ems-tms-server-new.vercel.app//deleteEmployee/${id}`,
+        `https://ems-tms-server-new.vercel.app/deleteEmployee/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -624,7 +624,7 @@ if (name.startsWith("bankDetails.")) {
                   src={
                     employee?.image?.startsWith("http")
                       ? employee.image
-                      : `https://ems-tms-server-new.vercel.app//uploads/${employee.image}`
+                      : `https://ems-tms-server-new.vercel.app/uploads/${employee.image}`
                   }
                   alt="Profile Preview"
                   style={{
@@ -1196,7 +1196,7 @@ if (name.startsWith("bankDetails.")) {
                       href={
                         employee[field]?.startsWith("http")
                           ? employee[field]
-                          : `https://ems-tms-server-new.vercel.app//uploads/${employee[field]}`
+                          : `https://ems-tms-server-new.vercel.app/uploads/${employee[field]}`
                       }
                       target="_blank"
                       rel="noopener noreferrer"
@@ -1227,7 +1227,7 @@ if (name.startsWith("bankDetails.")) {
 
                 ) : employee.bankDetails?.passbookPdf ? (
                   <a
-                    href={`https://ems-tms-server-new.vercel.app//uploads/${employee.bankDetails.passbookPdf}`}
+                    href={`https://ems-tms-server-new.vercel.app/uploads/${employee.bankDetails.passbookPdf}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

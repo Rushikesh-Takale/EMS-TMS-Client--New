@@ -104,7 +104,7 @@ function Resignation() {
     setLoading(true);
     try {
       const token = getToken();
-      const response = await axios.get("https://ems-tms-server-new.vercel.app//resignation", {
+      const response = await axios.get("https://ems-tms-server-new.vercel.app/resignation", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -179,7 +179,7 @@ function Resignation() {
       };
 
       const response = await axios.put(
-        `https://ems-tms-server-new.vercel.app//resignation/${selected.originalData.resignationId}`,
+        `https://ems-tms-server-new.vercel.app/resignation/${selected.originalData.resignationId}`,
         payload,
         {
           headers: {

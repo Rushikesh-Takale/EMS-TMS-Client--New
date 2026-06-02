@@ -66,7 +66,7 @@ function MyAttendance({ employeeId }) {
     if (selectedRecord?.leaveRef?.reportingManager) {
       axios
         .get(
-          `https://ems-tms-server-new.vercel.app//users/${selectedRecord.leaveRef.reportingManager}`,
+          `https://ems-tms-server-new.vercel.app/users/${selectedRecord.leaveRef.reportingManager}`,
         )
         .then((res) => setManager(res.data))
         .catch((err) => console.error("Error fetching manager:", err));
@@ -80,14 +80,14 @@ function MyAttendance({ employeeId }) {
      
         const [attRes, leaveRes, weeklyRes, holidayRes, regRes, lateRes] =
   await Promise.all([
-    axios.get(`https://ems-tms-server-new.vercel.app//attendance/${employeeId}`),
-    axios.get(`https://ems-tms-server-new.vercel.app//leave/my/${employeeId}`),
+    axios.get(`https://ems-tms-server-new.vercel.app/attendance/${employeeId}`),
+    axios.get(`https://ems-tms-server-new.vercel.app/leave/my/${employeeId}`),
     axios.get(
-      `https://ems-tms-server-new.vercel.app//admin/weeklyoff/${new Date().getFullYear()}`
+      `https://ems-tms-server-new.vercel.app/admin/weeklyoff/${new Date().getFullYear()}`
     ),
-    axios.get(`https://ems-tms-server-new.vercel.app//getHolidays`),
+    axios.get(`https://ems-tms-server-new.vercel.app/getHolidays`),
     axios.get(
-      `https://ems-tms-server-new.vercel.app//attendance/regularization/my/${employeeId}`
+      `https://ems-tms-server-new.vercel.app/attendance/regularization/my/${employeeId}`
     ),
   
   ]);
@@ -859,7 +859,7 @@ if (
     try {
       const token = localStorage.getItem("accessToken");
       const authAxios = axios.create({
-        baseURL: "https://ems-tms-server-new.vercel.app/",
+        baseURL: "https://ems-tms-server-new.vercel.app",
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -1012,7 +1012,7 @@ if (
     try {
       const token = localStorage.getItem("accessToken");
       const authAxios = axios.create({
-        baseURL: "https://ems-tms-server-new.vercel.app/",
+        baseURL: "https://ems-tms-server-new.vercel.app",
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -1081,7 +1081,7 @@ if (
   const token = localStorage.getItem("accessToken");
 
   const authAxios = axios.create({
-    baseURL: "https://ems-tms-server-new.vercel.app/",
+    baseURL: "https://ems-tms-server-new.vercel.app",
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -1242,7 +1242,7 @@ if (
     const fetchBreaks = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        const res = await axios.get("https://ems-tms-server-new.vercel.app//api/break/my", {
+        const res = await axios.get("https://ems-tms-server-new.vercel.app/api/break/my", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setBreakData(res.data);

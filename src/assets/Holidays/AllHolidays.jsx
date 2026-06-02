@@ -31,7 +31,7 @@ function AllHolidays() {
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.delete(`https://ems-tms-server-new.vercel.app//holidays/${id}`, {
+      await axios.delete(`https://ems-tms-server-new.vercel.app/holidays/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

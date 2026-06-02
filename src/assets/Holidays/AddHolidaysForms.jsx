@@ -95,7 +95,7 @@ const modalRef = useRef(null);
     try {
       const token = localStorage.getItem("accessToken");
       const res = await axios.post(
-        "https://ems-tms-server-new.vercel.app//holidays",
+        "https://ems-tms-server-new.vercel.app/holidays",
         { name, date },
         { headers: { Authorization: `Bearer ${token}` } },
       );

@@ -23,7 +23,7 @@ function MyProfile({ user, setUser }) {
       setRemovingImage(true);
 
       const res = await axios.delete(
-        `https://ems-tms-server-new.vercel.app//employees/${user._id}/image`,
+        `https://ems-tms-server-new.vercel.app/employees/${user._id}/image`,
       );
       const updatedUser = res?.data?.employee
         ? res.data.employee
@@ -52,7 +52,7 @@ function MyProfile({ user, setUser }) {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
-          `https://ems-tms-server-new.vercel.app//employees/${user._id}`,
+          `https://ems-tms-server-new.vercel.app/employees/${user._id}`,
         );
         setProfile(res.data);
         setFormData({
@@ -166,7 +166,7 @@ function MyProfile({ user, setUser }) {
 
       setSaving(true);
       // ✅ Only wait for PUT
-      await axios.put(`https://ems-tms-server-new.vercel.app//employees/${user._id}`, data, {
+      await axios.put(`https://ems-tms-server-new.vercel.app/employees/${user._id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setSaving(false);
@@ -176,7 +176,7 @@ function MyProfile({ user, setUser }) {
 
       // 🔥 Fetch updated profile in background (no need to block UI)
       axios
-        .get(`https://ems-tms-server-new.vercel.app//employees/${user._id}`)
+        .get(`https://ems-tms-server-new.vercel.app/employees/${user._id}`)
         .then((res) => {
           setProfile(res.data);
           setUser(res.data); // ✅ update dashboard user also
@@ -242,7 +242,7 @@ function MyProfile({ user, setUser }) {
     if (file instanceof File) return file.name;
     return (
       <a
-        href={`https://ems-tms-server-new.vercel.app//uploads/${file}`}
+        href={`https://ems-tms-server-new.vercel.app/uploads/${file}`}
         target="_blank"
         rel="noreferrer"
       >
@@ -385,7 +385,7 @@ function MyProfile({ user, setUser }) {
                     src={
                       profile.image?.startsWith("http")
                         ? profile.image
-                        : `https://ems-tms-server-new.vercel.app//image/${profile.image}`
+                        : `https://ems-tms-server-new.vercel.app/image/${profile.image}`
                     }
                     alt="Profile"
                     style={{

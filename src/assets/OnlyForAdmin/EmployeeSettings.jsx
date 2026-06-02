@@ -60,7 +60,7 @@ function EmployeeSettings({ user, setUser }) {
   //     const accessToken = localStorage.getItem("accessToken"); // from your login response
 
   //     const res = await axios.post(
-  //       "https://ems-tms-server-new.vercel.app//change-password",
+  //       "https://ems-tms-server-new.vercel.app/change-password",
   //       {
   //         currentPassword,
   //         newPassword,

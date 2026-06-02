@@ -53,7 +53,7 @@ const VisualDiary = () => {
  
   useEffect(() => {
     axios
-      .get("https://ems-tms-server-new.vercel.app//api/gallery")
+      .get("https://ems-tms-server-new.vercel.app/api/gallery")
       .then((res) => {
         setGallery(res.data || []);
         setLoading(false);

@@ -53,7 +53,7 @@ function Header({ user, handleLogout, notifications, fetchNotifications}) {
                   user?.image
                     ? user.image.startsWith("http")
                       ? user.image
-                      : `https://ems-tms-server-new.vercel.app//uploads/${user.image}`
+                      : `https://ems-tms-server-new.vercel.app/uploads/${user.image}`
                     : "/myprofile.jpg"
                 }
                 alt="Profile"
@@ -74,7 +74,7 @@ function Header({ user, handleLogout, notifications, fetchNotifications}) {
                       user?.image
                         ? user.image.startsWith("http")
                           ? user.image
-                          : `https://ems-tms-server-new.vercel.app//uploads/${user.image}`
+                          : `https://ems-tms-server-new.vercel.app/uploads/${user.image}`
                         : "/myprofile.jpg"
                     }
                     alt="Profile"

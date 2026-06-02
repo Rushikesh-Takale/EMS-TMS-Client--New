@@ -18,7 +18,7 @@ const isToday = (date) => {
     today.getDate() === selected.getDate()
   );
 };
-const BASE_URL = "https://ems-tms-server-new.vercel.app/";
+const BASE_URL = "https://ems-tms-server-new.vercel.app";
 
 const HRScheduleInterview = ({user}) => {
   const [showForm, setShowForm] = useState(false);
@@ -153,7 +153,7 @@ const [downloadUrl, setDownloadUrl] = useState("");
   
   useEffect(() => {
     axios
-      .get("https://ems-tms-server-new.vercel.app//allEmp")
+      .get("https://ems-tms-server-new.vercel.app/allEmp")
       .then((res) => {
         if (res.data.success) setEmployees(res.data.employees);
       })
@@ -162,7 +162,7 @@ const [downloadUrl, setDownloadUrl] = useState("");
 
   const fetchAllInterviews = () => {
     axios
-      .get("https://ems-tms-server-new.vercel.app//interviews")
+      .get("https://ems-tms-server-new.vercel.app/interviews")
       .then((res) => {
         if (res.data.success) {
           setAllInterviews(res.data.interviews);
@@ -207,7 +207,7 @@ useEffect(() => {
 
     try {
       const res = await axios.delete(
-        `https://ems-tms-server-new.vercel.app//interviewsDelete/${id}`,
+        `https://ems-tms-server-new.vercel.app/interviewsDelete/${id}`,
       );
 
       if (res.data.success) {
@@ -246,7 +246,7 @@ useEffect(() => {
     console.log("form data",formData)
     try {
       const res = await axios.put(
-        `https://ems-tms-server-new.vercel.app//interviewsUpdate/${id}`,
+        `https://ems-tms-server-new.vercel.app/interviewsUpdate/${id}`,
         formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -496,7 +496,7 @@ if (
     }
     const token = localStorage.getItem("accessToken");
     axios
-      .post("https://ems-tms-server-new.vercel.app//schedule-interview", formPayload, {
+      .post("https://ems-tms-server-new.vercel.app/schedule-interview", formPayload, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`

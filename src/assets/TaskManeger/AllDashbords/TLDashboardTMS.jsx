@@ -68,7 +68,7 @@ function TLDashboardTMS() {
         if (!token || !id) return;
 
         const membersRes = await axios.get(
-          `https://ems-tms-server-new.vercel.app//${id}/members`,
+          `https://ems-tms-server-new.vercel.app/${id}/members`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -96,7 +96,7 @@ function TLDashboardTMS() {
 
         // Fetch Teams
         const teamsRes = await axios.get(
-          `https://ems-tms-server-new.vercel.app//api/teams/user/${id}/teams`,
+          `https://ems-tms-server-new.vercel.app/api/teams/user/${id}/teams`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -105,7 +105,7 @@ function TLDashboardTMS() {
 
         // Fetch Projects
         const projectsRes = await axios.get(
-          `https://ems-tms-server-new.vercel.app//${id}/projects`,
+          `https://ems-tms-server-new.vercel.app/${id}/projects`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -153,7 +153,7 @@ function TLDashboardTMS() {
 
         // Fetch Tasks
         const tasksRes = await axios.get(
-          `https://ems-tms-server-new.vercel.app//tasks/${id}`,
+          `https://ems-tms-server-new.vercel.app/tasks/${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -224,7 +224,7 @@ function TLDashboardTMS() {
 
         // Use the new available employees API
         const res = await axios.get(
-          `https://ems-tms-server-new.vercel.app//${id}/available-employees`,
+          `https://ems-tms-server-new.vercel.app/${id}/available-employees`,
           { 
             headers: { Authorization: `Bearer ${token}` }
           }

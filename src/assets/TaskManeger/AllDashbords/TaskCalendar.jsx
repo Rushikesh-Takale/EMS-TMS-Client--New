@@ -19,7 +19,7 @@ function TaskCalendar({ employeeId }) {
     const fetchData = async () => {
       try {
         const [tasksRes] = await Promise.all([
-          axios.get(`https://ems-tms-server-new.vercel.app//tasks/assigned/${employeeId}`),
+          axios.get(`https://ems-tms-server-new.vercel.app/tasks/assigned/${employeeId}`),
         ]);
 
         setTasks(tasksRes.data.tasks || []);

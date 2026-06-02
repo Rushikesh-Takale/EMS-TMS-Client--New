@@ -147,7 +147,7 @@ const actionModalRef = useRef(null);
       setLoading(true);
       const token = localStorage.getItem("accessToken");
       const res = await axios.get(
-        "https://ems-tms-server-new.vercel.app//attendance/regularization/all",
+        "https://ems-tms-server-new.vercel.app/attendance/regularization/all",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -225,7 +225,7 @@ const actionModalRef = useRef(null);
     const token = localStorage.getItem("accessToken");
 
     await axios.put(
-      `https://ems-tms-server-new.vercel.app//attendance/regularization/${id}/status`,
+      `https://ems-tms-server-new.vercel.app/attendance/regularization/${id}/status`,
       {
         status,
         actionReason: actionReason.trim(),

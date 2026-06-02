@@ -143,7 +143,7 @@ useEffect(() => {
       }
 
       const response = await axios.get(
-        `https://ems-tms-server-new.vercel.app//resignation/manager/${managerId}`,
+        `https://ems-tms-server-new.vercel.app/resignation/manager/${managerId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -201,7 +201,7 @@ useEffect(() => {
       }
 
       const response = await axios.delete(
-        `https://ems-tms-server-new.vercel.app//cancel/resignation/${resignationId}`,
+        `https://ems-tms-server-new.vercel.app/cancel/resignation/${resignationId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -242,7 +242,7 @@ useEffect(() => {
       };
 
       const response = await axios.put(
-        `https://ems-tms-server-new.vercel.app//resignation/${selected.originalData.resignationId}`,
+        `https://ems-tms-server-new.vercel.app/resignation/${selected.originalData.resignationId}`,
         payload,
         {
           headers: {
@@ -292,7 +292,7 @@ useEffect(() => {
       const token = getToken();
 
       const response = await axios.post(
-        "https://ems-tms-server-new.vercel.app//resignation/apply",
+        "https://ems-tms-server-new.vercel.app/resignation/apply",
         {
           reason: applyForm.reason,
           comments: applyForm.comments,
@@ -325,7 +325,7 @@ useEffect(() => {
       if (!empId) return;
 
       const response = await axios.get(
-        `https://ems-tms-server-new.vercel.app//resignation/${empId}`,
+        `https://ems-tms-server-new.vercel.app/resignation/${empId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

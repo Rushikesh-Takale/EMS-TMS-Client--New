@@ -101,7 +101,7 @@ function EmployeePerformances() {
     if (!userId || !role) return;
 
     fetch(
-      `https://ems-tms-server-new.vercel.app//performance/employee?userId=${userId}&role=${role}`,
+      `https://ems-tms-server-new.vercel.app/performance/employee?userId=${userId}&role=${role}`,
     )
       .then((res) => res.json())
       .then((res) => {

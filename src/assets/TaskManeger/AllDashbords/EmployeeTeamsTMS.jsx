@@ -91,7 +91,7 @@ const EmployeeTeamsTMS = ({ user }) => {
 
       try {
         const empCountRes = await axios.get(
-          "https://ems-tms-server-new.vercel.app//getEmployeeCount",
+          "https://ems-tms-server-new.vercel.app/getEmployeeCount",
           { headers },
         );
         totalMembers = empCountRes.data?.totalEmployees || 0;
@@ -101,9 +101,9 @@ const EmployeeTeamsTMS = ({ user }) => {
 
       Promise.all([
         fetch(
-          `https://ems-tms-server-new.vercel.app//api/teams/employee/${user._id}/teams`,
+          `https://ems-tms-server-new.vercel.app/api/teams/employee/${user._id}/teams`,
         ).then((res) => res.json()),
-        axios.get("https://ems-tms-server-new.vercel.app//getAllDepartments"),
+        axios.get("https://ems-tms-server-new.vercel.app/getAllDepartments"),
       ])
         .then(([teamRes, deptRes]) => {
           if (!teamRes.success) return;

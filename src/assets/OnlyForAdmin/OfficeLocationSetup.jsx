@@ -15,7 +15,7 @@
 //   // Fetch existing office location from backend
 //   useEffect(() => {
 //     axios
-//       .get("https://ems-tms-server-new.vercel.app//admin/office-location")
+//       .get("https://ems-tms-server-new.vercel.app/admin/office-location")
 //       .then((res) => {
 //         if (res.data.length) setLocation(res.data[0]);
 //       })
@@ -32,7 +32,7 @@
 //   const handleSave = async () => {
 //   setLoading(true);
 //   try {
-//     await axios.post("https://ems-tms-server-new.vercel.app//admin/office-location", location);
+//     await axios.post("https://ems-tms-server-new.vercel.app/admin/office-location", location);
 
 //     // ✅ Use a built-in alert OR SweetAlert if available
 //     alert("Office location saved successfully!");
@@ -372,7 +372,7 @@ function OfficeLocationSetup() {
   // ✅ Fetch existing office location
   useEffect(() => {
     axios
-      .get("https://ems-tms-server-new.vercel.app//admin/office-location")
+      .get("https://ems-tms-server-new.vercel.app/admin/office-location")
       .then((res) => {
         if (res.data.length) setLocation(res.data[0]);
       })
@@ -454,7 +454,7 @@ const handleSave = () => {
   setLoading(true);
 
   axios
-    .post("https://ems-tms-server-new.vercel.app//admin/office-location", editLocation)
+    .post("https://ems-tms-server-new.vercel.app/admin/office-location", editLocation)
     .then(() => {
       setLocation(editLocation);
       alert("Office location saved");

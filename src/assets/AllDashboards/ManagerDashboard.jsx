@@ -189,12 +189,12 @@ useEffect(() => {
   const fetchData = async () => {
     try {
       const leavesRes = await axios.get(
-        `https://ems-tms-server-new.vercel.app//leaves/manager/${user._id}`,
+        `https://ems-tms-server-new.vercel.app/leaves/manager/${user._id}`,
       );
       setLeaves(leavesRes.data);
 
       const regRes = await axios.get(
-        `https://ems-tms-server-new.vercel.app//regularization/manager/${user._id}`,
+        `https://ems-tms-server-new.vercel.app/regularization/manager/${user._id}`,
       );
 
       const today = new Date();
@@ -272,7 +272,7 @@ const updateLeaveStatus = async (leaveId, status) => {
     }
 
     await axios.put(
-      `https://ems-tms-server-new.vercel.app//leave/${leaveId}/status`,
+      `https://ems-tms-server-new.vercel.app/leave/${leaveId}/status`,
       {
         status,
         userId: user._id,
@@ -309,7 +309,7 @@ const updateRegularizationStatus = async (
       localStorage.getItem("accessToken");
 
     await axios.put(
-      `https://ems-tms-server-new.vercel.app//attendance/regularization/${attendanceId}/status`,
+      `https://ems-tms-server-new.vercel.app/attendance/regularization/${attendanceId}/status`,
       {
         status,
         actionReason:

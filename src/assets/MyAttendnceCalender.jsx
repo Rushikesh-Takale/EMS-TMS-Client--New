@@ -21,11 +21,11 @@
 //     const fetchData = async () => {
 //       try {
 //         const [attRes, leaveRes, weeklyRes, holidayRes, regRes] = await Promise.all([
-//           axios.get(`https://ems-tms-server-new.vercel.app//attendance/${employeeId}`),
-//           axios.get(`https://ems-tms-server-new.vercel.app//leave/my/${employeeId}`),
-//           axios.get(`https://ems-tms-server-new.vercel.app//admin/weeklyoff/${new Date().getFullYear()}`),
-//           axios.get(`https://ems-tms-server-new.vercel.app//getHolidays`),
-//           axios.get(`https://ems-tms-server-new.vercel.app//attendance/regularization/my/${employeeId}`),
+//           axios.get(`https://ems-tms-server-new.vercel.app/attendance/${employeeId}`),
+//           axios.get(`https://ems-tms-server-new.vercel.app/leave/my/${employeeId}`),
+//           axios.get(`https://ems-tms-server-new.vercel.app/admin/weeklyoff/${new Date().getFullYear()}`),
+//           axios.get(`https://ems-tms-server-new.vercel.app/getHolidays`),
+//           axios.get(`https://ems-tms-server-new.vercel.app/attendance/regularization/my/${employeeId}`),
 //         ]);
 
 //         setWeeklyOff(weeklyRes.data.data?.saturdays || []);
@@ -250,14 +250,14 @@ function MyAttendanceCalendar({ employeeId }) {
       try {
         const [attRes, leaveRes, weeklyRes, holidayRes, regRes] =
           await Promise.all([
-            axios.get(`https://ems-tms-server-new.vercel.app//attendance/${employeeId}`),
-            axios.get(`https://ems-tms-server-new.vercel.app//leave/my/${employeeId}`),
+            axios.get(`https://ems-tms-server-new.vercel.app/attendance/${employeeId}`),
+            axios.get(`https://ems-tms-server-new.vercel.app/leave/my/${employeeId}`),
             axios.get(
-              `https://ems-tms-server-new.vercel.app//admin/weeklyoff/${new Date().getFullYear()}`,
+              `https://ems-tms-server-new.vercel.app/admin/weeklyoff/${new Date().getFullYear()}`,
             ),
-            axios.get(`https://ems-tms-server-new.vercel.app//getHolidays`),
+            axios.get(`https://ems-tms-server-new.vercel.app/getHolidays`),
             axios.get(
-              `https://ems-tms-server-new.vercel.app//attendance/regularization/my/${employeeId}`,
+              `https://ems-tms-server-new.vercel.app/attendance/regularization/my/${employeeId}`,
             ),
             
           ])

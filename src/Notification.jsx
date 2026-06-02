@@ -13,7 +13,7 @@ function Notification({ userId,notifications, fetchNotifications}) {
 
   //   try {
   //     const res = await axios.get(
-  //       `https://ems-tms-server-new.vercel.app//notifications/${userId}`,
+  //       `https://ems-tms-server-new.vercel.app/notifications/${userId}`,
   //     );
 
   //     // Filter last 15 days notifications
@@ -34,7 +34,7 @@ function Notification({ userId,notifications, fetchNotifications}) {
   const handleNotificationClick = async (n) => {
     try {
       // Mark as read in backend
-      await axios.put(`https://ems-tms-server-new.vercel.app//notifications/${n._id}/read`);
+      await axios.put(`https://ems-tms-server-new.vercel.app/notifications/${n._id}/read`);
 
 
       // Update state locally for instant UI feedback
@@ -225,7 +225,7 @@ else if (n.type === "Probation") {
   //   const fetchNotifications = async () => {
   //     try {
   //       const res = await axios.get(
-  //         `https://ems-tms-server-new.vercel.app//notifications/${userId}`
+  //         `https://ems-tms-server-new.vercel.app/notifications/${userId}`
   //       );
 
   //       // Filter last 15 days notifications

@@ -136,7 +136,7 @@ const actionModalRef = useRef(null);
     if (!token) return;
 
     axios
-      .get("https://ems-tms-server-new.vercel.app//me", {
+      .get("https://ems-tms-server-new.vercel.app/me", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setUser(res.data))
@@ -152,7 +152,7 @@ const actionModalRef = useRef(null);
         try {
           if (!leave.employee?._id) continue;
           const res = await axios.post(
-            "https://ems-tms-server-new.vercel.app//leave/calculate",
+            "https://ems-tms-server-new.vercel.app/leave/calculate",
             {
               // employeeId: leave.employee,
               employeeId: leave.employee?._id,
@@ -183,7 +183,7 @@ const actionModalRef = useRef(null);
     if (!user) return;
      setLoadingLeaves(true);
     axios
-      .get("https://ems-tms-server-new.vercel.app//leaves")
+      .get("https://ems-tms-server-new.vercel.app/leaves")
       .then((res) => {
         const filteredByAdmin = res.data.filter(
           (l) => l.employee?.employeeId !== user?.employeeId,
@@ -215,7 +215,7 @@ const actionModalRef = useRef(null);
     }
   
     try {
-      const response = await axios.put(`https://ems-tms-server-new.vercel.app//leave/${leaveId}/status`, {
+      const response = await axios.put(`https://ems-tms-server-new.vercel.app/leave/${leaveId}/status`, {
         status,
         userId: user._id,
         role: "admin",
@@ -286,7 +286,7 @@ const actionModalRef = useRef(null);
   const fetchYearlySettings = async () => {
     try {
       const res = await axios.get(
-        "https://ems-tms-server-new.vercel.app//leave/yearly-settings",
+        "https://ems-tms-server-new.vercel.app/leave/yearly-settings",
       );
       setData(res.data);
     } catch (err) {
@@ -300,7 +300,7 @@ const actionModalRef = useRef(null);
 
   const grantYearly = async () => {
     try {
-      const res = await axios.post("https://ems-tms-server-new.vercel.app//leave/grant-yearly", {
+      const res = await axios.post("https://ems-tms-server-new.vercel.app/leave/grant-yearly", {
         sl,
         cl,
       });
@@ -331,7 +331,7 @@ const actionModalRef = useRef(null);
   const grantMonthly = async () => {
     try {
       const res = await axios.post(
-        "https://ems-tms-server-new.vercel.app//leave/grant-monthly",
+        "https://ems-tms-server-new.vercel.app/leave/grant-monthly",
         {
           sl,
           cl,
@@ -348,7 +348,7 @@ const actionModalRef = useRef(null);
 
   const fetchLeaveBalance = async () => {
     try {
-      const res = await axios.get("https://ems-tms-server-new.vercel.app//leave/balance");
+      const res = await axios.get("https://ems-tms-server-new.vercel.app/leave/balance");
       console.log("data", res.data);
     } catch (err) {
       console.error("Error fetching leave balance:", err);
@@ -381,7 +381,7 @@ const actionModalRef = useRef(null);
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`https://ems-tms-server-new.vercel.app//leave/${leaveId}`);
+      await axios.delete(`https://ems-tms-server-new.vercel.app/leave/${leaveId}`);
 
       // ✅ Remove the deleted leave from state
       const updatedLeaves = leaves.filter((l) => l._id !== leaveId);
@@ -409,7 +409,7 @@ fetchNotifications();
     }
 
     try {
-      const res = await axios.delete("https://ems-tms-server-new.vercel.app//leave/reset-all");
+      const res = await axios.delete("https://ems-tms-server-new.vercel.app/leave/reset-all");
       alert(res.data.message);
       setData([]); // clear yearly table instantly
     } catch (err) {

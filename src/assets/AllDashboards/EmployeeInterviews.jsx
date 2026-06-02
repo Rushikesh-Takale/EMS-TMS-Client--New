@@ -153,7 +153,7 @@ const formatTo12Hour = (time24) => {
     console.log("token", token);
     try {
       const res = await fetch(
-        `https://ems-tms-server-new.vercel.app//interviews/employee/${employeeId}`,
+        `https://ems-tms-server-new.vercel.app/interviews/employee/${employeeId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -181,7 +181,7 @@ const formatTo12Hour = (time24) => {
     const token = localStorage.getItem("accessToken");
     try {
       const res = await fetch(
-        `https://ems-tms-server-new.vercel.app//interviews/employee/${selected._id}`,
+        `https://ems-tms-server-new.vercel.app/interviews/employee/${selected._id}`,
         {
           method: "PUT",
           headers: {

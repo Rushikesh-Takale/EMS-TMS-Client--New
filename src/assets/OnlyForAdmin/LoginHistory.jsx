@@ -38,7 +38,7 @@ const totalPages = Math.ceil(
   const fetchLoginHistory = async () => {
     try {
       const res = await axios.get(
-        "https://ems-tms-server-new.vercel.app//save-login-location"
+        "https://ems-tms-server-new.vercel.app/save-login-location"
       );
 
       setLoginHistory(res.data);

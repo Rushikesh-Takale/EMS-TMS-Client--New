@@ -162,7 +162,7 @@ const [notifications, setNotifications] = useState([]);
 
     let isMounted = true;
     axios
-      .get("https://ems-tms-server-new.vercel.app//me", {
+      .get("https://ems-tms-server-new.vercel.app/me", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -201,7 +201,7 @@ const [notifications, setNotifications] = useState([]);
 
     try {
       const res = await axios.get(
-        `https://ems-tms-server-new.vercel.app//notifications/${user._id}`
+        `https://ems-tms-server-new.vercel.app/notifications/${user._id}`
       );
 
       const fifteenDaysAgo = new Date();
@@ -272,7 +272,7 @@ const [notifications, setNotifications] = useState([]);
       const refreshToken = localStorage.getItem("refreshToken");
 
       await axios.post(
-        "https://ems-tms-server-new.vercel.app//logout",
+        "https://ems-tms-server-new.vercel.app/logout",
         { refreshToken }
       );
       

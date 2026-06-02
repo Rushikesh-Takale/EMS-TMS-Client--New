@@ -161,7 +161,7 @@ const [tl, setTl] = useState("");
   // Fetch employees for dropdown
   useEffect(() => {
     if (showModal) {
-      fetch("https://ems-tms-server-new.vercel.app//employees/teams")
+      fetch("https://ems-tms-server-new.vercel.app/employees/teams")
         .then((res) => res.json())
         .then((data) => {
           console.log("EMPLOYEES:", data.employees);
@@ -196,7 +196,7 @@ const [tl, setTl] = useState("");
 
   const fetchPerformanceRequests = async () => {
     try {
-      const res = await fetch("https://ems-tms-server-new.vercel.app//performance/getrequests", {
+      const res = await fetch("https://ems-tms-server-new.vercel.app/performance/getrequests", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -218,7 +218,7 @@ const [tl, setTl] = useState("");
     setPendingLoading(true);
     try {
       const res = await fetch(
-        "https://ems-tms-server-new.vercel.app//performance/admin/pending",
+        "https://ems-tms-server-new.vercel.app/performance/admin/pending",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -253,7 +253,7 @@ const [tl, setTl] = useState("");
     setProcessingRequest(id);
     try {
       const res = await fetch(
-        `https://ems-tms-server-new.vercel.app//performance/${id}/approve`,
+        `https://ems-tms-server-new.vercel.app/performance/${id}/approve`,
         {
           method: "POST",
           headers: {
@@ -294,7 +294,7 @@ const [tl, setTl] = useState("");
     setProcessingRequest(id);
     try {
       const res = await fetch(
-        `https://ems-tms-server-new.vercel.app//performance/${id}/reject`,
+        `https://ems-tms-server-new.vercel.app/performance/${id}/reject`,
         {
           method: "POST",
           headers: {
@@ -329,7 +329,7 @@ const [tl, setTl] = useState("");
       return;
 
     try {
-      const res = await fetch(`https://ems-tms-server-new.vercel.app//performance/${id}`, {
+      const res = await fetch(`https://ems-tms-server-new.vercel.app/performance/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -503,7 +503,7 @@ const handleSectionChange = (section) => {
     };
 
     try {
-      const res = await fetch("https://ems-tms-server-new.vercel.app//performance", {
+      const res = await fetch("https://ems-tms-server-new.vercel.app/performance", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

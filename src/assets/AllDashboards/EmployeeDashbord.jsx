@@ -40,7 +40,7 @@ function EmployeeDashboard({ user }) {
   const token = localStorage.getItem("accessToken");
 
   const authAxios = axios.create({
-    baseURL: "https://ems-tms-server-new.vercel.app/",
+    baseURL: "https://ems-tms-server-new.vercel.app",
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -274,9 +274,9 @@ if (hrs < 4) {
     const fetchData = async () => {
       try {
         const [leaveRes, regRes] = await Promise.all([
-          axios.get(`https://ems-tms-server-new.vercel.app//leave/my/${user._id}`),
+          axios.get(`https://ems-tms-server-new.vercel.app/leave/my/${user._id}`),
           axios.get(
-            `https://ems-tms-server-new.vercel.app//attendance/regularization/my/${user._id}`,
+            `https://ems-tms-server-new.vercel.app/attendance/regularization/my/${user._id}`,
           ),
         ]);
 

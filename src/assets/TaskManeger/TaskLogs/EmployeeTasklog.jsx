@@ -194,7 +194,7 @@ const EmployeeTasklog = ({ user }) => {
       const token = localStorage.getItem("accessToken");
 
       const logRes = await fetch(
-        `https://ems-tms-server-new.vercel.app//api/tasklogs/employee/${user._id}`,
+        `https://ems-tms-server-new.vercel.app/api/tasklogs/employee/${user._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -205,7 +205,7 @@ const EmployeeTasklog = ({ user }) => {
       const logsData = await logRes.json();
 
       const taskRes = await fetch(
-        `https://ems-tms-server-new.vercel.app//tasks/assigned/${user._id}`,
+        `https://ems-tms-server-new.vercel.app/tasks/assigned/${user._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -245,7 +245,7 @@ const EmployeeTasklog = ({ user }) => {
     if (!confirmDelete) return;
     
     try {
-      const response = await fetch(`https://ems-tms-server-new.vercel.app//api/tasklogs/${logId}`, {
+      const response = await fetch(`https://ems-tms-server-new.vercel.app/api/tasklogs/${logId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -496,8 +496,8 @@ const EmployeeTasklog = ({ user }) => {
       };
 
       const endpoint = editIndex !== null
-        ? `https://ems-tms-server-new.vercel.app//api/tasklogs/${editIndex}`
-        : "https://ems-tms-server-new.vercel.app//api/tasklogs/";
+        ? `https://ems-tms-server-new.vercel.app/api/tasklogs/${editIndex}`
+        : "https://ems-tms-server-new.vercel.app/api/tasklogs/";
 
       const method = editIndex !== null ? "PUT" : "POST";
 

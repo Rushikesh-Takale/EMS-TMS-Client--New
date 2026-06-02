@@ -17,7 +17,7 @@ function AllEventsCards() {
       try {
         const token = localStorage.getItem("accessToken"); // Auth token if required
         const res = await axios.get(
-          "https://ems-tms-server-new.vercel.app//events-for-employee",
+          "https://ems-tms-server-new.vercel.app/events-for-employee",
           {
             headers: {
               Authorization: `Bearer ${token}`,

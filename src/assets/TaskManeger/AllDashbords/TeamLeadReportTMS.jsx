@@ -442,7 +442,7 @@ const trapFocus = (e) => {
 
   useEffect(() => {
     axios
-      .get("https://ems-tms-server-new.vercel.app//managers/list")
+      .get("https://ems-tms-server-new.vercel.app/managers/list")
       .then((res) => setManagerList(res.data || []))
       .catch((err) => console.error(err));
   }, []);
@@ -773,7 +773,7 @@ const trapFocus = (e) => {
 
     const fetchTasks = async () => {
       try {
-        const res = await axios.get(`https://ems-tms-server-new.vercel.app//tasks/${managerId}`);
+        const res = await axios.get(`https://ems-tms-server-new.vercel.app/tasks/${managerId}`);
 
         setAllTasks(res.data.tasks || []);
       } catch (error) {
@@ -791,7 +791,7 @@ useEffect(() => {
       const userId =
         user?._id || JSON.parse(localStorage.getItem("activeUser"))?._id;
 
-      const res = await axios.get(`https://ems-tms-server-new.vercel.app//${userId}/projects`);
+      const res = await axios.get(`https://ems-tms-server-new.vercel.app/${userId}/projects`);
 
       console.log("Projects API:", res.data);
 
@@ -812,7 +812,7 @@ useEffect(() => {
 async function fetchRequiredDetails() {
   try {
     // Tasks
-    const taskResponse = await axios.get(`https://ems-tms-server-new.vercel.app//tasks/${user._id}`);
+    const taskResponse = await axios.get(`https://ems-tms-server-new.vercel.app/tasks/${user._id}`);
     const tasks = (taskResponse.data.tasks || []).
       map(({ _id, taskName, projectName, status, assignedTo, dateOfExpectedCompletion }) => ({
         _id, taskName, projectName, status, assignedTo, dateOfExpectedCompletion,
@@ -820,7 +820,7 @@ async function fetchRequiredDetails() {
 
     // Projects
     const projectsResponse = await axios.get(
-      `https://ems-tms-server-new.vercel.app//${user._id}/projects`
+      `https://ems-tms-server-new.vercel.app/${user._id}/projects`
     );
 
     const projects = projectsResponse.data.projects.map((item) => {
@@ -887,7 +887,7 @@ const calculateStatus = (project) => {
       if (!user?._id) return;
   
       try {
-        const response = await fetch(`https://ems-tms-server-new.vercel.app//${user._id}/members`);
+        const response = await fetch(`https://ems-tms-server-new.vercel.app/${user._id}/members`);
         const data = await response.json();
   
         if (data.success) {

@@ -63,7 +63,7 @@ function EmployeeReportTMS({ employeeId }) {
     if (!employeeId) return;
 
     axios
-      .get(`https://ems-tms-server-new.vercel.app//tasks/assigned/${employeeId}`)
+      .get(`https://ems-tms-server-new.vercel.app/tasks/assigned/${employeeId}`)
       .then((res) => {
         const apiTasks = res.data.tasks.map((task) => ({
           _id: task._id,
@@ -223,7 +223,7 @@ function EmployeeReportTMS({ employeeId }) {
       setLoadingProjects(true);
 
       const res = await axios.get(
-        `https://ems-tms-server-new.vercel.app//projects/employee/${employeeId}`,
+        `https://ems-tms-server-new.vercel.app/projects/employee/${employeeId}`,
       );
 
       if (res.data.success) {
@@ -247,7 +247,7 @@ function EmployeeReportTMS({ employeeId }) {
       setLoadingDelayedTasks(true);
 
       const res = await axios.get(
-        `https://ems-tms-server-new.vercel.app//api/tasks/employee/${employeeId}/delayed-tasks`,
+        `https://ems-tms-server-new.vercel.app/api/tasks/employee/${employeeId}/delayed-tasks`,
       );
 
       if (res.data.success) {
@@ -271,7 +271,7 @@ function EmployeeReportTMS({ employeeId }) {
       setLoadingUpcomingTasks(true);
 
       const res = await axios.get(
-        `https://ems-tms-server-new.vercel.app//api/tasks/employee/${employeeId}/upcoming-tasks`,
+        `https://ems-tms-server-new.vercel.app/api/tasks/employee/${employeeId}/upcoming-tasks`,
       );
 
       if (res.data.success) {
@@ -304,7 +304,7 @@ function EmployeeReportTMS({ employeeId }) {
       setLoadingTeam(true);
 
       const res = await axios.get(
-        `https://ems-tms-server-new.vercel.app//api/employee/${employeeId}/teams`,
+        `https://ems-tms-server-new.vercel.app/api/employee/${employeeId}/teams`,
       );
 
       if (res.data.success) {

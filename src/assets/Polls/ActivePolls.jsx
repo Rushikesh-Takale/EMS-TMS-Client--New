@@ -36,7 +36,7 @@ const ActivePolls = ({ user }) => {
   
     const fetchActivePoll = async () => {
       try {
-        const res = await axios.get("https://ems-tms-server-new.vercel.app//api/polls/active");
+        const res = await axios.get("https://ems-tms-server-new.vercel.app/api/polls/active");
   
         if (!isMounted) return;
   
@@ -146,7 +146,7 @@ const ActivePolls = ({ user }) => {
   useEffect(() => {
     const fetchPreviousPolls = async () => {
       try {
-        const res = await axios.get("https://ems-tms-server-new.vercel.app//api/polls/previous");
+        const res = await axios.get("https://ems-tms-server-new.vercel.app/api/polls/previous");
         setPreviousPolls(res.data);
       } catch (err) {
         console.error(err);
@@ -190,7 +190,7 @@ const ActivePolls = ({ user }) => {
 
       const token = localStorage.getItem("accessToken");
       const res = await axios.post(
-        "https://ems-tms-server-new.vercel.app//api/polls/create",
+        "https://ems-tms-server-new.vercel.app/api/polls/create",
         {
           question: pollQuestion,
           description: pollDescription,
@@ -200,7 +200,7 @@ const ActivePolls = ({ user }) => {
       );
 
       const activeRes = await axios.get(
-        "https://ems-tms-server-new.vercel.app//api/polls/active"
+        "https://ems-tms-server-new.vercel.app/api/polls/active"
       );
 
       setSavedPolls(activeRes.data ? [activeRes.data] : []);
@@ -239,7 +239,7 @@ const ActivePolls = ({ user }) => {
       const token = localStorage.getItem("accessToken");
 
       const response = await axios.put(
-        `https://ems-tms-server-new.vercel.app//api/polls/${editingPoll._id}`,
+        `https://ems-tms-server-new.vercel.app/api/polls/${editingPoll._id}`,
         {
           question: editQuestion,
           description: editDescription,
@@ -322,7 +322,7 @@ const ActivePolls = ({ user }) => {
     try {
       const token = localStorage.getItem("accessToken");
       await axios.delete(
-        `https://ems-tms-server-new.vercel.app//api/polls/${pollId}`,
+        `https://ems-tms-server-new.vercel.app/api/polls/${pollId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -331,7 +331,7 @@ const ActivePolls = ({ user }) => {
       setPreviousPolls(prev => prev.filter(p => p?._id?.toString() !== pollId?.toString()));
 
       const activeRes = await axios.get(
-        "https://ems-tms-server-new.vercel.app//api/polls/active"
+        "https://ems-tms-server-new.vercel.app/api/polls/active"
       );
   
       setSavedPolls(activeRes.data ? [activeRes.data] : []);  
@@ -349,7 +349,7 @@ const ActivePolls = ({ user }) => {
     try {
       const token = localStorage.getItem("accessToken");
       const res = await axios.get(
-        `https://ems-tms-server-new.vercel.app//api/polls/${pollId}/voted-members`,
+        `https://ems-tms-server-new.vercel.app/api/polls/${pollId}/voted-members`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -389,7 +389,7 @@ const ActivePolls = ({ user }) => {
 
 
       const res = await axios.post(
-        "https://ems-tms-server-new.vercel.app//api/polls/vote",
+        "https://ems-tms-server-new.vercel.app/api/polls/vote",
         { pollId, optionIndex, userId: loggedInUserId },
         { headers: { Authorization: `Bearer ${token}` } }
 

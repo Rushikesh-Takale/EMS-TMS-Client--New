@@ -25,7 +25,7 @@ function AdminDashboard({ user }) {
         const token = localStorage.getItem("accessToken");
 
         const authAxios = axios.create({
-          baseURL: "https://ems-tms-server-new.vercel.app/",
+          baseURL: "https://ems-tms-server-new.vercel.app",
           headers: { Authorization: `Bearer ${token}` },
         });
 

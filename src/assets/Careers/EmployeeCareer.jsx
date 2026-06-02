@@ -155,7 +155,7 @@ const [phone, setPhone] = useState("");
 
   const fetchJobs = async () => {
     try {
-      const res = await fetch("https://ems-tms-server-new.vercel.app//api/jobs/");
+      const res = await fetch("https://ems-tms-server-new.vercel.app/api/jobs/");
       const data = await res.json();
       setJobs(data);
     } catch (err) {
@@ -166,7 +166,7 @@ const [phone, setPhone] = useState("");
   const fetchAppliedJobs = async () => {
     try {
       const res = await fetch(
-        `https://ems-tms-server-new.vercel.app//api/apply/employee/${user._id}?applicantType=inhouse`,
+        `https://ems-tms-server-new.vercel.app/api/apply/employee/${user._id}?applicantType=inhouse`,
       );
 
       if (!res.ok) throw new Error("Failed to fetch applied jobs");
@@ -182,7 +182,7 @@ const [phone, setPhone] = useState("");
   const fetchRefferedJobs = async () => {
     try {
       const res = await fetch(
-        `https://ems-tms-server-new.vercel.app//api/apply/employee/${user._id}?applicantType=referral`,
+        `https://ems-tms-server-new.vercel.app/api/apply/employee/${user._id}?applicantType=referral`,
       );
 
       if (!res.ok) throw new Error("Failed to fetch applied jobs");
@@ -196,7 +196,7 @@ const [phone, setPhone] = useState("");
     }
   };
   const createApplication = (formData) =>
-    axios.post("https://ems-tms-server-new.vercel.app//api/apply", formData, {
+    axios.post("https://ems-tms-server-new.vercel.app/api/apply", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 

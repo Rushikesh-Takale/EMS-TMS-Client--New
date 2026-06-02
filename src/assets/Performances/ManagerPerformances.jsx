@@ -111,7 +111,7 @@ function ManagerPerformances() {
       return;
     }
 
-    fetch(`https://ems-tms-server-new.vercel.app//performance/manager/${managerId}`)
+    fetch(`https://ems-tms-server-new.vercel.app/performance/manager/${managerId}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("Manager API response:", data);
@@ -140,7 +140,7 @@ function ManagerPerformances() {
 
   //     // 🔁 API CALL (example)
   //     await axios.put(
-  //       `https://ems-tms-server-new.vercel.app//performance/${selectedPerformance._id}`,
+  //       `https://ems-tms-server-new.vercel.app/performance/${selectedPerformance._id}`,
   //       payload,
   //     );
   //     // ✅ Update UI locally
