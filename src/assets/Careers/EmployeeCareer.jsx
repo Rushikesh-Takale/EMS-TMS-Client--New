@@ -822,7 +822,7 @@ error = `${fieldLabel} is required`;
 textField: {
   sx: {
     width: {
-      xs: "260px",
+      xs: "300px",
       md: "170px",
         className: "form-control",
     fullWidth: true,
