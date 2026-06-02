@@ -788,7 +788,7 @@ error = `${fieldLabel} is required`;
                       style={{ minWidth: 150 }}
                     />
                   </div>
-               <div className="col-12 col-md-auto d-flex align-items-center mb-1">
+               <div className="col-12 col-md-auto d-flex align-items-center mb-1 ">
   <label
     className="fw-bold mb-0 text-start text-md-end"
     style={{
@@ -802,26 +802,32 @@ error = `${fieldLabel} is required`;
     Date
   </label>
 
-  <LocalizationProvider dateAdapter={AdapterDayjs}>
-    <DatePicker
-      format="DD-MM-YYYY"
-      value={filterDate ? dayjs(filterDate) : null}
-      onChange={(newValue) =>
-        setFilterDate(
-          newValue ? newValue.format("YYYY-MM-DD") : ""
-        )
-      }
-      slotProps={{
-        textField: {
-          size: "small",
-          placeholder: "dd-mm-yyyy",
-          sx: {
-            minWidth: 150,
-          },
+<LocalizationProvider dateAdapter={AdapterDayjs}>
+<DatePicker
+ className="form-control"
+  format="DD-MM-YYYY"
+  value={filterDate ? dayjs(filterDate) : null}
+  onChange={(newValue) =>
+    setFilterDate(newValue ? newValue.format("YYYY-MM-DD") : "")
+  }
+  slotProps={{
+    textField: {
+    
+      sx: {
+        "& .MuiPickersInputBase-root": {
+          height: "38px !important",
         },
-      }}
-    />
-  </LocalizationProvider>
+
+        "& .MuiPickersSectionList-root": {
+          fontSize: "15px !important",
+          color: "#090202fc !important",
+        },
+      },
+    },
+  }}
+
+  />
+</LocalizationProvider>
 </div>
                   <div className="col-auto ms-auto d-flex gap-2">
                     <button
