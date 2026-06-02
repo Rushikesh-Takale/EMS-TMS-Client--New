@@ -27,7 +27,7 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
   useEffect(() => {
     const fetchWeeklyOffs = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/admin/weeklyoff/${new Date().getFullYear()}`);
+        const res = await axios.get(`https://ems-tms-server-new.vercel.app//admin/weeklyoff/${new Date().getFullYear()}`);
         const weeklyData = res.data?.data || res.data || {};
         const saturdayOffs = weeklyData.saturdays || [1, 3, 5];
         const sundayOff = true; // Sundays always off
@@ -78,7 +78,7 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
     const fetchPublicHolidays = async () => {
       setLoadingHolidays(true);
       try {
-        const res = await axios.get(`http://localhost:8000/getHolidays`);
+        const res = await axios.get(`https://ems-tms-server-new.vercel.app//getHolidays`);
         const holidays = res.data.map(h => h.date); // Extract YYYY-MM-DD strings
         setPublicHolidays(holidays);
       } catch (err) {
@@ -99,7 +99,7 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
     const fetchLeaves = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/leave/my/${user._id}`
+          `https://ems-tms-server-new.vercel.app//leave/my/${user._id}`
         );
     console.log(res.data)
         const today = new Date();
@@ -140,7 +140,7 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
           allIds.map(async (id) => {
             try {
               const r = await axios.get(
-                `http://localhost:8000/users/${id}`
+                `https://ems-tms-server-new.vercel.app//users/${id}`
               );
               usersMap[id] = r.data?.name || "N/A";
             } catch {
@@ -269,7 +269,7 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
   //     for (let leave of leaves) {
   //       try {
   //         const res = await axios.post(
-  //           "http://localhost:8000/leave/calculate",
+  //           "https://ems-tms-server-new.vercel.app//leave/calculate",
   //           {
   //             // employeeId: leave.employee,
   //             employeeId:
@@ -330,7 +330,7 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
     const prevLeaves = leaves;
     setLeaves((ls) => ls.filter((x) => x._id !== id));
     try {
-      const res = await fetch(`http://localhost:8000/leave/${id}`, { method: "DELETE" });
+      const res = await fetch(`https://ems-tms-server-new.vercel.app//leave/${id}`, { method: "DELETE" });
       if (!res.ok) {
         setLeaves(prevLeaves);
         fetchNotifications();

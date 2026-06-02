@@ -111,7 +111,7 @@ useEffect(() => {
         const token = localStorage.getItem("accessToken");
         const headers = { Authorization: `Bearer ${token}` };
 
-        const userRes = await axios.get("http://localhost:8000/me", {
+        const userRes = await axios.get("https://ems-tms-server-new.vercel.app//me", {
           headers,
         });
         const user = userRes.data;
@@ -142,7 +142,7 @@ useEffect(() => {
         const token = localStorage.getItem("accessToken");
         const headers = { Authorization: `Bearer ${token}` };
 
-        const response = await axios.get(`http://localhost:8000/${teamLeadId}/members`, {
+        const response = await axios.get(`https://ems-tms-server-new.vercel.app//${teamLeadId}/members`, {
           headers
         });
 

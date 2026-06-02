@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-const API_BASE = "http://localhost:8000";
+const API_BASE = "https://ems-tms-server-new.vercel.app/";
 const STORAGE_KEY = "hr_policy";
 const ACK_KEY = "policy_ack_employee";
 
@@ -147,7 +147,7 @@ useEffect(() => {
   const fetchEmployeeAcknowledgements = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/policy/employee-ack/${employeeId}`
+        `https://ems-tms-server-new.vercel.app//policy/employee-ack/${employeeId}`
       );
 
       if (res.data.success) {
@@ -167,7 +167,7 @@ useEffect(() => {
       }
 
       const res = await axios.post(
-        "http://localhost:8000/policy/acknowledge",
+        "https://ems-tms-server-new.vercel.app//policy/acknowledge",
         {
           policyId,
           employeeId,

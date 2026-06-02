@@ -17,7 +17,7 @@ const ProbationReminderPopup = ({ user, role, username, id, onClose }) => {
 
       try {
         const token = localStorage.getItem("accessToken");
-        const res = await axios.get("http://localhost:8000/admin/probation-reminder", {
+        const res = await axios.get("https://ems-tms-server-new.vercel.app//admin/probation-reminder", {
           headers: { Authorization: `Bearer ${token}` }
         });
         

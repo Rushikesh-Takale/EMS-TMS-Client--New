@@ -129,7 +129,7 @@ const [selectedAbsentEmployee, setSelectedAbsentEmployee] = useState(null);
         setLoading(true);
         const token = localStorage.getItem("accessToken");
         const authAxios = axios.create({
-          baseURL: "http://localhost:8000",
+          baseURL: "https://ems-tms-server-new.vercel.app/",
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -453,7 +453,7 @@ const fetchLateCheckInHistory = async () => {
     const token = localStorage.getItem("accessToken");
 
     const res = await axios.get(
-      "http://localhost:8000/attendance/late-checkins",
+      "https://ems-tms-server-new.vercel.app//attendance/late-checkins",
       {
         params: {
           from: lateFromDate || undefined,
@@ -2190,7 +2190,7 @@ currentLateEmployees.map((emp) => (
   const token = localStorage.getItem("accessToken");
 
   const leaveRes = await axios.get(
-    "http://localhost:8000/attendance/on-leave-employees",
+    "https://ems-tms-server-new.vercel.app//attendance/on-leave-employees",
     {
       params: {
         date: leaveDate || undefined,
@@ -2220,7 +2220,7 @@ onClick={async () => {
   const token = localStorage.getItem("accessToken");
 
   const leaveRes = await axios.get(
-    "http://localhost:8000/attendance/on-leave-employees",
+    "https://ems-tms-server-new.vercel.app//attendance/on-leave-employees",
     {
       headers: {
         Authorization: `Bearer ${token}`,

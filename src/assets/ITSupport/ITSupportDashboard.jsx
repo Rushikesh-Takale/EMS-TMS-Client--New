@@ -1058,7 +1058,7 @@ function ITSupportDashboard() {
                     ? selectedTicket.attachment.map((file, i) => (
                         <div key={i}>
                           <a
-                            href={`http://localhost:8000/uploads/${file}`}
+                            href={`https://ems-tms-server-new.vercel.app//uploads/${file}`}
                             download
                             className="btn btn-sm btn-outline-primary ms-2"
                           >

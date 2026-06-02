@@ -77,7 +77,7 @@ const location = useLocation();
     const fetchRequests = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/attendance/regularization/my/${employeeId}`,
+          `https://ems-tms-server-new.vercel.app//attendance/regularization/my/${employeeId}`,
         );
         // ✅ Sort newest first (based on createdAt or request date)
         // 🔒 STRICT last 3 months (rolling window)
@@ -178,7 +178,7 @@ const location = useLocation();
 
     try {
       await axios.delete(
-        `http://localhost:8000/attendance/regularization/${id}`,
+        `https://ems-tms-server-new.vercel.app//attendance/regularization/${id}`,
       );
       setRequests(requests.filter((req) => req._id !== id));
     } catch (err) {

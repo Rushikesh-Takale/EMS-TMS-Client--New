@@ -174,12 +174,12 @@ useEffect(() => {
   const fetchData = async () => {
     try {
       const leavesRes = await axios.get(
-        `http://localhost:8000/leave/team-leader/${user._id}`,
+        `https://ems-tms-server-new.vercel.app//leave/team-leader/${user._id}`,
       );
       setLeaves(leavesRes.data.leaves || []);
       
       const regRes = await axios.get(
-        `http://localhost:8000/regularization/team-leader/${user._id}`,
+        `https://ems-tms-server-new.vercel.app//regularization/team-leader/${user._id}`,
       );
   
       // ✅ Get the requests array from response
@@ -271,7 +271,7 @@ useEffect(() => {
     }
 
     await axios.put(
-      `http://localhost:8000/leave/${leaveId}/status`,
+      `https://ems-tms-server-new.vercel.app//leave/${leaveId}/status`,
       {
         status,
         userId: user._id,
@@ -304,7 +304,7 @@ useEffect(() => {
       localStorage.getItem("accessToken");
 
     await axios.put(
-      `http://localhost:8000/attendance/regularization/${attendanceId}/status`,
+      `https://ems-tms-server-new.vercel.app//attendance/regularization/${attendanceId}/status`,
       {
         status,
         actionReason:

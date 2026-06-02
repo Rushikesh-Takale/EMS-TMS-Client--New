@@ -110,7 +110,7 @@ function EmployeeResignation({ user }) {
 
   async function fetchUser() {
     try {
-      const response = await axios.get("http://localhost:8000/me", {
+      const response = await axios.get("https://ems-tms-server-new.vercel.app//me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -126,7 +126,7 @@ function EmployeeResignation({ user }) {
       if (!userData) return;
 
       const response = await axios.get(
-        `http://localhost:8000/emp/info/${userData.employeeId}`,
+        `https://ems-tms-server-new.vercel.app//emp/info/${userData.employeeId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -151,7 +151,7 @@ function EmployeeResignation({ user }) {
       if (!userData) return;
 
       const response = await axios.get(
-        `http://localhost:8000/resignation/${userData.employeeId}`,
+        `https://ems-tms-server-new.vercel.app//resignation/${userData.employeeId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -202,7 +202,7 @@ function EmployeeResignation({ user }) {
       };
 
       const response = await axios.post(
-        "http://localhost:8000/resignation/apply",
+        "https://ems-tms-server-new.vercel.app//resignation/apply",
         payload,
         {
           headers: {
@@ -237,7 +237,7 @@ function EmployeeResignation({ user }) {
 
     try {
       const response = await axios.delete(
-        `http://localhost:8000/cancel/resignation/${resignationId}`,
+        `https://ems-tms-server-new.vercel.app//cancel/resignation/${resignationId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },

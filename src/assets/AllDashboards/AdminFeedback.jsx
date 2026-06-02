@@ -25,7 +25,7 @@ const AdminFeedback = () => {
 
   const fetchAllFeedbacks = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/feedback/all");
+      const response = await axios.get("https://ems-tms-server-new.vercel.app//feedback/all");
 
       if (response.data && response.data.success) {
         const allFeedbacks = (response.data.feedbacks || []).map((fb) => {
@@ -200,7 +200,7 @@ const AdminFeedback = () => {
         return;
       }
 
-      await axios.delete(`http://localhost:8000/feedback/delete/${id}`, {
+      await axios.delete(`https://ems-tms-server-new.vercel.app//feedback/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

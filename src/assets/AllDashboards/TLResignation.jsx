@@ -139,7 +139,7 @@ const fetchTLResignations = async () => {
     if (!teamLeadId) return;
 
     const response = await axios.get(
-      `http://localhost:8000/${teamLeadId}/members`,
+      `https://ems-tms-server-new.vercel.app//${teamLeadId}/members`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -203,7 +203,7 @@ setFilteredRequests(sorted);
       }
 
       const response = await axios.delete(
-        `http://localhost:8000/cancel/resignation/${resignationId}`,
+        `https://ems-tms-server-new.vercel.app//cancel/resignation/${resignationId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -245,7 +245,7 @@ setFilteredRequests(sorted);
       };
 
       const response = await axios.put(
-        `http://localhost:8000/resignation/${selected.originalData.resignationId}`,
+        `https://ems-tms-server-new.vercel.app//resignation/${selected.originalData.resignationId}`,
         payload,
         {
           headers: {
@@ -297,7 +297,7 @@ setFilteredRequests(sorted);
       const token = getToken();
 
       const response = await axios.post(
-        "http://localhost:8000/resignation/apply",
+        "https://ems-tms-server-new.vercel.app//resignation/apply",
         {
           reason: applyForm.reason,
           comments: applyForm.comments,
@@ -330,7 +330,7 @@ setFilteredRequests(sorted);
       if (!empId) return;
 
       const response = await axios.get(
-        `http://localhost:8000/resignation/${empId}`,
+        `https://ems-tms-server-new.vercel.app//resignation/${empId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -149,7 +149,7 @@ const isModalOpen = !!selected || showResumeModal;
     const token = localStorage.getItem("accessToken");
     try {
       const res = await fetch(
-        `http://localhost:8000/interviews/manager/${managerId}`,
+        `https://ems-tms-server-new.vercel.app//interviews/manager/${managerId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -177,7 +177,7 @@ const isModalOpen = !!selected || showResumeModal;
     try {
       const token = localStorage.getItem("accessToken");
       const res = await fetch(
-        `http://localhost:8000/interviews/managerUpdate/${selected._id}`,
+        `https://ems-tms-server-new.vercel.app//interviews/managerUpdate/${selected._id}`,
         {
           method: "PUT",
           body: JSON.stringify({

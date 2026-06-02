@@ -24,7 +24,7 @@ function AddPolicyPage() {
       if (file) {
         formData.append("pdf", file); // rutuja 03-04-26
       }
-      await axios.post("http://localhost:8000/policy/create", formData);
+      await axios.post("https://ems-tms-server-new.vercel.app//policy/create", formData);
 
       alert("Policy created successfully");
       navigate(-1);

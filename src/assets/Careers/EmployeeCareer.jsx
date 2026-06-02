@@ -5,6 +5,10 @@ import axios from "axios";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/bootstrap.css";
 import TablePagination from "./TablePagination";
+import dayjs from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const EmployeeCareer = ({ user }) => {
   const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
@@ -151,7 +155,7 @@ const [phone, setPhone] = useState("");
 
   const fetchJobs = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/jobs/");
+      const res = await fetch("https://ems-tms-server-new.vercel.app//api/jobs/");
       const data = await res.json();
       setJobs(data);
     } catch (err) {
@@ -162,7 +166,7 @@ const [phone, setPhone] = useState("");
   const fetchAppliedJobs = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/apply/employee/${user._id}?applicantType=inhouse`,
+        `https://ems-tms-server-new.vercel.app//api/apply/employee/${user._id}?applicantType=inhouse`,
       );
 
       if (!res.ok) throw new Error("Failed to fetch applied jobs");
@@ -178,7 +182,7 @@ const [phone, setPhone] = useState("");
   const fetchRefferedJobs = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/apply/employee/${user._id}?applicantType=referral`,
+        `https://ems-tms-server-new.vercel.app//api/apply/employee/${user._id}?applicantType=referral`,
       );
 
       if (!res.ok) throw new Error("Failed to fetch applied jobs");
@@ -192,7 +196,7 @@ const [phone, setPhone] = useState("");
     }
   };
   const createApplication = (formData) =>
-    axios.post("http://localhost:8000/api/apply", formData, {
+    axios.post("https://ems-tms-server-new.vercel.app//api/apply", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
@@ -784,27 +788,41 @@ error = `${fieldLabel} is required`;
                       style={{ minWidth: 150 }}
                     />
                   </div>
-                  <div className="col-12 col-md-auto d-flex align-items-center  mb-1">
-                    <label
-                      className="fw-bold mb-0 text-start text-md-end"
-                      style={{
-                        fontSize: "16px",
-                        color: "#3A5FBE",
-                        width: "50px",
-                        minWidth: "50px",
-                        marginRight: "8px",
-                      }}
-                    >
-                      Date
-                    </label>
-                    <input
-                      className="form-control"
-                      value={filterDate}
-                      type="date"
-                      onChange={(e) => setFilterDate(e.target.value)}
-                      style={{ minWidth: 150 }}
-                    />
-                  </div>
+               <div className="col-12 col-md-auto d-flex align-items-center mb-1">
+  <label
+    className="fw-bold mb-0 text-start text-md-end"
+    style={{
+      fontSize: "16px",
+      color: "#3A5FBE",
+      width: "50px",
+      minWidth: "50px",
+      marginRight: "8px",
+    }}
+  >
+    Date
+  </label>
+
+  <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <DatePicker
+      format="DD-MM-YYYY"
+      value={filterDate ? dayjs(filterDate) : null}
+      onChange={(newValue) =>
+        setFilterDate(
+          newValue ? newValue.format("YYYY-MM-DD") : ""
+        )
+      }
+      slotProps={{
+        textField: {
+          size: "small",
+          placeholder: "dd-mm-yyyy",
+          sx: {
+            minWidth: 150,
+          },
+        },
+      }}
+    />
+  </LocalizationProvider>
+</div>
                   <div className="col-auto ms-auto d-flex gap-2">
                     <button
                       onClick={handleFilter}

@@ -10,7 +10,7 @@ function EmployeeLeaveBalance({ user, fetchNotifications}) {
   useEffect(() => {
     if (!user?._id) return;
     axios
-      .get(`http://localhost:8000/leave/${user._id}`)
+      .get(`https://ems-tms-server-new.vercel.app//leave/${user._id}`)
       .then((res) => setBalance(res.data))
       .catch((err) => console.error(err));
   }, [user, refresh]);

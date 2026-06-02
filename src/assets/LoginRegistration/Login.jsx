@@ -118,7 +118,7 @@ const getCurrentLocation = () => {
 
   try {
     // ✅ First get location permission
- const response = await axios.post("http://localhost:8000/login", {
+ const response = await axios.post("https://ems-tms-server-new.vercel.app//login", {
   email,
   password,
 });
@@ -164,7 +164,7 @@ if (response.data.success) {
   getCurrentLocation()
     .then(async (locationData) => {
       await axios.post(
-        "http://localhost:8000/save-login-location",
+        "https://ems-tms-server-new.vercel.app//save-login-location",
         {
           employeeId: response.data.employeeId,
           employeeName: response.data.username,
