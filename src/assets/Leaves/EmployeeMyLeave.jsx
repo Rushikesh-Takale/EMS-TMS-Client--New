@@ -382,6 +382,19 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
         .badge-rejected { background:#f8d7da; }
         .badge-pending { background:#ffe493; }
 
+        input[type="date"] {
+          min-height: 42px;
+          width: 100%;
+          -webkit-appearance: none;
+          appearance: none;
+          background-color: #fff;
+        }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+          opacity: 1;
+          display: block;
+          cursor: pointer;
+        }
         @media (max-width: 576px) {
           .card-body {
             padding: 12px;
@@ -446,7 +459,10 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
                 className="form-control"
                 value={dateFromFilter}
                 onChange={(e) => setDateFromFilter(e.target.value)}
-                style={{ minWidth: "140px" }}
+              style={{
+                  minWidth: "140px",
+                  width: "100%"
+                }}
               />
             </div>
             <div className="col-12 col-md-auto d-flex align-items-center mb-1 ms-2">
@@ -470,6 +486,10 @@ function EmployeeMyLeave({ user, refreshKey,fetchNotifications}) {
   value={dateToFilter}
   min={dateFromFilter}   // ✅ IMPORTANT
   onChange={(e) => setDateToFilter(e.target.value)}
+  style={{
+                  minWidth: "140px",
+                  width: "100%"
+                }}
 />
             </div>
 
