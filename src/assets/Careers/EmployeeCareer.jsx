@@ -803,6 +803,7 @@ error = `${fieldLabel} is required`;
   </label>
 
 <LocalizationProvider dateAdapter={AdapterDayjs}>
+
 <DatePicker
  className="form-control"
   format="DD-MM-YYYY"
@@ -810,23 +811,37 @@ error = `${fieldLabel} is required`;
   onChange={(newValue) =>
     setFilterDate(newValue ? newValue.format("YYYY-MM-DD") : "")
   }
-  slotProps={{
-    textField: {
-    
+ slotProps={{
+      popper: {
       sx: {
-        "& .MuiPickersInputBase-root": {
-          height: "38px !important",
-        },
-
-        "& .MuiPickersSectionList-root": {
-          fontSize: "15px !important",
-          color: "#090202fc !important",
+        "& .MuiPaper-root": {
+          width: "310px",
         },
       },
     },
-  }}
+textField: {
+  sx: {
+    width: {
+      xs: "260px",
+      md: "170px",
+        className: "form-control",
+    fullWidth: true,
+    },
+
+    "& .MuiPickersInputBase-root": {
+      height: "38px !important",
+    },
+    "& .MuiPickersSectionList-root": {
+      fontSize: "15px !important",
+      color: "#090202fc !important",
+      textTransform: "lowercase",
+    },
+  },
+}
+}}
 
   />
+  
 </LocalizationProvider>
 </div>
                   <div className="col-auto ms-auto d-flex gap-2">
